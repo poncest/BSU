@@ -5,16 +5,45 @@
 library(tidyverse)
 library(readxl)
 
-bikes_tbl           <- read_excel("00_data/bike_sales/data_raw/bikes.xlsx")
-orderlines_tbl      <- read_excel("00_data/bike_sales/data_raw/orderlines.xlsx")
-bike_orderlines_tbl <- read_rds("00_data/bike_sales/data_wrangled/bike_orderlines.rds")
+bikes_tbl <- read_excel("R-Track/Course 1 - DS for Business Part 1/DS4B_101_R_Business_Analysis/00_data/bike_sales/data_raw/bikes.xlsx")
 
+orderlines_tbl <- read_excel("R-Track/Course 1 - DS for Business Part 1/DS4B_101_R_Business_Analysis/00_data/bike_sales/data_raw/orderlines.xlsx")
+
+bike_orderlines_tbl <- read_rds("R-Track/Course 1 - DS for Business Part 1/DS4B_101_R_Business_Analysis/00_data/bike_sales/data_wrangled/bike_orderlines.rds")
+
+glimpse(bikes_tbl)
+glimpse(orderlines_tbl)
+glimpse(bike_orderlines_tbl)
 
 # 1.0 Selecting Columns with select() ----
 
+# select function
+bike_orderlines_tbl %>% 
+select(order_date, order_id, order_line)
 
+bike_orderlines_tbl %>% 
+    select(1:3)
 
+bike_orderlines_tbl %>% 
+    select(starts_with('order_'))
 
+# reduce columns for a visualization
+bike_orderlines_tbl %>% 
+    select(order_date, total_price, category_1, category_2)
+    
+# rearrange columns
+bike_orderlines_tbl %>% 
+    select(bikeshop_name:state, everything())
+    
+# select helpers
+bike_orderlines_tbl %>% 
+    select(contains('price'))
+
+bike_orderlines_tbl %>% 
+    select(ends_with('price'))
+
+bike_orderlines_tbl %>% 
+    select(starts_with('price'))
 
 # 2.0 Arranging with arrange() and desc() ----
 
