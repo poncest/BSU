@@ -45,6 +45,39 @@ bike_orderlines_tbl %>%
 bike_orderlines_tbl %>% 
     select(starts_with('price'))
 
+
+# pull function
+bike_orderlines_tbl %>% 
+    select(total_price) %>% 
+    pull() %>% 
+    mean()
+
+bike_orderlines_tbl %>% 
+    pull(model) 
+    
+
+# select_if()
+bike_orderlines_tbl %>% 
+    select_if(is.character)
+
+bike_orderlines_tbl %>% 
+    select_if(is.numeric)   
+
+# returns everything that is not numeric
+bike_orderlines_tbl %>% 
+    select_if(~ !is.numeric(.))
+
+# arrange()
+bikes_tbl %>% 
+    select(model, price) %>% 
+    arrange(price)
+
+bikes_tbl %>% 
+    select(model, price) %>% 
+    arrange(desc(price))
+ 
+
+
 # 2.0 Arranging with arrange() and desc() ----
 
 
