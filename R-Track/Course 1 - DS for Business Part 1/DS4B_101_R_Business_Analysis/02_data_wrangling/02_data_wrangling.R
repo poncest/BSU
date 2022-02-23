@@ -67,7 +67,10 @@ bike_orderlines_tbl %>%
 bike_orderlines_tbl %>% 
     select_if(~ !is.numeric(.))
 
-# arrange()
+
+
+# 2.0 Arranging with arrange() and desc() ----
+
 bikes_tbl %>% 
     select(model, price) %>% 
     arrange(price)
@@ -78,25 +81,90 @@ bikes_tbl %>%
  
 
 
-# 2.0 Arranging with arrange() and desc() ----
-
-
-
-
-
 # 3.0 Filtering Rows with filter() ----
 
 # 3.1 filter(): formula filtering ----
 
+bikes_tbl %>% 
+    select(model, price) %>% 
+    filter(price > 1500)
 
+bikes_tbl %>% 
+    select(model, price) %>% 
+    filter(price > mean(price))
+
+bikes_tbl %>% 
+    select(model, price) %>% 
+    filter(price > 5000 | (price < 1000)) %>% 
+    arrange(desc(price)) %>% 
+    View()
+
+bikes_tbl %>% 
+    select(model, price) %>% 
+    filter(price > 6000,
+           model %>% str_detect('Supersix')               )
+
+
+# Filtering for one or more conditions exactly using == and %in%
+
+bike_orderlines_tbl %>% 
+    filter(category_2 %in% c("Over Mountain", 'Trail', 'Endurance Road'))
+    
+    
+bike_orderlines_tbl %>% 
+    filter(category_2 == "Over Mountain")
+    
+    
+bike_orderlines_tbl %>% 
+    filter(category_2 != "Over Mountain") 
+
+# everything except...
+bike_orderlines_tbl %>% 
+    filter(!(category_2 %in% c("Over Mountain", 'Trail', 'Endurance Road')))
+    
 
 # 3.2 slice(): filtering with row number(s) ----
 
+# top 5
+bikes_tbl %>% 
+    arrange(desc(price)) %>% 
+    slice(1:5)
+    
+#  bottom 5 
+bikes_tbl %>% 
+    arrange(price) %>% 
+    slice(1:5)
+
+#  bottom 5 
+bikes_tbl %>% 
+    arrange(desc(price)) %>% 
+    slice(93 :  97)
+
+#  bottom 5 ???
+bikes_tbl %>% 
+    arrange(desc(price)) %>% 
+    slice(nrow(.)-4 : nrow(.))
 
 
+# 3.2 distinct(): Unique values ----
+
+bike_orderlines_tbl %>% 
+    distinct(category_1)
+
+bike_orderlines_tbl %>% 
+    distinct(category_1, category_2)
+
+bike_orderlines_tbl %>% 
+    distinct(bikeshop_name, city, state)
 
 
 # 4.0 Adding Columns with mutate() ----
+
+
+
+
+
+
 
 
 
