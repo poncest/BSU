@@ -160,16 +160,55 @@ bike_orderlines_tbl %>%
 
 # 4.0 Adding Columns with mutate() ----
 
+# adding column
+bilke_orderlines_prices <-  bike_orderlines_tbl %>% 
+    select(order_date, model, quantity, price) %>% 
+    mutate(total_price = quantity * price)
+
+# overwrite column
+bilke_orderlines_prices %>% 
+    mutate(total_price = log(total_price)) 
+
+# transformations
+bilke_orderlines_prices %>% 
+    mutate(
+        total_price = quantity * price,
+        total_price_log = log(total_price),
+        total_price_sqrt = total_price^0.5
+        )
+
+# adding flag (binary)
+bilke_orderlines_prices %>% 
+    mutate(is_supersix = model %>% str_to_lower() %>% str_detect('supersix')) %>% 
+    filter(is_supersix)
 
 
+# bining with ntile()
+bilke_orderlines_prices %>% 
+    mutate(total_price_bin = ntile(total_price, 3)) # high, low, medium
+ 
+
+# case_when() - more flexible binning
+
+# numeric to categorical
+bilke_orderlines_prices %>% 
+    mutate(total_price_bin = ntile(total_price, 3)) %>% 
+    mutate(total_price_bin2 = case_when(
+        total_price > quantile(total_price, 0.66) ~ 'High',  # prob .66 = 3rd quantile
+        total_price > quantile(total_price, 0.33) ~ 'Medium',  
+        TRUE ~ 'Low'  # catchall
+    ))
+
+# text to categorical
+bilke_orderlines_prices %>% 
+    mutate(bike_type = case_when(
+      model %>% str_to_lower() %>% str_detect('supersix') ~ 'Supersix',
+      model %>% str_to_lower() %>% str_detect('jekyll') ~ 'Jekyll',
+      TRUE ~ 'Not Supersix or Jekyll'  # catchall (all others)
+    ))
 
 
-
-
-
-
-
-# 5.0 Grouping & Summarizing with group_by() and summarize() ----
+A# 5.0 Grouping & Summarizing with group_by() and summarize() ----
 
 
 
