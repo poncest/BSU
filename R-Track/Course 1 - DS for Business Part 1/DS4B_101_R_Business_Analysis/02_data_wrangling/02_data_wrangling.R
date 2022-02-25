@@ -208,17 +208,109 @@ bilke_orderlines_prices %>%
     ))
 
 
-A# 5.0 Grouping & Summarizing with group_by() and summarize() ----
+# 5.0 Grouping & Summarizing with group_by() and summarize() ----
+
+# Basics
+bike_orderlines_tbl %>% 
+    summarise(revenue = sum(total_price))
+
+bike_orderlines_tbl %>% 
+    group_by(category_1) %>% 
+    summarise(revenue = sum(total_price))
+
+bike_orderlines_tbl %>% 
+    group_by(category_1, category_2) %>% 
+    summarise(revenue = sum(total_price)) %>% 
+    ungroup() %>% 
+    arrange(desc(revenue))
+
+bike_orderlines_tbl %>% 
+    group_by(category_1, category_2, frame_material) %>% 
+    summarise(revenue = sum(total_price)) %>% 
+    ungroup() %>% 
+    arrange(desc(revenue))
 
 
+# Summary
+bike_orderlines_tbl %>% 
+    group_by(category_1, category_2) %>% 
+    summarise(count = n()) %>% 
+    ungroup() %>% 
+    arrange(desc(count))
+        
+bike_orderlines_tbl %>% 
+    group_by(category_1, category_2) %>% 
+    summarise(
+        count = n(),
+        avg = mean(total_price)
+        ) %>% 
+    ungroup %>% 
+    arrange(desc(count))
+
+# summary of one column at a time
+bike_orderlines_tbl %>% 
+    group_by(category_1, category_2) %>% 
+    summarise(
+        count = n(),
+        avg = mean(total_price),
+        med = median(total_price),     # most likely there are a few outliers
+        sd = sd(total_price),          # variability
+        min = min(total_price),
+        max = max(total_price)
+    ) %>% 
+    ungroup %>% 
+    arrange(desc(count))
+
+# sumarise_all() - detecting values (all columns)
+
+bike_orderlines_missing <-  bike_orderlines_tbl %>% 
+    # inject some missing values
+    mutate(total_price = c(rep(NA, 4), total_price[5:nrow(.)]))  # go from 5 to end row (15644)
+
+# count NA
+bike_orderlines_missing %>% 
+    summarise_all(~ sum(is.na(.)))  # (.) = all columns, ~ = anonymous function
+
+# proportion of missing
+bike_orderlines_missing %>% 
+    summarise_all(~ sum(is.na(.)) / length(.))  # (.) = all columns, ~ = anonymous function
+
+# handling NA
+bike_orderlines_missing %>% 
+    filter(!is.na(total_price))
+
+bike_orderlines_missing %>% 
+    drop_na()
 
 
 # 6.0 Renaming columns with rename() and set_names() ----
 
 # 6.1 rename: One column at a time ----
 
+bikeshop_revenue_tbl <- bike_orderlines_tbl %>% 
+    select(bikeshop_name, category_1, total_price) %>% 
+    group_by(bikeshop_name, category_1) %>% 
+    summarise(sales = sum(total_price)) %>% 
+    ungroup() %>% 
+    arrange(desc(sales))
+
+# rename()
+bikeshop_revenue_tbl %>% 
+    rename(
+        `Bikeshop Name` = bikeshop_name,
+        `Primary Catogory` = category_1,
+        Sales = sales
+    )
+
 
 # 6.2 set_names: All columns at once ---
+bikeshop_revenue_tbl %>% 
+    set_names(c('Bikeshop Name', 'Primary Category', 'Sales'))
+
+# alternative
+bikeshop_revenue_tbl %>% 
+    set_names(names(.) %>% str_replace('_', ' ') %>% str_to_title())
+
 
 
 
