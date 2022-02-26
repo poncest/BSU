@@ -6,9 +6,7 @@ library(tidyverse)
 library(readxl)
 
 bikes_tbl <- read_excel("R-Track/Course 1 - DS for Business Part 1/DS4B_101_R_Business_Analysis/00_data/bike_sales/data_raw/bikes.xlsx")
-
 orderlines_tbl <- read_excel("R-Track/Course 1 - DS for Business Part 1/DS4B_101_R_Business_Analysis/00_data/bike_sales/data_raw/orderlines.xlsx")
-
 bike_orderlines_tbl <- read_rds("R-Track/Course 1 - DS for Business Part 1/DS4B_101_R_Business_Analysis/00_data/bike_sales/data_wrangled/bike_orderlines.rds")
 
 glimpse(bikes_tbl)
@@ -161,16 +159,16 @@ bike_orderlines_tbl %>%
 # 4.0 Adding Columns with mutate() ----
 
 # adding column
-bilke_orderlines_prices <-  bike_orderlines_tbl %>% 
+bike_orderlines_prices <-  bike_orderlines_tbl %>% 
     select(order_date, model, quantity, price) %>% 
     mutate(total_price = quantity * price)
 
 # overwrite column
-bilke_orderlines_prices %>% 
+bike_orderlines_prices %>% 
     mutate(total_price = log(total_price)) 
 
 # transformations
-bilke_orderlines_prices %>% 
+bike_orderlines_prices %>% 
     mutate(
         total_price = quantity * price,
         total_price_log = log(total_price),
@@ -178,20 +176,20 @@ bilke_orderlines_prices %>%
         )
 
 # adding flag (binary)
-bilke_orderlines_prices %>% 
+bike_orderlines_prices %>% 
     mutate(is_supersix = model %>% str_to_lower() %>% str_detect('supersix')) %>% 
     filter(is_supersix)
 
 
 # bining with ntile()
-bilke_orderlines_prices %>% 
+bike_orderlines_prices %>% 
     mutate(total_price_bin = ntile(total_price, 3)) # high, low, medium
  
 
 # case_when() - more flexible binning
 
 # numeric to categorical
-bilke_orderlines_prices %>% 
+bike_orderlines_prices %>% 
     mutate(total_price_bin = ntile(total_price, 3)) %>% 
     mutate(total_price_bin2 = case_when(
         total_price > quantile(total_price, 0.66) ~ 'High',  # prob .66 = 3rd quantile
@@ -200,7 +198,7 @@ bilke_orderlines_prices %>%
     ))
 
 # text to categorical
-bilke_orderlines_prices %>% 
+bike_orderlines_prices %>% 
     mutate(bike_type = case_when(
       model %>% str_to_lower() %>% str_detect('supersix') ~ 'Supersix',
       model %>% str_to_lower() %>% str_detect('jekyll') ~ 'Jekyll',
@@ -297,10 +295,10 @@ bikeshop_revenue_tbl <- bike_orderlines_tbl %>%
 # rename()
 bikeshop_revenue_tbl %>% 
     rename(
-        `Bikeshop Name` = bikeshop_name,
+        `Bikeshop Name`    = bikeshop_name,
         `Primary Catogory` = category_1,
-        Sales = sales
-    )
+        Sales              = sales
+    ) 
 
 
 # 6.2 set_names: All columns at once ---
@@ -312,32 +310,88 @@ bikeshop_revenue_tbl %>%
     set_names(names(.) %>% str_replace('_', ' ') %>% str_to_title())
 
 
-
-
-
 # 7.0 Reshaping (Pivoting) Data with spread() and gather() ----
 
 # 7.1 spread(): Long to Wide ----
 
+bikeshop_revenue_formatted_tbl <- bikeshop_revenue_tbl %>% 
+    
+    spread(key = category_1, value = sales) %>% 
+    arrange(desc(Mountain)) %>% 
+    rename(`Bikeshop Name` = bikeshop_name) %>% 
+    
+    mutate(
+        Mountain = scales::dollar(Mountain),
+        Road     = scales::dollar(Road)
+    )
+    
 
 # 7.2 gather(): Wide to Long ----
 
-
+bikeshop_revenue_formatted_tbl %>% 
+    
+    gather(key = 'category_1', value = 'sales', Mountain, Road) %>% 
+    
+    mutate(sales = sales %>% str_remove_all("\\$|,") %>%  as.double()) %>%   # \\ enable us to use special character $, | = or
+    arrange(desc(sales))
 
 
 # 8.0 Joining Data by Key(s) with left_join() (e.g. VLOOKUP in Excel) ----
+orderlines_tbl
+bikes_tbl
+?left_join  # x will be the lead
 
-
+orderlines_tbl %>% 
+    left_join(y = bikes_tbl, by = c('product.id' = 'bike.id'))
 
 
 # 9.0 Binding Data by Row or by Column with bind_rows() and bind_col() ----
 
 # 9.1 bind_cols() ----
 
-
+# recover vars that were previously dropped
+bike_orderlines_tbl %>% 
+    select(-contains('order')) %>%    # drop col  (10 cols)
+    
+    bind_cols(
+        bike_orderlines_tbl %>%  select(order_id)  # recover col (11 cols)
+    )
 
 
 # 9.2 bind_rows() ----
 
+train_tbl <- bike_orderlines_tbl %>% 
+    slice(1:(nrow(.)/2))
+
+test_tbl <- bike_orderlines_tbl %>% 
+    slice((nrow(.)/2 + 1):nrow(.)) 
+
+# merge them together
+train_tbl %>% 
+    bind_rows(test_tbl )
 
 
+# 10 Separate and Unite ----
+bike_orderlines_tbl %>% 
+    select(order_date) %>% 
+    mutate(order_date = as.character(order_date)) %>% 
+    
+    # separate
+    separate(col = order_date, into = c('year', 'month', 'day'), sep = '-', remove = FALSE) %>% 
+    
+    mutate(
+        year  = as.numeric(year),
+        month = as.numeric(month),
+        day   = as.numeric(day)
+    ) %>% 
+    
+    # unite
+    unite(order_date_united, year, month, day, sep = '-', remove = FALSE) %>% 
+    mutate(order_date_united = as.Date(order_date_united))
+    
+    
+    
+    
+
+
+ 
