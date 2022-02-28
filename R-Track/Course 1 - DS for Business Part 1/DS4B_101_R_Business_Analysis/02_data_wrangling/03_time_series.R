@@ -54,11 +54,8 @@ order_date_tbl %>%
 
 # yyyy/mm/dd
 '2011-01-01' %>% ymd() %>% year()
-
 '2011-01-01' %>% ymd() %>% month(label = TRUE, abbr = FALSE)
-
 '2011-01-01' %>% ymd() %>% day()
-
 '2011-01-01' %>% ymd() %>% wday(label = TRUE, abbr = FALSE)
 
 
@@ -103,22 +100,125 @@ order_date_tbl %>%
     )
 
 # 2.0 Time-Based Data Grouping ----
- 
 
+# year
+bike_sales_y_tbl <- bike_orderlines_tbl %>% 
+    select(order_date, total_price) %>% 
+    
+    # lubridate
+    mutate(
+        order_date = ymd(order_date),
+        year = year(order_date)
+    ) %>% 
+    
+    # dplyr
+    group_by(year) %>% 
+    summarize(
+        sales = sum(total_price)
+    ) %>% 
+    ungroup()
+    
+# month   
+bike_sales_m_tbl <-  bike_orderlines_tbl %>% 
+    select(order_date, total_price) %>% 
+    
+    # lubridate
+    mutate(
+        order_date = ymd(order_date),
+        year = year(order_date),
+        month = month(order_date, label = TRUE)
+    ) %>% 
+    
+    # dplyr
+    group_by(year, month) %>% 
+    summarize(
+        sales = sum(total_price)
+    ) %>% 
+    ungroup()
 
+# floor date (grouping)
 
-
+bike_orderlines_tbl %>% 
+    select(order_date, total_price) %>% 
+    
+    # lubridate
+    mutate(
+        order_date = ymd(order_date),
+        year_month = floor_date(order_date, unit = 'month')
+    ) %>% 
+    
+    # group_by + summarize
+    group_by(year_month) %>% 
+    summarize(
+        sales = sum(total_price)
+    ) %>% 
+    ungroup()
+    
 
 
 # 3.0 Measuring Change ----
 
 # 3.1 Difference from most recent observation ----
 
+# we're going to calculate the % diff
+bike_sales_y_tbl %>% 
+    mutate(
+        sales_lag_1 = lag(sales, n = 1)
+    ) %>% 
+    
+    # handling NA's
+    mutate(
+        sales_lag_1 = case_when(
+            is.na(sales_lag_1) ~ sales, # if NA, return sales value
+            TRUE ~ sales_lag_1) # otherwise, return sales lag value
+    ) %>% 
+    
+    # diff's and % diff
+    mutate(
+        diff_1 = sales - sales_lag_1,
+        pct_diff_1 = (diff_1 / sales_lag_1), 
+        pct_diff_1_chr = scales::percent(pct_diff_1)
+    )
 
+# function to calculate pct diff
+# notice it is harcoded for `sales`
 
+calculate_pct_diff <- function(data){
+    
+    data %>% mutate(
+        sales_lag_1 = lag(sales, n = 1)
+    ) %>% 
+        
+        # handling NA's
+        mutate(
+            sales_lag_1 = case_when(
+                is.na(sales_lag_1) ~ sales, # if NA, return sales value
+                TRUE ~ sales_lag_1) # otherwise, return sales lag value
+        ) %>% 
+        
+        # diff's and % diff
+        mutate(
+            diff_1 = sales - sales_lag_1,
+            pct_diff_1 = (diff_1 / sales_lag_1), 
+            pct_diff_1_chr = scales::percent(pct_diff_1)
+        )
+}
+
+# using the function
+bike_sales_m_tbl %>% 
+    calculate_pct_diff()
 
 
 # 3.2 Difference from first observation ----
+
+bike_sales_y_tbl %>% 
+    mutate(
+        sales_2011 = first(sales),
+        diff_2011 = sales - sales_2011,
+        pct_diff_2011 = diff_2011 / sales_2011,
+        pct_diff_2011_chr = scales::percent(pct_diff_2011)
+    )
+ 
 
 
 
