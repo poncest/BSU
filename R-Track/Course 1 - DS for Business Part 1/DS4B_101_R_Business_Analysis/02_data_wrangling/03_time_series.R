@@ -219,21 +219,82 @@ bike_sales_y_tbl %>%
         pct_diff_2011_chr = scales::percent(pct_diff_2011)
     )
  
-
-
-
+bike_sales_m_tbl %>% 
+    group_by(year) %>% 
+    mutate(
+        sales_jan = first(sales),
+        diff_jan = sales - sales_jan,
+        pct_diff_jan = diff_jan / sales_jan,
+        pct_diff_jan_chr = scales::percent(pct_diff_jan)
+    ) %>% 
+    ungroup()
 
 
 # 4.0 Cumulative Calculations ----
 
+bike_sales_y_tbl %>% 
+    mutate(
+        cum_sales = cumsum(sales),
+        cum_sales_avg = cummean(sales),
+    )
+
+bike_sales_m_tbl %>% 
+    group_by(year) %>% 
+    mutate(
+        cum_sales = cumsum(sales),
+        cum_sales_avg = cummean(sales),
+    ) %>% 
+    ungroup
+
+
+bike_sales_y_tbl %>% 
+    mutate(
+        cum_sales = cumsum(sales),
+        cum_pct = cum_sales / sum(sales),
+        cum_pct_chr = scales::percent(cum_pct)
+    ) 
+
+bike_sales_m_tbl %>% 
+    group_by(year) %>% 
+    mutate(
+        cum_sales = cumsum(sales),
+        cum_pct = cum_sales / sum(sales),
+        cum_pct_chr = scales::percent(cum_pct)
+    ) %>% 
+    ungroup()
 
 
 
 # 5.0 Rolling Calculations ----
 
+# using the {zoo} package
+bike_sales_m_tbl %>% 
+    mutate(
+        roll_mean_3 = rollmean(sales, 
+                               k = 3, 
+                               na.pad = TRUE,
+                               align = 'right', # aligned w/ the end of the series                               
+                               fill = 0 # remove NA's
+                               ), 
+            
+        roll_mean_6 = rollmean(sales, 
+                               k = 6, 
+                               na.pad = TRUE,
+                               align = 'right',                 
+                               fill = 0)    
+    )
+ 
 
 
 # 6.0 Filtering Date Ranges ---- 
 
+bike_orderlines_tbl %>% 
+    mutate(order_date = ymd(order_date)) %>% 
+    filter(order_date %>% between(left = ymd('2012-01-01'), right = ymd('2013-12-31'))) 
+
+
+bike_orderlines_tbl %>% 
+    mutate(order_date = ymd(order_date)) %>% 
+    filter(year(order_date) %in% c(2012, 2013))
 
 
