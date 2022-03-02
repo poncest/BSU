@@ -9,7 +9,6 @@ bike_orderlines_tbl <- read_rds("R-Track/Course 1 - DS for Business Part 1/DS4B_
 
 bike_orderlines_tbl
 
-
 bikes_tbl <- readxl::read_excel("R-Track/Course 1 - DS for Business Part 1/DS4B_101_R_Business_Analysis/00_data/bike_sales/data_raw/bikes.xlsx")
 
 bikes_tbl
@@ -20,19 +19,42 @@ bikes_tbl
 # 1.1 Detection: Used with filter() ----
 
 # Vector
+c('Supersix Evo Black Inc.', 'Supersix Evo Hi-Mod Team') %>% 
+    str_detect(patter = 'Supersix')
 
 
 # Tibble
-
+bikes_tbl %>% 
+    select(model) %>% 
+    mutate(
+        supersix = model %>% str_detect(patter = 'Supersix') %>% 
+            as.numeric(),
+        
+        black = model %>% str_detect(patter = 'Black') %>% 
+            as.numeric(),
+    )
 
 
 # 1.2 Case & Concatenation ----
 
-
 # Case
+bishop_name <- 'Ithaca Mountain Climbers'
+
+str_to_lower(bishop_name)
+str_to_upper(bishop_name)
+str_to_title(bishop_name)
 
 
 # Concatenation
+order_id <- 1
+order_line <- 1
+
+# sentence
+str_c('Order Line: ', order_id, '.' , order_line,
+      'sent to Customer: ', bishop_name)
+
+
+
 
 # Vector
 
