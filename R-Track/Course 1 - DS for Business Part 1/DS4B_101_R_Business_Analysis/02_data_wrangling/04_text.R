@@ -123,23 +123,75 @@ bikes_tbl %>%
 
 # values
 
+value <- 1e6
+
+1e6 %>% scales::number(prefix = '$')
+
+(value/1e6) %>% scales::number(prefix = '$', suffix = "M")
+
+value %>% scales::number(prefix = '$', big.mark = ',')
+
+value %>% scales::dollar()
+
+value %>% scales::dollar(scale = 1/1e6, suffix = 'M')
+
 
 # percents
 
+pct <-  0.15
+
+pct %>% scales::number(scale = 100, suffix = '%')
+
+pct %>% scales::percent()
 
 
 # 1.7 Formatting Column Names ----
 
 # Replacing text in column names
 
-
+bike_orderlines_tbl %>% 
+    set_names(names(.) %>% str_replace('_', '.') %>% toupper())
 
 # Appending text to column names
-
+bike_orderlines_tbl %>% 
+    set_names(str_glue('{names(.)}_bike')) 
 
 # Appending text to specific column names
+bike_orderline_colnames_tbl <- bike_orderlines_tbl %>% 
+    
+    rename_at(.vars = vars(model:frame_material), 
+              .funs = ~ str_c('prod_', .)) %>% 
+    
+    rename_at(.vars = vars(bikeshop_name:state), 
+              .funs = ~ str_c('cust_', .)) %>% 
+    
+    glimpse()
+
+
+bike_orderline_colnames_tbl %>% 
+    select(contains('prod_'), total_price)
+
+bike_orderline_colnames_tbl %>% 
+    select(contains('cust_'), total_price)
 
 
 # 2.0 Feature Engineering with Text -----
 # Investigating "model" and extracting well-formatted features
+
+bikes_tbl %>% 
+    select(model) %>% 
+    
+    # fix typo
+    mutate(model = case_when(
+        model ==  'CAAD Disc Ultegra' ~ 'CAAD12 Disc Ultegra',
+        TRUE ~ model)) %>% 
+    
+    # separate model col into more columns
+    separate(col    = model, 
+             into   = str_c('model_', 1:6),
+             sep    = ' ', 
+             remove = FALSE,
+             fill   = 'right',
+             extra  = 'drop') 
+#%>% View()
 
