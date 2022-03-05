@@ -178,12 +178,14 @@ bike_orderline_colnames_tbl %>%
 # 2.0 Feature Engineering with Text -----
 # Investigating "model" and extracting well-formatted features
 
-bikes_tbl %>% 
+test <- bikes_tbl %>% 
     select(model) %>% 
     
-    # fix typo
+    # fix typos
     mutate(model = case_when(
         model ==  'CAAD Disc Ultegra' ~ 'CAAD12 Disc Ultegra',
+        model == 'Syapse Carbon Tiagra' ~ 'Synapse Carbon Tiagra',
+        model == 'Supersix Evo Hi-Mod Utegra' ~ 'Supersix Evo Hi-Mod Ultegra',
         TRUE ~ model)) %>% 
     
     # separate model col into more columns
@@ -192,6 +194,50 @@ bikes_tbl %>%
              sep    = ' ', 
              remove = FALSE,
              fill   = 'right',
-             extra  = 'drop') 
-#%>% View()
+             extra  = 'drop') %>% 
+    
+    # create a 'baAse' feature - notice `beat of the east` case
+    mutate(
+        model_base = case_when(
+            
+            # fix `Supersix  Evo`
+            str_detect(str_to_lower(model_1), 'supersix') ~ str_c(model_1, model_2, sep = ' '),
+            
+            # fix `Fat CAAD`
+            str_detect(str_to_lower(model_1), 'fat') ~ str_c(model_1, model_2, sep = ' '),
+            
+            # fix `Beast of the East`
+            str_detect(str_to_lower(model_1), 'beast') ~ 
+                str_c(model_1, model_2, model_3, model_4, sep = ' '),
+            
+            # fix `Bad Habit`
+            str_detect(str_to_lower(model_1), 'bad') ~ str_c(model_1, model_2, sep = ' '),
+            
+            # fix `Scapel 29`
+            str_detect(str_to_lower(model_2), '29') ~ str_c(model_1, model_2, sep = ' '),
+            
+            # catch all
+            TRUE ~ model_1)
+            ) %>% 
+    
+    # get 'tier' feature
+    mutate(
+        model_tier = model %>% str_replace(model_base, replacement = "") %>% 
+            str_trim()) %>% 
+    
+    # remove unnecessary columns
+    select(-matches('[0-9]')) %>% 
+    
+    # create Flags
+    mutate(
+        black = model_tier %>%  str_to_lower() %>% str_detect('black') %>% as.numeric(),  # 1 = Yes
+        hi_mod = model_tier %>%  str_to_lower() %>% str_detect('hi-mod') %>% as.numeric(),
+        team = model_tier %>%  str_to_lower() %>% str_detect('team') %>% as.numeric(),
+        red = model_tier %>%  str_to_lower() %>% str_detect('red') %>% as.numeric(),
+        ultegra = model_tier %>%  str_to_lower() %>% str_detect('ultegra') %>% as.numeric(),
+        dura_ace = model_tier %>%  str_to_lower() %>% str_detect('dura ace') %>% as.numeric(),
+        disc = model_tier %>%  str_to_lower() %>% str_detect('disc') %>% as.numeric()
+    )
+ 
+
 
