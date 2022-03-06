@@ -1,0 +1,140 @@
+---
+title: "Week 3 Challenge"
+author: "Business Science"
+date:   "12/30/2018"
+output: 
+    html_document:
+        toc: TRUE
+        theme: flatly
+        highlight: tango
+        code_folding: show
+        df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+    echo = TRUE
+    )
+```
+
+# Challenge Summary
+
+This is a short challenge to begin applying what you are learning to the problem at hand. You will go through a series of questions related to the course project goals: 
+
+1. Coming up with a new product idea, and 
+
+2. Segmenting the customer-base
+
+# Objectives
+
+1. Apply `lubridate` and `stringr` functions to answer questions related to the course projects. 
+
+2. Gain exposure to `rmarkdown`.
+
+# Data
+
+To read the data, make sure that the paths point to the appropriate data sets. Saving the file in the "challenges folder" should enable the paths to be detected correctly. 
+
+```{r, message=FALSE, warning=FALSE}
+# Load libraries
+library(tidyverse)
+library(lubridate)
+```
+
+```{r}
+# Read bike orderlines data
+path_bike_orderlines <- "../00_data/bike_sales/data_wrangled/bike_orderlines.rds"
+bike_orderlines_tbl <- read_rds(path_bike_orderlines) %>%
+    
+    # Fix typos found in Feature Engineering
+    mutate(model = case_when(
+        model == "CAAD Disc Ultegra" ~ "CAAD12 Disc Ultegra",
+        model == "Syapse Carbon Tiagra" ~ "Synapse Carbon Tiagra",
+        model == "Supersix Evo Hi-Mod Utegra" ~ "Supersix Evo Hi-Mod Ultegra",
+        TRUE ~ model
+    ))
+
+glimpse(bike_orderlines_tbl)
+```
+
+
+
+# Questions
+
+# lubridate: Which month has the highest bike sales? (Difficulty = Medium)
+
+- Start with `bike_orderlines_tbl`
+- Select columns `order_date` and `total_price`
+- Add a column called `month`
+- Group by, summarize, and ungroup calculating the `sales`
+- Arrange the sales values by month (Jan - Dec)
+- Format the sales values as `dollar()`
+- Adjust column names to title case
+
+_What does this tell us about a time of year to focus marketing efforts?_
+
+```{r}
+
+
+
+```
+
+
+# stringr: What is the median orderline sales value by Bike Attribute? (Difficulty = Medium)
+
+- Begin with `bike_orderlines`
+- Select `model` and `total_price`
+- Detect if string is present (e.g. "black inc")
+- Groupby, summarize, and ungroup calculating the `median()` orderline
+- Format numeric price as `dollar()` (Hint: investigate `largest_with_cents` argument)
+- Rename column to evaluation string (e.g. "Black Inc") 
+
+
+Evaluate "Black Inc". _What does this tell us about the "Black Inc" feature?_
+
+```{r}
+
+    
+    
+```
+
+Evaluate "Ultegra". _What does this tell us about the "Ultegra" feature?_
+
+```{r}
+
+    
+    
+```
+
+
+Evaluate "Disc" option. _What does this tell us about the "Disc" feature?_
+
+```{r}
+
+
+```
+
+
+# stringr: What are the average, min, and max prices by Base Model? (Difficulty = High)
+
+- Start with `bike_orderlines_tbl`
+- Select distinct primary category, secondary category, model, and price (unit price, not total price)
+- Create the base feature, `model_base` (Hint: Use the Feature Engineering code)
+    - separate the models
+    - Create a base feature that combines the appopriate parts (e.g. "Beast of the East")
+- Remove any unnecessary columns (Hint: Deselect any columns matching `"model_[0-9]"`)
+- Group by, summarize, and ungroup (Hint: use `mean()`, `min()`, and `max()`)
+- Arrange descending by average price
+- Format any numeric columns as `dollar()` (Hint: Check out `largest_with_cents`) 
+- Adjust the column names to title case
+
+_What does this tell us about how bikes are priced?_
+
+```{r}
+
+ 
+```
+
+
+
+

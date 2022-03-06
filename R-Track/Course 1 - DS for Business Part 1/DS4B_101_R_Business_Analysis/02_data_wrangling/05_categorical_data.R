@@ -80,32 +80,99 @@ sales_by_cat_2_tbl %>%
 # 3.1 Inspecting Factors ----
 
 # Vector
+sales_by_cat_2_tbl %>% 
+    pull(category_2) %>% 
+    levels()
+
+sales_by_cat_2_tbl %>% 
+    pull(category_2) %>% 
+    as.numeric()
 
 
 # Tibble
-
+sales_by_cat_2_tbl %>% 
+    mutate(
+        category_2 = category_2 %>% fct_rev(),
+        label = category_2 %>% as.character(),
+        value = category_2 %>% as.numeric()
+    )
 
 
 # 3.2 Creating Factors: as_factor() vs as.factor() ----
-
-
-
+sales_by_cat_2_tbl %>% 
+    mutate(
+        category_2 =  as.character(category_2),
+        category_2_as_factor = as_factor(category_2) %>% as.numeric(),
+        category_2_as.factor = as.factor(category_2) %>% as.numeric()
+    )
 
 
 # 3.3 Reording Factors: fct_reorder() and fct_rev() ----
-
-
+sales_by_cat_2_tbl %>% 
+    arrange(desc(sales)) %>% 
+    
+    mutate(
+        sales_neg  = -sales,
+        category_2 = category_2 %>% fct_reorder(sales_neg),
+        values     = category_2 %>% as.numeric() 
+    ) %>% 
+    
+    plot_sales()
 
 
 
 # 3.4 Time-Based Reordering: fct_reorder2() ----
 
+sales_by_cat_2_qtr_tbl <- bike_orderlines_tbl %>% 
+    
+    # data by quarters
+    mutate(
+        order_date = order_date %>% floor_date('quarter') %>% ymd()
+    ) %>% 
+    
+    group_by(category_2, order_date) %>%
+    summarise(sales = sum(total_price)) %>% 
+    ungroup()
 
 
+sales_by_cat_2_qtr_tbl %>% 
+    
+    # order by sales from High to Low
+    mutate(
+        categrory_2 = category_2 %>% fct_reorder2(order_date, sales)
+    ) %>% 
+    
+    ggplot(aes( x= order_date, y = sales, color = category_2))+
+    geom_point() +
+    geom_line() + 
+    facet_wrap(~ category_2) + 
+    
+    theme_tq() + 
+    scale_color_tq() +
+    scale_y_continuous(labels = scales::dollar_format(scale = 1e-6, suffix = 'M'))
 
 
-# 3.5 Creating "Other" Category - fct_lump() & fct_shift() ----
-
+# 3.5 Creating "Other" Category - fct_lump() & fct_relevel() ----
+sales_by_cat_2_tbl %>% 
+    
+    mutate(
+        # take the first 6 and weight them by sales
+        category_2 = category_2 %>% 
+            fct_lump(n = 6, 
+                     w = sales, 
+                     other_level = 'All Other Bike Categories')
+    ) %>% 
+    
+    group_by(category_2) %>% 
+    summarise(sales = sum(sales)) %>% 
+    
+    # fixing the order of `all other bikes cat`
+    # after = 0, moves `all other bikes cat` to the front
+    mutate(category_2 = category_2 %>% 
+               fct_relevel('All Other Bike Categories', after = 0)) %>% 
+    
+    plot_sales()
+ 
 
 
 
