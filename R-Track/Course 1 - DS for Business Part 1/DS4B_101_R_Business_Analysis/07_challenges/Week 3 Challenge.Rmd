@@ -74,8 +74,24 @@ glimpse(bike_orderlines_tbl)
 _What does this tell us about a time of year to focus marketing efforts?_
 
 ```{r}
-
-
+bike_orderlines_tbl %>% 
+    select(order_date, total_price) %>% 
+    mutate(
+        order_date = ymd(order_date),
+        Month = month(order_date, label = TRUE)
+    ) %>% 
+    
+    group_by(Month) %>% 
+    summarise(
+        Sales = sum(total_price) 
+    ) %>% 
+    
+    ungroup() %>% 
+    mutate(
+        Sales = scales::dollar(Sales)
+    ) %>% 
+    
+    arrange(Month)
 
 ```
 
@@ -93,16 +109,66 @@ _What does this tell us about a time of year to focus marketing efforts?_
 Evaluate "Black Inc". _What does this tell us about the "Black Inc" feature?_
 
 ```{r}
-
+bike_orderlines_tbl %>% 
     
+    # fix typos
+    mutate(model = case_when(
+        model ==  'CAAD Disc Ultegra' ~ 'CAAD12 Disc Ultegra',
+        model == 'Syapse Carbon Tiagra' ~ 'Synapse Carbon Tiagra',
+        model == 'Supersix Evo Hi-Mod Utegra' ~ 'Supersix Evo Hi-Mod Ultegra',
+        TRUE ~ model)) %>% 
+    
+    select(model, total_price) %>% 
+    
+    # flag / boolean 
+    mutate(
+        `Black Inc` =  str_detect(str_to_lower(model), 'black inc')
+    ) %>% 
+    
+    group_by(`Black Inc`) %>% 
+    summarise(
+        `Median Orderline` = median(total_price)
+    ) %>% 
+    
+    ungroup() %>% 
+    mutate(
+        `Median Orderline` =  scales::dollar(`Median Orderline`)
+    ) %>% 
+
+    arrange()
     
 ```
 
 Evaluate "Ultegra". _What does this tell us about the "Ultegra" feature?_
 
 ```{r}
-
+bike_orderlines_tbl %>% 
     
+    # fix typos
+    mutate(model = case_when(
+        model ==  'CAAD Disc Ultegra' ~ 'CAAD12 Disc Ultegra',
+        model == 'Syapse Carbon Tiagra' ~ 'Synapse Carbon Tiagra',
+        model == 'Supersix Evo Hi-Mod Utegra' ~ 'Supersix Evo Hi-Mod Ultegra',
+        TRUE ~ model)) %>% 
+    
+    select(model, total_price) %>% 
+    
+    # flag / boolean 
+    mutate(
+        Ultegra =  str_detect(str_to_lower(model), 'ultegra')
+    ) %>% 
+    
+    group_by(Ultegra) %>% 
+    summarise(
+        `Median Orderline` = median(total_price)
+    ) %>% 
+    
+    ungroup() %>% 
+    mutate(
+        `Median Orderline` =  scales::dollar(`Median Orderline`)
+    ) %>% 
+
+    arrange()
     
 ```
 
@@ -110,7 +176,33 @@ Evaluate "Ultegra". _What does this tell us about the "Ultegra" feature?_
 Evaluate "Disc" option. _What does this tell us about the "Disc" feature?_
 
 ```{r}
+bike_orderlines_tbl %>% 
+    
+    # fix typos
+    mutate(model = case_when(
+        model ==  'CAAD Disc Ultegra' ~ 'CAAD12 Disc Ultegra',
+        model == 'Syapse Carbon Tiagra' ~ 'Synapse Carbon Tiagra',
+        model == 'Supersix Evo Hi-Mod Utegra' ~ 'Supersix Evo Hi-Mod Ultegra',
+        TRUE ~ model)) %>% 
+    
+    select(model, total_price) %>% 
+    
+    # flag / boolean 
+    mutate(
+        Disc =  str_detect(str_to_lower(model), 'disc')
+    ) %>% 
+    
+    group_by(Disc) %>% 
+    summarise(
+        `Median Orderline` = median(total_price)
+    ) %>% 
+    
+    ungroup() %>% 
+    mutate(
+        `Median Orderline` =  scales::dollar(`Median Orderline`)
+    ) %>% 
 
+    arrange()
 
 ```
 
