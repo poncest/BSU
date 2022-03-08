@@ -12,9 +12,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(
-    echo = TRUE
-    )
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # Challenge Summary
@@ -78,20 +76,21 @@ bike_orderlines_tbl %>%
     select(order_date, total_price) %>% 
     mutate(
         order_date = ymd(order_date),
-        Month = month(order_date, label = TRUE)
+        month = month(order_date, label = TRUE)
     ) %>% 
     
-    group_by(Month) %>% 
+    group_by(month) %>% 
     summarise(
-        Sales = sum(total_price) 
+        sales = sum(total_price) 
     ) %>% 
     
     ungroup() %>% 
-    mutate(
-        Sales = scales::dollar(Sales)
-    ) %>% 
-    
-    arrange(Month)
+    mutate(sales = scales::dollar(sales)) %>% 
+    arrange(month) %>% 
+    rename(
+        Month = month,
+        Sales = sales
+    )
 
 ```
 
@@ -110,13 +109,6 @@ Evaluate "Black Inc". _What does this tell us about the "Black Inc" feature?_
 
 ```{r}
 bike_orderlines_tbl %>% 
-    
-    # fix typos
-    mutate(model = case_when(
-        model ==  'CAAD Disc Ultegra' ~ 'CAAD12 Disc Ultegra',
-        model == 'Syapse Carbon Tiagra' ~ 'Synapse Carbon Tiagra',
-        model == 'Supersix Evo Hi-Mod Utegra' ~ 'Supersix Evo Hi-Mod Ultegra',
-        TRUE ~ model)) %>% 
     
     select(model, total_price) %>% 
     
@@ -144,13 +136,6 @@ Evaluate "Ultegra". _What does this tell us about the "Ultegra" feature?_
 ```{r}
 bike_orderlines_tbl %>% 
     
-    # fix typos
-    mutate(model = case_when(
-        model ==  'CAAD Disc Ultegra' ~ 'CAAD12 Disc Ultegra',
-        model == 'Syapse Carbon Tiagra' ~ 'Synapse Carbon Tiagra',
-        model == 'Supersix Evo Hi-Mod Utegra' ~ 'Supersix Evo Hi-Mod Ultegra',
-        TRUE ~ model)) %>% 
-    
     select(model, total_price) %>% 
     
     # flag / boolean 
@@ -177,14 +162,7 @@ Evaluate "Disc" option. _What does this tell us about the "Disc" feature?_
 
 ```{r}
 bike_orderlines_tbl %>% 
-    
-    # fix typos
-    mutate(model = case_when(
-        model ==  'CAAD Disc Ultegra' ~ 'CAAD12 Disc Ultegra',
-        model == 'Syapse Carbon Tiagra' ~ 'Synapse Carbon Tiagra',
-        model == 'Supersix Evo Hi-Mod Utegra' ~ 'Supersix Evo Hi-Mod Ultegra',
-        TRUE ~ model)) %>% 
-    
+
     select(model, total_price) %>% 
     
     # flag / boolean 
@@ -213,7 +191,7 @@ bike_orderlines_tbl %>%
 - Select distinct primary category, secondary category, model, and price (unit price, not total price)
 - Create the base feature, `model_base` (Hint: Use the Feature Engineering code)
     - separate the models
-    - Create a base feature that combines the appopriate parts (e.g. "Beast of the East")
+    - Create a base feature that combines the appropriate parts (e.g. "Beast of the East")
 - Remove any unnecessary columns (Hint: Deselect any columns matching `"model_[0-9]"`)
 - Group by, summarize, and ungroup (Hint: use `mean()`, `min()`, and `max()`)
 - Arrange descending by average price
@@ -223,7 +201,56 @@ bike_orderlines_tbl %>%
 _What does this tell us about how bikes are priced?_
 
 ```{r}
+bike_orderlines_tbl %>% 
+    
+    select(category_1, category_2, model, price) %>% 
+    
+    # separate model col into more columns
+    separate(col    = model, 
+             into   = str_c('model_', 1:6),
+             sep    = ' ', 
+             remove = FALSE,
+             fill   = 'right',
+             extra  = 'drop') %>% 
+    
+    # create a 'base' feature - notice `beat of the east` case
+    mutate(
+        model_base = case_when(
+            
+            # fix `Supersix  Evo`
+            str_detect(str_to_lower(model_1), 'supersix') ~ str_c(model_1, model_2, sep = ' '),
+            
+            # fix `Fat CAAD`
+            str_detect(str_to_lower(model_1), 'fat') ~ str_c(model_1, model_2, sep = ' '),
+            
+            # fix `Beast of the East`
+            str_detect(str_to_lower(model_1), 'beast') ~ 
+                str_c(model_1, model_2, model_3, model_4, sep = ' '),
+            
+            # fix `Bad Habit`
+            str_detect(str_to_lower(model_1), 'bad') ~ str_c(model_1, model_2, sep = ' '),
+            
+            # fix `Scapel 29`
+            str_detect(str_to_lower(model_2), '29') ~ str_c(model_1, model_2, sep = ' '),
+            
+            # catch all
+            TRUE ~ model_1)
+        ) %>% 
+    
+    # remove unnecessary columns
+    select(-matches('model_[0-9]')) %>% 
+    
+    # group and summary
+    group_by(category_1, category_2, model_base) %>% 
+    summarise(
+        avg_price = mean(price),
+        min_prince = min(price),
+        max_price = max(price)
+    ) %>% 
+    ungroup %>% 
+    arrange(desc(avg_price))
 
+    ### Almost done - I need to rename columns and add the dollar scale  ###
  
 ```
 
