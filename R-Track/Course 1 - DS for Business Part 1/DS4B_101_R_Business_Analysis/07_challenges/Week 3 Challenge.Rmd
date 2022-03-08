@@ -203,15 +203,14 @@ _What does this tell us about how bikes are priced?_
 ```{r}
 bike_orderlines_tbl %>% 
     
-    select(category_1, category_2, model, price) %>% 
+    distinct(category_1, category_2, model, price) %>% 
     
     # separate model col into more columns
     separate(col    = model, 
              into   = str_c('model_', 1:6),
              sep    = ' ', 
              remove = FALSE,
-             fill   = 'right',
-             extra  = 'drop') %>% 
+             fill   = 'right') %>% 
     
     # create a 'base' feature - notice `beat of the east` case
     mutate(
@@ -235,7 +234,7 @@ bike_orderlines_tbl %>%
             
             # catch all
             TRUE ~ model_1)
-        ) %>% 
+    ) %>% 
     
     # remove unnecessary columns
     select(-matches('model_[0-9]')) %>% 
@@ -243,17 +242,30 @@ bike_orderlines_tbl %>%
     # group and summary
     group_by(category_1, category_2, model_base) %>% 
     summarise(
-        avg_price = mean(price),
-        min_prince = min(price),
-        max_price = max(price)
+        mean_price = mean(price),
+        min_price = min(price),
+        max_price = max(price) 
     ) %>% 
+    
+    arrange(desc(mean_price)) %>%
+    
     ungroup %>% 
-    arrange(desc(avg_price))
-
-    ### Almost done - I need to rename columns and add the dollar scale  ###
+    
+    mutate(
+        mean_price = mean_price %>% scales::dollar(largest_with_cents = 10),
+        min_price  = min_price  %>% scales::dollar(largest_with_cents = 10),
+        max_price  = max_price  %>% scales::dollar(largest_with_cents = 10)
+    ) %>% 
+    
+    rename(
+        `Category 1` = category_1,
+        `Category 2` = category_2,
+        `Model Base` = model_base,
+        `Mean Price` = mean_price,
+        `Min Price`  = min_price,
+        `Max Price`  = max_price
+    )  
  
 ```
-
-
 
 
