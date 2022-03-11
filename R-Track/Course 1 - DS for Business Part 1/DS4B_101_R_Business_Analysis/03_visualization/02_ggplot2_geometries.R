@@ -149,17 +149,50 @@ bike_orderlines_tbl %>%
 # Goal: Unit price of models, segmenting by category 2
 
 # Data Manipulation
-
+unit_price_cat_2_tbl <-  bike_orderlines_tbl %>% 
+    select(category_2, model, price) %>% 
+    distinct() %>% 
+    
+    # reoder factors
+    mutate(
+        category_2 = as.factor(category_2) %>% fct_reorder(price)
+    ) 
+    
 
 # Box Plot
+unit_price_cat_2_tbl %>% 
+    ggplot(aes(x = category_2,
+               y = price)) +
+    geom_boxplot() +
+    coord_flip() +
+    theme_tq()
+
+# Rain Plot
+library(gghalves)
+
+revenue_by_cat2_fct_tbl   <- bike_orderlines_tbl %>% 
+    select(category_2, model, price) %>% 
+    distinct() %>% 
+    mutate(category_2 = as_factor(category_2) %>% fct_reorder(price))
+
+
+ggplot(data = revenue_by_cat2_fct_tbl, aes(x = category_2,
+                                           y = price)) +
+    geom_half_boxplot(side = "r", fill = "#2e3c50", color = "gray80") +
+    geom_half_point(side = "l", alpha = .5) +
+    coord_flip() +
+    theme_tq()
 
 
 # Violin Plot & Jitter Plot
-
-
-
-
-
+unit_price_cat_2_tbl %>% 
+    ggplot(aes(x = category_2,
+               y = price)) +
+    
+    geom_jitter(width = 0.15, color = '#2C3E50') + 
+    geom_violin(alpha = 0.5)+
+    coord_flip() + 
+    theme_tq()
 
 
 # 6.0 Adding Text & Labels ----
@@ -168,8 +201,30 @@ bike_orderlines_tbl %>%
 
 # Data Manipulation
 
+revenue_by_year_tbl <- bike_orderlines_tbl %>% 
+    select(order_date, total_price) %>% 
+    mutate(year = year(order_date)) %>% 
+    group_by(year) %>% 
+    summarise(
+        revenue = sum(total_price)
+    ) %>% 
+    ungroup()
+
 
 # Adding text to bar chart
+revenue_by_year_tbl %>% 
+    
+    # bar labels
+    mutate(revenue_text = scales::dollar(revenue, scale = 1e-6, suffix = 'M')) %>% 
+
+    ggplot(aes(x = year, y = revenue)) +
+    geom_col(fill = '#2C3E50') + 
+    geom_text(aes(label = revenue_text),
+                  vjust = 1.5, color = 'snow') + 
+    
+    expand_limits(y = 2e6)+
+    theme_tq()
+
 
 
 # Filtering labels to highlight a point
