@@ -212,6 +212,8 @@ revenue_by_year_tbl <- bike_orderlines_tbl %>%
 
 
 # Adding text to bar chart
+# Filtering labels to highlight a point
+
 revenue_by_year_tbl %>% 
     
     # bar labels
@@ -219,17 +221,22 @@ revenue_by_year_tbl %>%
 
     ggplot(aes(x = year, y = revenue)) +
     geom_col(fill = '#2C3E50') + 
+    geom_smooth(method = 'lm', se = FALSE) +
+    
     geom_text(aes(label = revenue_text),
                   vjust = 1.5, color = 'snow') + 
     
-    expand_limits(y = 2e6)+
-    theme_tq()
-
-
-
-# Filtering labels to highlight a point
-
-
+    geom_label(data = revenue_by_year_tbl %>% filter(year %in% c(2013)),
+               label = 'Major Demand This Year',
+               size = 5,
+               fontface = 'bold',
+               fill = '#1F78b4',
+               color = 'white',
+               vjust = -0.5) +
+    
+    expand_limits(y = 2e7)+
+    
+    theme_tq() 
 
 
 
