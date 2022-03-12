@@ -95,30 +95,48 @@ sales_by_year_category_2_tbl %>%
 # 2.3 Size ----
 # - Used with points
 sales_by_year_category_2_tbl %>% 
-        ggplot(aes(x = year, 
+    ggplot(aes(x = year, 
                    y = revenue,
                    color = category_2)) +
-        geom_line(size = 2) + 
-        geom_point(size = 5) +
-        theme_minimal()
+    geom_line(size = 1) + 
+    geom_point(size = 2) +
+    facet_wrap(~ category_2, scales = 'free') +
+    expand_limits(y = 0)+ 
+    
+    geom_smooth(method = 'lm', se = FALSE, color = 'black') +
+    theme_minimal()
 
 
-# 3.0 Faceting ----
+# 3.0 Faceting ---- 
 # - Great way to tease out variation by category
 
 # Goal: Sales annual sales by category 2
 
- 
+sales_by_year_category_2_tbl %>% 
+    ggplot(aes(x = year, 
+               y = revenue,
+               color = category_2)) +
+    geom_line(size = 2) + 
+    geom_point(size = 5) +
+    theme_minimal()
 
 
 # 4.0 Position Adjustments (Stack & Dodge) ----
 
 # Stacked Bars & Side-By-Side Bars
-
+sales_by_year_category_2_tbl %>% 
+    ggplot(aes(x = year, 
+               y = revenue,
+               fill = category_2)) +
+    geom_col(position = position_dodge(width = 0.9), color = 'white') +     theme_minimal()
 
 # Stacked Area
-
-
+sales_by_year_category_2_tbl %>% 
+    ggplot(aes(x = year, 
+               y = revenue,
+               fill = category_2)) +
+    geom_area(color = 'black') +      
+    theme_minimal()
 
 
 # 5.0 Scales (Colors, Fills, Axis) ----
@@ -128,14 +146,35 @@ sales_by_year_category_2_tbl %>%
 # - Categorical (e.g. ): Changes color via discrete palette
 
 # Plot 1: Faceted Plot, Color = Continuous Scale
-
+g_facet_continous <- sales_by_year_category_2_tbl %>% 
+    ggplot(aes(x = year, 
+               y = revenue,
+               color = revenue)) +
+    geom_line(size = 1) +
+    geom_point(size = 3) +
+    facet_wrap(~ category_2, scales = 'free_y') +
+    expand_limits(y = 0) +
+    theme_minimal()
 
 # Plot 2: Faceted Plot, Color = Discrete Scale
-
+g_facet_discrete <- sales_by_year_category_2_tbl %>% 
+    ggplot(aes(x = year, 
+               y = revenue,
+               color = category_2)) +
+    geom_line(size = 1) +
+    geom_point(size = 3) +
+    facet_wrap(~ category_2, scales = 'free_y') +
+    expand_limits(y = 0) +
+    theme_minimal()
 
 # Plot 3: Stacked Area Plot
-
-
+g_area_discrete <- sales_by_year_category_2_tbl %>% 
+    ggplot(aes(x = year, 
+               y = revenue,
+               fill = category_2)) +
+    geom_area(color = 'black') +
+    expand_limits(y = 0) +
+    theme_minimal()
 
 
 # 5.2 Scale Colors & Fills ----
@@ -143,17 +182,48 @@ sales_by_year_category_2_tbl %>%
 
 # Color by Revenue (Continuous Scale)
 
-
+g_facet_continous +
+    
+    # scale_color_continuous(
+    #     low = 'cornflowerblue',
+    #     high = 'black'
+    # )
+    
+    #scale_color_viridis_c(direction = -1)
+    #scale_color_viridis_c(option = 'A', direction = -1)
+    #scale_color_viridis_c(option = 'B', direction = -1)
+    #scale_color_viridis_c(option = 'C', direction = -1)
+    #scale_color_viridis_c(option = 'D', direction = -1)
+    scale_color_viridis_c(option = 'E', direction = -1)
 
 
 # Color by Category 2 (Discrete Scale)
 
+RColorBrewer::display.brewer.all()
+RColorBrewer::brewer.pal.info  # colorblind info
+RColorBrewer::brewer.pal(n =9, name = 'Blues')
 
+g_facet_discrete + 
+    scale_color_brewer(palette = 'Set1') + 
+    theme_minimal()
+
+g_facet_discrete + 
+    scale_color_tq(theme = 'dark') + 
+    theme_tq()
+
+g_facet_discrete + 
+    scale_color_viridis_d()+
+    theme_minimal()
 
 # Fill by Category 2
-
+g_area_discrete +
+    scale_fill_brewer(palette = 'Set3')
  
+g_area_discrete +
+    scale_fill_tq()
 
+g_area_discrete +
+    scale_fill_viridis_d() 
 
 # 5.3 Axis Scales ----
 
