@@ -41,7 +41,7 @@ colors()
 sales_by_year_category_2_tbl %>% 
     ggplot(aes(x = year,
                y = revenue)) +
-    geom_col(aes(fill = 'red')) +
+    geom_col(fill = '#08519C') +
     theme_classic()
     
     
@@ -55,37 +55,52 @@ col2rgb('#2C3E50')
 # 1.2 Color Palettes ----
  
 # tidyquant
+tidyquant::palette_light()
+palette_light()[2]
+palette_light()[2] %>% col2rgb()
 
-
-# Brewer
-
+# Brewer - divergent, qualitative (categorical), sequential
+RColorBrewer::display.brewer.all()
+RColorBrewer::brewer.pal.info  # colorblind info
+RColorBrewer::brewer.pal(n =9, name = 'Blues')
 
 # Viridis
-
-
+viridisLite::viridis(n = 20)
+viridisLite::viridis(n = 20)[15]
 
 
 # 2.0 Aesthetic Mappings ----
 
 # 2.1 Color  -----
 # - Used with line and points, Outlines of rectangular objects
-
-
-# Usine colors as aesthetics
-
-
+sales_by_year_category_2_tbl %>% 
+    ggplot(aes(x = year, 
+               y = revenue,
+               color = category_2)) +
+    geom_line() + 
+    geom_point(size = 3) +
+    theme_minimal()
 
 
 # 2.2 Fill  -----
 # - Used with fill of rectangular objects 
-
+sales_by_year_category_2_tbl %>% 
+    ggplot(aes(x = year, 
+               y = revenue,
+               fill = category_2)) +
+    geom_col() +
+    theme_minimal()
 
 
 # 2.3 Size ----
 # - Used with points
-
-
-
+sales_by_year_category_2_tbl %>% 
+        ggplot(aes(x = year, 
+                   y = revenue,
+                   color = category_2)) +
+        geom_line(size = 2) + 
+        geom_point(size = 5) +
+        theme_minimal()
 
 
 # 3.0 Faceting ----
@@ -93,7 +108,7 @@ col2rgb('#2C3E50')
 
 # Goal: Sales annual sales by category 2
 
-
+ 
 
 
 # 4.0 Position Adjustments (Stack & Dodge) ----
