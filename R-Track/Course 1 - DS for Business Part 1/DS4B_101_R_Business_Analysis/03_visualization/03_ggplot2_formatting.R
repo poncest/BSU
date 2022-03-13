@@ -226,26 +226,93 @@ g_area_discrete +
     scale_fill_viridis_d() 
 
 # 5.3 Axis Scales ----
-
-
-
-
+ 
+g_facet_continous + 
+    scale_x_continuous(breaks = seq(2011, 2015, by = 2)) +
+    scale_y_continuous(labels = scales::dollar_format(scale = 1e-6, suffix = 'M'))
+    
 
 # 6.0 Labels ----
 
-
+g_facet_continous + 
+    scale_x_continuous(breaks = seq(2011, 2015, by = 2)) +
+    scale_y_continuous(labels = scales::dollar_format(scale = 1e-6, suffix = 'M')) + 
+    geom_smooth(method = 'lm', se = FALSE) + 
+    scale_color_viridis_c()+
+    theme_dark() +
+    
+    #labs
+    labs(
+        title = 'Bike Sales',
+        subtitle = 'Sales are trending up',
+        caption = '5-year sales trend\ncomes from our ERP Database',
+        x = 'Year',
+        y = 'Revenue ($M)',
+        color = 'Revenue'
+    )
 
 
 # 7.0 Themes  ----
 
-
+g_facet_continous + 
+    theme_light() +
+    
+    theme(
+        axis.text.x = element_text(
+            angle = 45, 
+            hjust = 1),
+        
+        strip.background = element_rect(
+            color = 'black',
+            fill = 'cornflowerblue',
+            size = 1
+        ),
+        
+        strip.text = element_text(
+            face = 'bold',
+            color = 'white'
+        )
+    )
 
 
 # 8.0 Putting It All Together ----
 
+# Brewer
+RColorBrewer::display.brewer.all()
+RColorBrewer::brewer.pal.info
+RColorBrewer::brewer.pal(n = 8, name = 'Blues')
 
-
-
-
-
+sales_by_year_category_2_tbl %>% 
+    
+    ggplot(aes(x = year, 
+               y = revenue,
+               fill = category_2)) +
+    
+    geom_area(color = 'black') + 
+    
+    # Scales
+    scale_fill_brewer(palette = 'Blues', direction = -1) + 
+    scale_y_continuous(labels = scales::dollar_format()) +
+    
+    # Labels
+    labs(
+        title = 'Sales Over Year by Category 2',
+        subtitle = 'Sales Trending Upward',
+        x = "",
+        y = 'Revenue ($M)',
+        fill = '2nd Category',
+        caption = 'Bike sales trends look strong heading into 2016'
+        ) +
+    
+    # Theme
+    theme_light() +
+    
+    theme(
+        title = element_text(
+            face = 'bold',
+            color = '#08306B')
+    )
+    
+    
+    
 
