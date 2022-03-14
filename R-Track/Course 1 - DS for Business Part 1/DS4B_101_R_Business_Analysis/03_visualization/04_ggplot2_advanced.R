@@ -106,21 +106,81 @@ top_customers_tbl %>%
         plot.caption = element_text(face = 'bold.italic')
     )
                              
-                            
   
 
 
 # 2.0 Heatmaps ----
 # - Great for showing details in 3 dimensions
 
-# Question: Do specific customers have a purchasing prefernce?
+# Question: Do specific customers have a purchasing preference?
 # Goal: Visualize heatmap of proportion of sales by Secondary Product Category
 
 # Data Manipulation
- 
+pct_sales_by_customer_tbl <- bike_orderlines_tbl %>% 
+    
+    select(bikeshop_name, category_1, category_2, quantity) %>% 
+    group_by(bikeshop_name, category_1, category_2) %>% 
+    
+    summarise(
+        total_quantity = sum(quantity)
+    ) %>% 
+    
+    ungroup() %>% 
+    
+    group_by(bikeshop_name) %>% 
+    
+    mutate(
+        pct = total_quantity / sum(total_quantity)
+    ) %>% 
+    
+    ungroup() %>% 
+    
+    mutate(
+        bikeshop_name = as.factor(bikeshop_name) %>% fct_rev(),
+        bikeshop_name_num = as.numeric(bikeshop_name)
+    )
+
+
 
 # Data Visualization
- 
+
+pct_sales_by_customer_tbl %>% 
+    
+    ggplot(aes(x = category_2, y = bikeshop_name)) +
+    
+    # geometries
+    geom_tile(aes(fill = pct)) +
+    
+    geom_text(aes(label = scales::percent(pct, accuracy = 0.1)),
+              size = 3) +
+    
+    facet_wrap(~ category_1, scales = 'free_x') + #no data, free to be removed
+    
+    # format 
+    scale_fill_gradient(low = 'white', high = palette_light()[1]) +
+    
+    labs(
+        title = 'Heatmap of Purchasing Habitls',
+        x = 'Bike Type',
+        y = 'Customer',
+        caption = str_glue(
+        'Customer that prefer Road: 
+        Ann Arbor Speed, Austin Cruisers, & Inndianapolis Velocipedes
+        
+        Customer that prefer Mountain: 
+        Ithaca Mountain Climbers, Pitt Mountain Machines, & Tampa 29ers'
+            )
+    ) + 
+    
+    theme_tq() +
+    theme(
+        legend.position = 'none',
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(face = 'bold.italic'),
+        plot.caption = element_text(face = 'bold.italic')
+    )
+    
+
 
 
 
