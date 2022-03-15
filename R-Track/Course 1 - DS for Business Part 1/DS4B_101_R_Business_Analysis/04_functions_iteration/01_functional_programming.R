@@ -23,7 +23,11 @@ glimpse(bike_orderlines_tbl)
 x <- c(0:10, 50, NA_real_)
 x
 
-
+mean(x)
+# remove NA
+mean(x, na.rm = TRUE)
+# remove NA and the `50` value
+mean(x, na.rm = TRUE, trim = .1)
 
 # 1.2 Customizing a mean function ----
 
@@ -37,8 +41,9 @@ mean_remove_na <- function(x, na.rm = TRUE, ...) {
     return(avg)
 }
 
+mean_remove_na(x)
 
-
+mean_remove_na(x, trim = 0.1)
 
 
 
