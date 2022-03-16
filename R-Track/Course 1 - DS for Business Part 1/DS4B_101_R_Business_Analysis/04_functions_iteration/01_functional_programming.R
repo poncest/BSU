@@ -47,14 +47,38 @@ mean_remove_na(x, trim = 0.1)
 
 
 
-
-
 # 2.0 THE TWO STYLES OF FUNCTIONS: VECTOR FUNCTIONS & DATA FUNCTIONS ----
 
 # Calculating a 3 month rolling average  for category_1 & category_2 
 # with dates aligned at last day of the month
 
-
+rolling_avg_3_tbl <- bike_orderlines_tbl %>% 
+    select(order_date, category_1, category_2, total_price) %>% 
+    
+    mutate(
+        order_date = ymd(order_date),
+        # move to the end of a segment
+        month_end = ceiling_date(order_date, unit = 'month') - period(1, units = 'day')
+    ) %>% 
+    
+    group_by(category_1, category_2, month_end) %>% 
+    
+    summarise(
+        total_price = sum(total_price)
+    ) %>% 
+    
+    #  rolling average
+    mutate(
+        rolling_avg_3 = rollmean(total_price, 
+                                 k = 3, 
+                                 na.pad = TRUE,
+                                 align = 'right')
+    ) %>% 
+    
+    ungroup()  
+    
+    
+    
 
 
 # 2.1 Vector Functions ----
