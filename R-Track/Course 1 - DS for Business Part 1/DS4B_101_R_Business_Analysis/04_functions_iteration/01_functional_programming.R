@@ -75,20 +75,72 @@ rolling_avg_3_tbl <- bike_orderlines_tbl %>%
                                  align = 'right')
     ) %>% 
     
-    ungroup()  
+    ungroup()  %>% 
     
+    # reorder factors
+    mutate(
+        category_2 = as.factor(category_2) %>% 
+            fct_reorder2(month_end, total_price))
     
+# data vis
+rolling_avg_3_tbl %>% 
+    ggplot(aes(x = month_end,
+               y = total_price,
+               color = category_2)) +
+    
+    # geometries
+    geom_point() + 
+    geom_line(aes(y = rolling_avg_3), 
+              color = 'navy blue',
+              size = 1)+
+    facet_wrap(~ category_2, scales = 'free_y') + 
+    
+    # formatting
+    theme_tq() +
+    scale_color_tq()
     
 
 
 # 2.1 Vector Functions ----
-
+(x)
+?ymd
+?ceiling_date
+?rollmean
 
 # 2.2 Data Functions ----
-
+(.data)
+?select
+?mutate
+?goup_by
 
 # 3.0 CONTROLLING FLOW: IF STATEMENTS, MESSAGES, WARNINGS, STOP ----
 
+class_detect <- function(x) {
+    
+    if (is.numeric(x)) {
+        message('Value is numeric')
+        print(x)
+        
+    } else if (is.character(x)) {
+        warning('In class_detect(): Value is character! Should be numeric', call. = FALSE)
+        print(x)
+        
+    } else if (is.logical(x)) {
+        stop('In class_detect(): Value is logical! Should be numeric', call. = FALSE)
+        print(x)
+        
+    } else {
+        message('Unknown Class')
+        print(x)
+    }
+}
+ 
+class_detect(1)
+class_detect('a')
+class_detect(FALSE)
+
+formula(y ~ x) %>% class()
+formula(y ~ x) %>% class_detect()
 
 # 4.0 VECTORIZED REMOVE OUTLIERS FUNCTION ----
 #  - Box Plot Diagram to Identify Outliers
