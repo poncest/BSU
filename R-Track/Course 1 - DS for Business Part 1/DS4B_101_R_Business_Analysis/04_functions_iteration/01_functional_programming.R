@@ -147,22 +147,68 @@ formula(y ~ x) %>% class_detect()
 #  - Goal: Use box plot approach to identify outliers
 
 # Make bikes_tbl
-
-
+bike_tbl <- 
+bike_orderlines_tbl %>% 
+ distinct(model, category_1, price)
 
 # Visualize Box Plot
+bike_tbl %>% 
+    ggplot(aes(x = category_1, y = price)) +
+    
+    geom_boxplot()
 
 
-
-# Create remove_outliers()
-
-
-
-# Apply remove_outliers() to bikes_tbl
+# Create detect_outliers()
+x <- c(0:10, 50, NA_real_)
+x
 
 
+detect_outliers <- function(x) {
+    
+    if (missing(x)) stop('The argument x needs a vector.')
+    
+    if (!is.numeric(x)) stop('The argument x must be numeric.')
+    
+    # create a tibble
+    data_tbl <- tibble(data = x)
+    
+    limits_tbl <- 
+    data_tbl %>% 
+        summarise(
+            quantile_lo = quantile(data, probs = 0.25, na.rm = TRUE),
+            quantile_hi = quantile(data, probs = 0.75, na.rm = TRUE),
+            iqr         = IQR(data, na.rm = TRUE),
+            limit_lo    = quantile_lo - 1.5 * iqr,
+            limit_hi    = quantile_hi + 1.5 * iqr
+        )
+    
+    # detect which values are outliers
+    output_tbl <- 
+    data_tbl %>% 
+        mutate(
+            outlier = case_when(
+                data < limits_tbl$limit_lo ~ TRUE,
+                data > limits_tbl$limit_hi ~ TRUE,
+                TRUE ~ FALSE
+            )
+        )
+    
+    return(output_tbl$outlier)    
+}
 
-# Visualize with remove_outlers()
+
+detect_outliers()
+detect_outliers('a')
+detect_outliers(x)
+
+tibble(x = x) %>% 
+    mutate(outlier = detect_outliers(x))
+
+# Apply detect_outliers() to bikes_tbl
+ 
+
+
+# Visualize with detect_outlers()
 
 
 
