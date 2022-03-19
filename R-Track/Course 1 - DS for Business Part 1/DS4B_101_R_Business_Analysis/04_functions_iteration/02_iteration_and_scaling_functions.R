@@ -15,20 +15,46 @@ glimpse(bike_orderlines_tbl)
 
 # 1.0 PRIMER ON PURRR ----
 # Programmatically getting Excel files into R
+excel_paths_tbl <- 
+    fs::dir_info('R-Track/Course 1 - DS for Business Part 1/DS4B_101_R_Business_Analysis/00_data/bike_sales/data_raw/')
 
-
+paths_chr <- 
+    excel_paths_tbl %>% 
+    pull(path)
 
 # What Not To Do: Don't use for loops
 
+excel_list <- list()
+for (path in paths_chr) {
+    excel_list[[path]] <- read_excel(path)
+}
+
+excel_list
+
 
 # What to Do: Use map()
+?map
 
+# method 1 - function name
+excel_list2 <- 
+    paths_chr %>% 
+        map(read_excel) %>% 
+        set_names(paths_chr)
 
+# method 2 - anonymous function
+paths_chr %>% 
+    map(~ read_excel(.))
 
+# method 3 - function specified with function()
+paths_chr %>% 
+    map(function(x) read_excel(path = x))
 
 
 # Reading Excel Sheets
 
+excel_sheets('R-Track/Course 1 - DS for Business Part 1/DS4B_101_R_Business_Analysis/00_data/bike_sales/data_raw/bikes.xlsx') %>% 
+    
+    map(~ read_excel(path = 'R-Track/Course 1 - DS for Business Part 1/DS4B_101_R_Business_Analysis/00_data/bike_sales/data_raw/bikes.xlsx', sheet = .)) 
 
 
 
