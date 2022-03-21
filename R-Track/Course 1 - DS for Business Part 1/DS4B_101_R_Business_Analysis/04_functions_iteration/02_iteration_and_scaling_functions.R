@@ -62,41 +62,106 @@ excel_sheets('R-Track/Course 1 - DS for Business Part 1/DS4B_101_R_Business_Anal
 
 # 2.1 Column-wise Map ----
 
+bike_orderlines_tbl %>% is.list()
 
+# map over columns
+bike_orderlines_tbl %>% 
+    map(~ class(.)[1])
+
+# note that `order_date` has two classes:POSIXct and POSIXt
 
 
 # 2.2 Map Variants ----
+?map
 
+# character map
+bike_orderlines_tbl %>% 
+    map_chr(~ class(.)[1])
 
+# dataframe map
+bike_orderlines_tbl %>% 
+    map_df(~ class(.)[1]) %>% 
+    gather()
+
+# pct of missing values
+bike_orderlines_tbl %>% 
+    map_df(~ sum(is.na(.)) / length(.)[1]) %>% 
+    gather()
 
 
 
 # 2.3 Row-wise Map ----
 
+# read all files in a directory
+excel_tbl <- excel_paths_tbl %>% 
+    select(path) %>% 
+    mutate(data = path %>%  map(read_excel))
 
-
-
+excel_list
+excel_tbl
 
 # 3.0 NESTED DATA ----
 
 # Unnest
+excel_tbl
 
+excel_tbl$data
+
+excel_tbl$data[2]
+
+excel_tbl_unnested <- excel_tbl %>% 
+    mutate(.id = 1:3) %>% 
+    unnest(data) 
 
 # Nest
+excel_tbl_nested <- excel_tbl_unnested %>% 
+    group_by(.id, path) %>% 
+    nest()
 
-
+# did not drop the NA values
+excel_tbl_nested$data
 
 # Mapping Nested List Columns
 
+# first tbl
+excel_tbl_nested$data[[1]] %>% 
+    # only grabs columns that are not NAs
+    select_if(~ !is.na(.) %>% all())
+
+# examples
+x <- rep(NA,5)
+x
+!is.na(x) %>% all()
 
 
+y <- c(1:4, NA_real_)
+y
+!is.na(y) %>% all()
 
 
+# Method 1: creating a function outside pur::map()
 
+# step 1: create a function that can be mapped to one element
+select_non_na_columns <- function(data) {
+    
+    data %>% 
+        select_if(~ !is.na(.) %>% all())
+    
+} 
 
+# step 2: extract an element, and test the function
+excel_tbl_nested$data[[1]] %>% 
+    select_non_na_columns()
+    
 
+# step 3: use mutate() + map() 
+excel_tbl_nested_fixed <- excel_tbl_nested %>% 
+    mutate(data_fixed = data %>% map(select_non_na_columns))
 
-
+# before
+excel_tbl_nested_fixed$data[1]
+# after
+excel_tbl_nested_fixed$data_fixed[1]
 
 
 
