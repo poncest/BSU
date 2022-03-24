@@ -197,7 +197,7 @@ rolling_avg_3_tbl %>%
     geom_line(aes(y = rolling_avg_3), color = "blue", linetype = 1) +
     facet_wrap(~ category_2, scales = "free_y") +
     
-    # Add Loess Smoother
+    # Add Loess Smoother (locally estimated scatterplot smoothing)
     geom_smooth(method = "loess", se = FALSE, span = 0.2, color = "black") +
     
     # Formatting
@@ -206,44 +206,104 @@ rolling_avg_3_tbl %>%
     scale_y_continuous(labels = scales::dollar_format(scale = 1e-3, suffix = "K"))
 
 
-
-
 # 4.2 Modeling Primer ----
 
 # Data Preparation
+sales_by_m_cross_country_tbl <- rolling_avg_3_tbl %>% 
+    filter(category_2 == 'Cross Country Race') %>% 
+    select(month_end, total_price) %>% 
+    mutate(month_end_num = as.numeric(month_end))
 
+sales_by_m_cross_country_tbl %>% 
+    ggplot(aes(x = month_end_num,
+               y = total_price)) +
+    
+    geom_point() +
+    geom_smooth(method = 'loess', se = FALSE, span = 0.2)
 
 
 # Making a loess model
+?loess() 
+
+fit_loess_cross_country <- sales_by_m_cross_country_tbl %>% 
+    # not a tidy function (do not %>% )
+    loess(total_price ~ month_end_num, span = 0.2, data = .)
 
 
+# Working With Broom 
 
-# Working With Broom
-
-
+fit_loess_cross_country %>% 
+    # extract the fitted results
+    broom::augment() %>%   
     
+    # Visualizing results
+    ggplot(aes(x = month_end_num,
+               y = total_price)) +
     
-# Visualizing results
+    geom_point() +
+    geom_line(aes(y = .fitted))
+
+
+# 4.3 Step 1: Function To Return Fitted Results ----
+
+rolling_avg_3_tbl_nested <- rolling_avg_3_tbl %>% 
     
+    group_by(category_1, category_2) %>% 
+    nest() %>% 
+    ungroup()
+
+# test data
+data <- rolling_avg_3_tbl_nested$data[[1]] 
 
 
+tidy_loess <- function(data) {
+    
+    data_formatted <- data %>% 
+        select(month_end, total_price) %>% 
+        mutate(month_end_num = as.numeric(month_end))
+    
+    fit_loess <- loess(formula = total_price ~ month_end_num,
+                       data    = data_formatted,
+                       span    = 0.2)
+    
+    output_tbl <- fit_loess %>% 
+        broom::augment() %>% 
+        select(.fitted)
+    
+    return(output_tbl)
+           
+}
 
 
-# 4.3 Function To Return Fitted Results ----
+# 4.4 Step 2: Test Function on Single Element ----
+
+# to test the function change [[num]]
+rolling_avg_3_tbl_nested$data[[3]] %>% 
+    tidy_loess()
 
 
+# 4.5 Step 3: Map Function to All Categories ----
 
+# Map Functions 
 
-# 4.4 Test Function on Single Element ----
+loess_tbl_nested <- rolling_avg_3_tbl_nested %>% 
+    mutate(fitted = data %>% map(tidy_loess))
 
+loess_tbl_nested$fitted[[1]]
 
-# 4.5 Map Function to All Categories ----
+loess_tbl_nested %>% 
+    unnest()
 
-# Map Functions
+# Visualize Results 
 
-
-
-# Visualize Results
-
+loess_tbl_nested %>% 
+    unnest() %>% 
+    
+    ggplot(aes(x = month_end, y = total_price, color = category_2)) + 
+    
+    geom_point() +
+    geom_line(aes(y = .fitted), color = 'blue', size = 2) +
+    geom_smooth(method = 'loess', span =0.2, se = FALSE) +
+    facet_wrap(~ category_2, scales = 'free_y')
 
 
