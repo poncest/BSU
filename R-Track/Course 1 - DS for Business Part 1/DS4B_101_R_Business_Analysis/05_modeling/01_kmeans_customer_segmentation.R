@@ -2,11 +2,11 @@
 # CUSTOMER SEGMENTATION ----
 
 
-library(tidyverse)
+library(tidyverse, quietly = TRUE)
 library(broom)
 library(umap)
 library(ggrepel)
-library(tidyquant)
+library(tidyquant, quietly = TRUE)
 
 bike_orderlines_tbl <- read_rds("R-Track/Course 1 - DS for Business Part 1/DS4B_101_R_Business_Analysis/00_data/bike_sales/data_wrangled/bike_orderlines.rds")
 
@@ -117,17 +117,116 @@ kmeans_mapped_tbl %>%
 # 3.0 VISUALIZATION: UMAP ---- 
 
 # 3.1 Use UMAP to get 2-D Projection ----
+?umap
 
+umap_obj <- customer_product_tbl %>% 
+    select(-bikeshop_name) %>% 
+    umap()
+
+umap_results_tbl <- umap_obj$layout %>% 
+    as_tibble() %>% 
+    set_names(c('x', 'y')) %>% 
+    bind_cols(
+        customer_product_tbl %>% select(bikeshop_name)
+    )
+
+umap_results_tbl %>% 
+    ggplot(aes(x, y)) + 
+    geom_point() +
+    geom_label_repel(aes(label = bikeshop_name),
+                     size = 3)
 
 # 3.2 Use K-Means to Add Cluster Assignments ----
+umap_results_tbl 
+
+kmeans_4_obj <- kmeans_mapped_tbl %>% 
+    pull(k_means) %>% 
+    pluck(4)
+    
+kmeans_4_clusters_tbl <- kmeans_4_obj %>% 
+    augment(customer_product_tbl) %>% 
+    select(bikeshop_name, .cluster)
+
+# join
+umap_kmeans_4_results_tbl <- umap_results_tbl %>% 
+    left_join(kmeans_4_clusters_tbl)
 
 
 # 3.3 Visualize UMAP'ed Projections with Cluster Assignments ----
 
-
-
+umap_kmeans_4_results_tbl %>% 
+    
+    # labels
+    mutate(label_text = str_glue('Customer: {bikeshop_name}
+                                 Cluster: {.cluster}')) %>% 
+    
+    ggplot(aes(x, y, color = .cluster)) +
+    
+    # geometries
+    geom_point() + 
+    geom_label_repel(aes(label = label_text), size = 3) +
+    
+    # format
+    theme_tq() +
+    scale_color_tq() +
+    
+    theme(legend.position = 'none') +
+    
+    # labs
+    labs(
+        title ='Customer Segmentation: 2D Projection',
+        subtitle = 'UMAP 2D Prjection with K-Means Cluster Assigment',
+        caption = 'Conclusion: 4 Customer Segments identified using 2 algorithms'
+    ) 
+    
 
 # 4.0 ANALYZE PURCHASING TRENDS ----
+
+customer_trend_tbl %>% 
+    pull(price) %>% 
+    quantile(probs = c(0, 0.33, 0.66, 1)) 
+
+?quantile
+
+
+cluster_trends_tbl <- customer_trend_tbl %>% 
+    
+    # join cluster assignment by bikeshop name
+    left_join(umap_kmeans_4_results_tbl) %>% 
+    
+    # encoding price
+    mutate(
+        price_bin = case_when(
+            price <= 2240 ~ 'low',
+            price >= 4260 ~ 'medium',
+            TRUE ~ 'high'
+        )) %>% 
+    
+    # selecting specific cols
+    select(.cluster, model, contains('price'), 
+           category_1:quantity_purchased) %>% 
+    
+    # aggregate qty purchased by cluster and product attributes
+    group_by_at(.vars = vars(.cluster:frame_material)) %>% 
+    
+    summarise(
+        total_quantity = sum(quantity_purchased)
+    ) %>% 
+    
+    ungroup() %>% 
+    
+    # normalize the data - prop of total
+    group_by(.cluster) %>% 
+    
+    mutate(
+        prop_of_total = total_quantity / sum(total_quantity)
+        ) %>%
+    
+    ungroup() 
+
+
+
+
 
 
 
