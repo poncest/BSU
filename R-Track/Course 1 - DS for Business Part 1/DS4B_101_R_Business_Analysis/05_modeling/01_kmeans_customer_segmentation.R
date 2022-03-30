@@ -224,9 +224,33 @@ cluster_trends_tbl <- customer_trend_tbl %>%
     
     ungroup() 
 
+# cluster 1 - medium/high price - road model preference
+cluster_trends_tbl %>% 
+    filter(.cluster == 1) %>% 
+    arrange(desc(prop_of_total)) %>% 
+    mutate(cum_prop = cumsum(prop_of_total)) 
+    
+
+get_cluster_trends <- function(cluster = 1) {
+    
+    cluster_trends_tbl %>% 
+        filter(.cluster == cluster) %>% 
+        arrange(desc(prop_of_total)) %>% 
+        mutate(cum_prop = cumsum(prop_of_total)) 
+    
+}
+
+get_cluster_trends(cluster = 1)   
 
 
+# cluster 2 - high/low price - road model preference
+get_cluster_trends(cluster = 2) 
 
+# cluster 3 - high/low price - mountain model preference, aluminum preference
+get_cluster_trends(cluster = 3) 
+
+# cluster 4 - high/medium price - mountain model preference, carbon preference
+get_cluster_trends(cluster = 4) 
 
 
 
