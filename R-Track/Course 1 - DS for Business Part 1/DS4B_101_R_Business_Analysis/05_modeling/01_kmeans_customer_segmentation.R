@@ -253,5 +253,46 @@ get_cluster_trends(cluster = 3)
 get_cluster_trends(cluster = 4) 
 
 
+# update visualization
+
+# cluster labels
+cluster_label_tbl <- tibble(
+    .cluster = 1:4,
+    .cluster_label = c(
+        'Medium/High Price, Road Model',
+        'High/Low Price, Road model',
+        'High/Low Price, Mountain Model, Aluminum Frame',
+        'High/Medium Price, Mountain Model, Carbon Frame')
+) %>% 
+    
+    mutate(.cluster = as_factor(as.character(.cluster))) 
+    
+    
+
+umap_kmeans_4_results_tbl %>% 
+    left_join(cluster_label_tbl) %>% 
+    
+    # labels
+    mutate(label_text = str_glue('Customer: {bikeshop_name}
+                                 Cluster: {.cluster}
+                                 {.cluster_label}')) %>% 
+    
+    ggplot(aes(x, y, color = .cluster)) +
+    
+    # geometries
+    geom_point() + 
+    geom_label_repel(aes(label = label_text), size = 3) +
+    
+    # format
+    theme_tq() +
+    scale_color_tq() +
+    
+    theme(legend.position = 'none') +
+    
+    # labs
+    labs(
+        title ='Customer Segmentation: 2D Projection',
+        subtitle = 'UMAP 2D Prjection with K-Means Cluster Assigment',
+        caption = 'Conclusion: 4 Customer Segments identified using 2 algorithms') 
 
 
