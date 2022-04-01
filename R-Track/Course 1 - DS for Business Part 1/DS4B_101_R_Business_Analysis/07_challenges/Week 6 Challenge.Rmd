@@ -55,7 +55,7 @@ library(plotly) # NEW PACKAGE
 
 # Data
 
-We will be using stock prices in this analysis. The `tidyquant` R package contains an API to retreive stock prices. The following code is shown so you can see how I obtained the stock prices for every stock in the S&P 500 index. The files are saved in the `week_6_data` directory. 
+We will be using stock prices in this analysis. The `tidyquant` R package contains an API to retrieve stock prices. The following code is shown so you can see how I obtained the stock prices for every stock in the S&P 500 index. The files are saved in the `week_6_data` directory. 
 
 ```{r, eval = FALSE}
 # # NOT RUN - WILL TAKE SEVERAL MINUTES TO DOWNLOAD ALL THE STOCK PRICES
@@ -80,7 +80,7 @@ We can read in the stock prices. The data is 1.2M observations. The most importa
 
 - `symbol`: The stock ticker symbol that corresponds to a company's stock price
 - `date`: The timestamp relating the symbol to the share price at that point in time
-- `adjusted`: The stock price, adjusted for any splits and divdends (we use this when analyzing stock data over long periods of time) 
+- `adjusted`: The stock price, adjusted for any splits and dividends (we use this when analyzing stock data over long periods of time) 
 
  
 ```{r}
@@ -140,11 +140,37 @@ Your first task is to convert to a tibble named `sp_500_daily_returns_tbl` by pe
 
 ```{r}
 # Apply your data transformation skills!
-
 # Output: sp_500_daily_returns_tbl
+
+sp_500_daily_returns_tbl <- sp_500_prices_tbl %>% 
+    # Select the `symbol`, `date` and `adjusted` columns
+    select(symbol, date, adjusted) %>% 
+    
+    # Filter to dates beginning in the year 2018 and beyond.
+    filter(date >= ymd('2018-01-01')) %>% 
+    
+    # Compute a Lag of 1 day on the adjusted stock price. Be sure to group by symbol first, otherwise we will have lags computed using values from the previous stock in the data frame.
+    group_by(symbol) %>% 
+    mutate(lag_1day = lag(x = adjusted, n = 1)) %>% 
+    ungroup() %>% 
+    
+    # Remove an `NA` values from the lagging operation
+    drop_na(lag_1day) %>% 
+    
+    # Compute the difference between adjusted and the lag
+    # Compute the percentage difference by dividing the difference by that lag. Name this column `pct_return`.
+    mutate(
+        diff       = adjusted - lag_1day,
+        pct_return = diff / lag_1day) %>% 
+    
+    # Return only the `symbol`, `date`, and `pct_return` columns
+    select(symbol, date, pct_return)
+
+# output
+sp_500_daily_returns_tbl
 ```
 
-
+ 
 ## Step 2 - Convert to User-Item Format
 
 The next step is to convert to a user-item format with the `symbol` in the first column and every other column the value of the _daily returns_ (`pct_return`) for every stock at each `date`.
@@ -164,13 +190,19 @@ Now that we have the daily returns (percentage change from one day to the next),
 
 ```{r}
 # Convert to User-Item Format
-
 # Output: stock_date_matrix_tbl
+
+stock_date_matrix_tbl <- sp_500_daily_returns_tbl %>% 
+    # Spread the `date` column to get the values as percentage returns. 
+    # Make sure to fill an `NA` values with zeros. 
+    spread(key = date, value = pct_return, fill = 0)
+
+# output: 
+stock_date_matrix_tbl 
 ```
 
 
-
-## Step 3 - Perform K-Means Clustering
+## Step 3 - Perform K-Means Clustering 
 
 Next, we'll perform __K-Means clustering__. 
 
@@ -188,6 +220,13 @@ Beginning with the `stock_date_matrix_tbl`, perform the following operations:
 ```{r}
 # Create kmeans_obj for 4 centers
 
+kmeans_obj <- stock_date_matrix_tbl %>% 
+    # Drop the non-numeric column, `symbol`
+    select(-symbol) %>% 
+    
+    # Perform `kmeans()` with `centers = 4` and `nstart = 20`
+    kmeans(centers = 4, nstart = 20)
+
 ```
 
 Use `glance()` to get the `tot.withinss`. 
@@ -195,6 +234,9 @@ Use `glance()` to get the `tot.withinss`.
 ```{r}
 # Apply glance() to get the tot.withinss
 
+# Use `glance()` to get the `tot.withinss`
+glance(kmeans_obj) %>% 
+    pull(tot.withinss)
 ```
 
 ## Step 4 - Find the optimal value of K
@@ -209,7 +251,7 @@ kmeans_mapper <- function(center = 3) {
         select(-symbol) %>%
         kmeans(centers = center, nstart = 20)
 }
-```
+``` 
 
 Apply the `kmeans_mapper()` and `glance()` functions iteratively using `purrr`.
 
@@ -221,9 +263,22 @@ Apply the `kmeans_mapper()` and `glance()` functions iteratively using `purrr`.
 
 ```{r}
 # Use purrr to map
-
-
 # Output: k_means_mapped_tbl 
+
+k_means_mapped_tbl <- 
+    
+    # Create a tibble containing column called `centers` that go from 1 to 30
+    tibble(centers = 1:30) %>%
+        
+    # Add a column named `k_means` with the `kmeans_mapper()` output. 
+    mutate(k_means = centers %>% map(kmeans_mapper)) %>%
+    
+    # Use `mutate()` to add the column and `map()` to map centers to 
+    # the `kmeans_mapper()` function.
+    mutate(glance  = k_means %>% map(glance))    
+    
+# output: 
+k_means_mapped_tbl 
 ```
 
 Next, let's visualize the "tot.withinss" from the glance output as a ___Scree Plot___. 
@@ -403,7 +458,7 @@ We can plot the clusters interactively.
 
 ```{r}
 plot_cluster(k = 10)
-```
+``` 
 
 
 
