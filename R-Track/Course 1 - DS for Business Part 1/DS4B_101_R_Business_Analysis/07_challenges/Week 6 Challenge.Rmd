@@ -1,7 +1,7 @@
 ---
 title: "Week 6 - Challenge - Company Segmentation"
-author: "Business Science"
-date: "`r Sys.Date()`"    ## current date
+author: "Steven Ponce - Data Science for Business Part 1"
+date: "`r Sys.Date()`"         ## current date 
 output: 
     html_document:
         toc: TRUE
@@ -277,7 +277,7 @@ k_means_mapped_tbl <-
     # the `kmeans_mapper()` function.
     mutate(glance  = k_means %>% map(glance))    
     
-# output: 
+# output:  
 k_means_mapped_tbl 
 ```
 
@@ -290,15 +290,29 @@ Next, let's visualize the "tot.withinss" from the glance output as a ___Scree Pl
 
 ```{r}
 # Visualize Scree Plot
-
-
+# Begin with the `k_means_mapped_tbl`
+k_means_mapped_tbl %>%
+    
+    # Unnest the `glance` column
+    unnest(glance) %>% 
+    
+    # Plot the `centers` column (x-axis) versus the `tot.withinss` column (y-axis) 
+    ggplot(aes(x = centers, y = tot.withinss)) + 
+    
+    # using `geom_point()` and `geom_line()`
+    geom_line(size = 0.8) +
+    geom_point(size = 2.5) +
+    geom_vline(xintercept = 10, linetype = 'dashed', size = 0.8, color = 'gray70') +
+    theme_minimal()+
+    labs(title = 'Scree Plot')
+    
 
 ```
 
 We can see that the Scree Plot becomes linear (constant rate of change) between 5 and 10 centers for K.
 
 
-## Step 5 - Apply UMAP
+## Step 5 - Apply UMAP 
 
 Next, let's plot the `UMAP` 2D visualization to help us investigate cluster assignments. 
 
@@ -315,9 +329,17 @@ First, let's apply the `umap()` function to the `stock_date_matrix_tbl`, which c
 - Use the `umap()` function storing the output as `umap_results`
 ```{r}
 # Apply UMAP
-
 # Store results as: umap_results 
-```
+
+umap_results <- stock_date_matrix_tbl %>% 
+    
+    # De-select the `symbol` column
+    select(-symbol) %>% 
+    
+    # umap()
+    umap()
+
+``` 
 
 Next, we want to combine the `layout` from the `umap_results` with the `symbol` column from the `stock_date_matrix_tbl`.
 
@@ -328,8 +350,13 @@ Next, we want to combine the `layout` from the `umap_results` with the `symbol` 
 
 ```{r}
 # Convert umap results to tibble with symbols
-
 # Output: umap_results_tbl
+
+umap_results_tbl <- umap_results$layout %>% 
+    as_tibble() %>% 
+    bind_cols(stock_date_matrix_tbl %>% select(symbol))
+
+umap_results_tbl
 ```
 
 Finally, let's make a quick visualization of the `umap_results_tbl`.
@@ -340,7 +367,15 @@ Finally, let's make a quick visualization of the `umap_results_tbl`.
 
 ```{r}
 # Visualize UMAP results
-
+umap_results_tbl %>% 
+    
+    # `ggplot()` mapping the `V1` and `V2` columns to x-axis and y-axis
+    ggplot(aes(x = V1, y = V2)) + 
+    
+    # Add a `geom_point()` geometry with an `alpha = 0.5`` 
+    geom_point(size = 1, alpha = 0.5) +
+    theme_tq()+
+    labs(title = 'UMAP Projection')
 ```
 
 We can now see that we have some clusters. However, we still need to combine the K-Means clusters and the UMAP 2D representation. 
@@ -364,12 +399,23 @@ First, pull out the K-Means for 10 Centers. Use this since beyond this value the
 - Filter to `centers == 10`
 - Pull the `k_means` column
 - Pluck the first element
-- Store this as `k_means_obj`
-
+- Store this as `k_means_obj` 
+ 
 ```{r}
 # Get the k_means_obj from the 10th center
-
 # Store as k_means_obj
+
+k_means_obj <- k_means_mapped_tbl %>% 
+    
+    # Filter to `centers == 10`
+    filter(centers == 10) %>% 
+    
+    # Pull the `k_means` column
+    pull(k_means) %>% 
+    
+    # Pluck the first element
+    pluck(1)
+
 ```
 
 Next, we'll combine the clusters from the `k_means_obj` with the `umap_results_tbl`.
@@ -383,9 +429,25 @@ Next, we'll combine the clusters from the `k_means_obj` with the `umap_results_t
 
 ```{r}
 # Use your dplyr & broom skills to combine the k_means_obj with the umap_results_tbl
-
-
 # Output: umap_kmeans_results_tbl 
+
+umap_kmeans_results_tbl <- k_means_obj %>%  
+    
+    # Augment the `k_means_obj` with the `stock_date_matrix_tbl` 
+    # to get the clusters added to the end of the tibble
+    augment(data = stock_date_matrix_tbl) %>% 
+    
+    # Select just the `symbol` and `.cluster` columns
+    select(symbol, .cluster) %>% 
+    
+    # Left join the result with the `umap_results_tbl` by the `symbol` column
+    left_join(y = umap_results_tbl, by = 'symbol') %>% 
+    
+    # Left join the result with the result of 
+    # `sp_500_index_tbl %>% select(symbol, company, sector)` by the `symbol` column. 
+    left_join(y = sp_500_index_tbl %>% select(symbol, company, sector), by = 'symbol')
+
+umap_kmeans_results_tbl
 ```
 
 Plot the K-Means and UMAP results.
@@ -395,11 +457,21 @@ Plot the K-Means and UMAP results.
 - Add the `geom_point()` geometry with `alpha = 0.5`
 - Apply `theme_tq()` and `scale_color_tq()`
 
-Note - If you've used centers greater than 12, you will need to use a hack to enable `scale_color_tq()` to work. Just replace with: `scale_color_manual(values = palette_light() %>% rep(3))`
+Note - If you've used centers greater than 12, you will need to use a hack to enable `scale_color_tq()` to work. Just replace with: `scale_color_manual(values = palette_light() %>% rep(3))` 
 
 ```{r}
 # Visualize the combined K-Means and UMAP results
-
+umap_kmeans_results_tbl %>% 
+    
+    # Use `ggplot()` mapping `V1`, `V2` and `color = .cluster`
+    ggplot(aes(x = V1, y = V2, color = .cluster)) + 
+    
+    # Add the `geom_point()` geometry with `alpha = 0.5`
+    geom_point(size = 2, alpha = 0.5) +
+    
+    # Apply `theme_tq()` and `scale_color_tq()`
+    theme_tq() + 
+    scale_color_tq()
 
 ```
 
@@ -446,19 +518,22 @@ plot_cluster <- function(k = 3) {
         ggplot(aes(V1, V2, color = .cluster, text = label_text)) +
         geom_point(alpha = 0.5) +
         theme_tq() +
-        scale_color_manual(values = palette_light() %>% rep(3))
+        scale_color_tq()
+        # scale_color_manual(values = palette_light() %>% rep(3))
     
     g %>%
         ggplotly(tooltip = "text")
     
 }
-```
+``` 
 
-We can plot the clusters interactively. 
+We can plot the clusters interactively.  
 
 ```{r}
 plot_cluster(k = 10)
 ``` 
 
-
+```{r}
+sessionInfo()
+```
 
