@@ -3,7 +3,7 @@
 
 # GOAL: BUILD PREDICTION MODEL FOR PRICING ALGORITHM
 
-
+ 
 # LIBRARIES & DATA ----
 
 pkgs <- c("parsnip", "glmnet", "rpart", "rpart.plot", "ranger", "randomForest", "xgboost", "kernlab")
@@ -28,10 +28,10 @@ library(yardstick)
 library(rpart.plot)
 
 # Source Scripts
-source("00_scripts/separate_bikes_and_outlier_detection.R")
+source('R-Track/Course 1 - DS for Business Part 1/DS4B_101_R_Business_Analysis/00_scripts/separete_bikes_and_outlier_detection.R')
 
 # Read Data
-bike_orderlines_tbl <- read_rds("00_data/bike_sales/data_wrangled/bike_orderlines.rds")
+bike_orderlines_tbl <- read_rds("R-Track/Course 1 - DS for Business Part 1/DS4B_101_R_Business_Analysis/00_data/bike_sales/data_wrangled/bike_orderlines.rds")
 
 glimpse(bike_orderlines_tbl)
 
