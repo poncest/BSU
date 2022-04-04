@@ -67,7 +67,7 @@ model_sales_tbl %>%
         title = "Total Sales for Each Model",
         x = "Frame Material", y = "Revenue"
     )
-
+ 
 
 # 2.0 TRAINING & TEST SETS ----
 
@@ -99,7 +99,7 @@ split_obj %>% testing() %>% distinct(model_base)
 
 
 train_tbl <- training(split_obj)
-test_tbl  <- testing(split_obj)
+test_tbl  <- testing(split_obj) 
 
 # *** FIX 1 *** ----
 # Error: factor model_base has new levels Fat CAAD2
