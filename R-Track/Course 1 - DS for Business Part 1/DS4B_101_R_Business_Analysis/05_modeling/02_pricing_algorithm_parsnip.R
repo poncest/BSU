@@ -122,14 +122,14 @@ train_tbl <- train_tbl %>%
 test_tbl <- test_tbl %>%
     filter(!model_base %>% str_detect("Fat CAAD2"))
 
-# *** END FIX 1 *** ----
+# *** END FIX 1 *** ---- 
 
-# 3.0 LINEAR METHODS ----
-?linear_reg 
-?set_engine 
-?fit 
-?predict.model_fit 
-?metrics 
+# 3.0 LINEAR METHODS ---- 
+?linear_reg  
+?set_engine  
+?fit  
+?predict.model_fit  
+?metrics  
 
 
 # 3.1 LINEAR REGRESSION - NO ENGINEERED FEATURES ----
@@ -145,7 +145,18 @@ model_01_linear_lm_simple <- linear_reg(mode = "regression") %>%
     # fit(target ~ as a function of cols)
     fit(price ~ category_2 + frame_material, data = train_tbl)
 
+    # manual calculations
+    # residuals
+    # mutate(residuals = price - .pred) %>%
+    # 
+    # summarize(
+          # mean abs error
+    #     mae = abs(residuals) %>% mean(),
+          # root mean sqrt error
+    #     rmse = mean(residuals^2)^0.5
+    # )
 
+# the same calcs but using yardstick
 model_01_linear_lm_simple %>% 
     # prediction, data Testing Dataset
     predict(new_data = test_tbl) %>%
@@ -153,15 +164,6 @@ model_01_linear_lm_simple %>%
     # 
     bind_cols(test_tbl %>% select(price)) %>%
     yardstick::metrics(truth = price, estimate = .pred)
-    
-    
-    # mutate(residuals = price - .pred) %>%
-    # 
-    # summarize(
-    #     mae = abs(residuals) %>% mean(),
-    #     rmse = mean(residuals^2)^0.5
-    # )
-
 
 # 3.1.2 Feature Importance ----
 model_01_linear_lm_simple
@@ -208,7 +210,7 @@ model_01_linear_lm_simple %>% calc_metrics(test_tbl)
 train_tbl
 
 model_02_linear_lm_complex <- linear_reg("regression") %>%
-    set_engine("lm") %>%
+    set_engine("lm") %>% 
     fit(price ~ ., data = train_tbl %>% select(-id, -model, -model_tier))
 
 model_02_linear_lm_complex %>% calc_metrics(new_data = test_tbl)
