@@ -165,8 +165,8 @@ model_01_linear_lm_simple %>%
     bind_cols(test_tbl %>% select(price)) %>%
     yardstick::metrics(truth = price, estimate = .pred)
 
-# 3.1.2 Feature Importance ----
-model_01_linear_lm_simple
+# 3.1.2 Feature Importance ---- 
+model_01_linear_lm_simple 
 
 model_01_linear_lm_simple$fit %>% class()
 
@@ -175,22 +175,26 @@ model_01_linear_lm_simple$fit %>%
     arrange(p.value) %>%
     mutate(term = as_factor(term) %>% fct_rev()) %>%
     
+    # visualization
     ggplot(aes(x = estimate, y = term)) +
-    geom_point() +
+    geom_point() + 
     ggrepel::geom_label_repel(aes(label = scales::dollar(estimate, accuracy = 1)),
                               size = 3) +
     scale_x_continuous(labels = scales::dollar_format()) +
     labs(title = "Linear Regression: Feature Importance",
-         subtitle = "Model 01: Simple lm Model")
+         subtitle = "Model 01: Simple lm Model") +
+    theme_tq()
 
 # 3.1.3 Function to Calculate Metrics ----
 
+# computes metrics (rmse, rsq, mae)
 model_01_linear_lm_simple %>% 
     predict(new_data = test_tbl) %>%
     
     bind_cols(test_tbl %>% select(price)) %>%
     yardstick::metrics(truth = price, estimate = .pred)
 
+# use a function to compute metrics
 calc_metrics <- function(model, new_data = test_tbl) {
     
     model %>%
@@ -201,7 +205,10 @@ calc_metrics <- function(model, new_data = test_tbl) {
     
 }
 
+# test function 
 model_01_linear_lm_simple %>% calc_metrics(test_tbl)
+
+calc_metrics(model_01_linear_lm_simple, test_tbl)
 
 
 # 3.2 LINEAR REGRESSION - WITH ENGINEERED FEATURES ----
