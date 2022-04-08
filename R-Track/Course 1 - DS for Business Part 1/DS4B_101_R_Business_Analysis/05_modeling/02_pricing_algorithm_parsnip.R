@@ -218,15 +218,23 @@ train_tbl
 
 model_02_linear_lm_complex <- linear_reg("regression") %>%
     set_engine("lm") %>% 
+    
+    # TARGET = price, ~. = as a function of everything
     fit(price ~ ., data = train_tbl %>% select(-id, -model, -model_tier))
 
+
+# using calc_metrics function
+# BEFORE - SIMPLE (mae = 1997)
+model_01_linear_lm_simple %>% calc_metrics(new_data = test_tbl)
+
+# AFTER - COMPLEX (mae = 904)
 model_02_linear_lm_complex %>% calc_metrics(new_data = test_tbl)
 
 
-# 3.2.2 Feature importance ----
+# 3.2.2 Feature importance ---- 
 model_02_linear_lm_complex$fit %>%
     broom::tidy() %>%
-    arrange(p.value) %>%
+    arrange(p.value) %>% drop_na() %>% 
     mutate(term = as_factor(term) %>% fct_rev()) %>%
     
     ggplot(aes(x = estimate, y = term)) +
@@ -235,9 +243,10 @@ model_02_linear_lm_complex$fit %>%
                               size = 3) +
     scale_x_continuous(labels = scales::dollar_format()) +
     labs(title = "Linear Regression: Feature Importance",
-         subtitle = "Model 02: Complex lm Model")
+         subtitle = "Model 02: Complex lm Model") +
+    theme_tq()
 
-
+  
 # 3.3 PENALIZED REGRESSION ----
 
 # 3.3.1 Model ----
