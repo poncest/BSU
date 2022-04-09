@@ -247,22 +247,30 @@ model_02_linear_lm_complex$fit %>%
     theme_tq()
 
   
-# 3.3 PENALIZED REGRESSION ----
+# 3.3 PENALIZED REGRESSION ---- 
 
 # 3.3.1 Model ----
 ?linear_reg
 ?glmnet::glmnet
 
-model_03_linear_glmnet <- linear_reg(mode = "regression", penalty = 500, mixture = 0) %>%
+# BEFORE - GLMNET (mae = 898)
+model_03_linear_glmnet <- linear_reg(mode = "regression", penalty = 10, mixture = 0.5) %>%
+    set_engine("glmnet") %>%
+    fit(price ~ ., data = train_tbl %>% select(-id, -model, -model_tier))
+
+model_03_linear_glmnet %>% calc_metrics(test_tbl)
+
+# BEFORE - GLMNET (mae = 881)
+model_03_linear_glmnet <- linear_reg(mode = "regression", penalty = 50, mixture = 0) %>%
     set_engine("glmnet") %>%
     fit(price ~ ., data = train_tbl %>% select(-id, -model, -model_tier))
 
 model_03_linear_glmnet %>% calc_metrics(test_tbl)
 
 
-# 3.3.2 Feature Importance ----
+# 3.3.2 Feature Importance ---- 
 model_03_linear_glmnet$fit %>%
-    broom::tidy() %>% 
+    broom::tidy() %>%  
     
     # *** FIX 2 *** ----
     # Problem: glmnet returns all lambda (penalty) values assessed
@@ -279,8 +287,9 @@ model_03_linear_glmnet$fit %>%
                               size = 3) +
     scale_x_continuous(labels = scales::dollar_format()) +
     labs(title = "Linear Regression: Feature Importance",
-         subtitle = "Model 03: GLMNET Model")
-
+         subtitle = "Model 03: GLMNET Model") + 
+    theme_tq()
+ 
 
 
 # 4.0 TREE-BASED METHODS ----
