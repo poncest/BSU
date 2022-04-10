@@ -5,7 +5,7 @@
 
  
 # LIBRARIES & DATA ----
-
+model_04_tree_deci
 pkgs <- c("parsnip", "glmnet", "rpart", "rpart.plot", "ranger", "randomForest", "xgboost", "kernlab")
 # If any of these packages are not installed, run this: install.packages(pkgs)
 
@@ -300,33 +300,59 @@ model_03_linear_glmnet$fit %>%
 ?decision_tree
 ?rpart::rpart
 
+# BEFORE - (mae 1205) 
 model_04_tree_decision_tree <- decision_tree(mode = "regression", 
-              cost_complexity = 0.001, 
-              tree_depth      = 7, 
+              cost_complexity = 0.01, 
+              tree_depth      = 5, 
               min_n           = 10) %>%
     set_engine("rpart") %>%
     fit(price ~ ., data = train_tbl %>% select(-id, -model, -model_tier))
 
 model_04_tree_decision_tree %>% calc_metrics(test_tbl)
 
+
+# AFTER - (mae 1463) - Worst
+model_04_tree_decision_tree <- decision_tree(mode = "regression", 
+                                             cost_complexity = 0.1, 
+                                             tree_depth      = 5, 
+                                             min_n           = 10) %>%
+    set_engine("rpart") %>%
+    fit(price ~ ., data = train_tbl %>% select(-id, -model, -model_tier))
+
+model_04_tree_decision_tree %>% calc_metrics(test_tbl)
+
+# AFTER - (mae 1088) 
+model_04_tree_decision_tree <- decision_tree(mode = "regression", 
+                                             cost_complexity = 0.001, 
+                                             tree_depth      = 7, 
+                                             min_n           = 7) %>%
+    set_engine("rpart") %>%
+    fit(price ~ ., data = train_tbl %>% select(-id, -model, -model_tier))
+
+model_04_tree_decision_tree %>% calc_metrics(test_tbl)
+
+
 # 4.1.2 Decision Tree Plot ----
 ?rpart.plot()
 
+# base plot
 model_04_tree_decision_tree$fit %>%
     rpart.plot(roundint = FALSE)
 
+# modify plot
 model_04_tree_decision_tree$fit %>%
     rpart.plot(
         roundint = FALSE,
         type = 1, 
-        extra = 101,
-        fallen.leaves = FALSE, 
-        cex = 0.8,
-        main = "Model 04: Decision Tree", 
-        box.palette = "Blues"
+        extra = 101,                              # add n and %
+        fallen.leaves = FALSE,                    # change the angles
+        cex = 0.8,                                # font size
+        main = "Model 04: Decision Tree",         # title
+        box.palette = "Grays"                     # color
         )
 
 show.prp.palettes()
+
 
 
 # 4.2 RANDOM FOREST ----
