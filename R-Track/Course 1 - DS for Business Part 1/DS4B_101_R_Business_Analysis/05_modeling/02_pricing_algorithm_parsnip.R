@@ -358,35 +358,96 @@ show.prp.palettes()
 # 4.2 RANDOM FOREST ----
 
 # 4.2.1 Model: ranger ----
-?rand_forest()
-?ranger::ranger
+?rand_forest() 
+?ranger::ranger 
 
-set.seed(1234)
-model_05_rand_forest_ranger <- rand_forest(
-    mode = "regression", mtry = 8, trees = 5000, min_n = 10
-    ) %>%
-    set_engine("ranger", replace = TRUE, splitrule = "extratrees", importance = "impurity") %>%
+# BEFORE (mae 1335)
+model_05_rand_forest_ranger <- rand_forest(mode = "regression") %>% 
+    
+    set_engine("ranger") %>%
+    
     fit(price ~ ., data = train_tbl %>% select(-id, -model, -model_tier))
 
 model_05_rand_forest_ranger %>% calc_metrics(test_tbl)
 
+
+# AFTER - tuning parameters (mae 1156)
+model_05_rand_forest_ranger <- rand_forest(
+    mode = "regression", 
+    mtry = 8, 
+    trees = 1000, 
+    min_n = 10
+    ) %>%
+    
+    set_engine("ranger", 
+               replace = TRUE, 
+               splitrule = "extratrees", 
+               importance = "impurity") %>%
+    
+    fit(price ~ ., data = train_tbl %>% select(-id, -model, -model_tier))
+
+model_05_rand_forest_ranger %>% calc_metrics(test_tbl)
+
+
+# AFTER - tuning parameters (mae 1149) about the same
+set.seed(1234)
+model_05_rand_forest_ranger <- rand_forest(
+    mode = "regression", 
+    mtry = 8, 
+    trees = 1000, 
+    min_n = 10
+) %>%
+    
+    set_engine("ranger", 
+               replace = TRUE, 
+               splitrule = "extratrees", 
+               importance = "impurity") %>%
+    
+    fit(price ~ ., data = train_tbl %>% select(-id, -model, -model_tier))
+
+model_05_rand_forest_ranger %>% calc_metrics(test_tbl)
+
+
+# AFTER - tuning parameters (mae 1149) about the same
+set.seed(1234)
+model_05_rand_forest_ranger <- rand_forest(
+    mode = "regression", 
+    mtry = 8, 
+    trees = 1000, 
+    min_n = 10
+) %>%
+    
+    # other parameters to tune
+    set_engine("ranger", 
+               replace = TRUE, 
+               splitrule = "extratrees", 
+               importance = "impurity") %>%
+    
+    fit(price ~ ., data = train_tbl %>% select(-id, -model, -model_tier))
+
+model_05_rand_forest_ranger %>% calc_metrics(test_tbl)
+
+
+ 
 # 4.2.2 ranger: Feature Importance ----
 
 model_05_rand_forest_ranger$fit %>% 
     ranger::importance() %>%
-    enframe() %>%
+    enframe() %>%                        # list -> dataframe
     arrange(desc(value)) %>%
     mutate(name = as_factor(name) %>% fct_rev()) %>%
     
     ggplot(aes(value, name)) +
     geom_point() +
     labs(title = "ranger: Variable Importance",
-         subtitle = "Model 05: Ranger Random Forest Model")
-    
+         subtitle = "Model 05: Ranger Random Forest Model")+
+    theme_tq()
 
+# we know that the `black` feature is important but we don not know about how much 
+# it is important ($) because RF is an ensemble method
 
 # 4.2.3 Model randomForest ----
-?rand_forest()
+?rand_forest() 
 ?randomForest::randomForest
 
 # *** FIX 3 *** ----
