@@ -297,15 +297,15 @@ model_03_linear_glmnet$fit %>%
 # 4.1 DECISION TREES ----
 
 # 4.1.1 Model ----
-?decision_tree
-?rpart::rpart
+?decision_tree 
+?rpart::rpart 
 
-# BEFORE - (mae 1205) 
+# BEFORE - (mae 1205)  
 model_04_tree_decision_tree <- decision_tree(mode = "regression", 
               cost_complexity = 0.01, 
               tree_depth      = 5, 
               min_n           = 10) %>%
-    set_engine("rpart") %>%
+    set_engine("rpart") %>% 
     fit(price ~ ., data = train_tbl %>% select(-id, -model, -model_tier))
 
 model_04_tree_decision_tree %>% calc_metrics(test_tbl)
@@ -352,7 +352,6 @@ model_04_tree_decision_tree$fit %>%
         )
 
 show.prp.palettes()
-
 
 
 # 4.2 RANDOM FOREST ----
@@ -428,7 +427,6 @@ model_05_rand_forest_ranger <- rand_forest(
 model_05_rand_forest_ranger %>% calc_metrics(test_tbl)
 
 
- 
 # 4.2.2 ranger: Feature Importance ----
 
 model_05_rand_forest_ranger$fit %>% 
@@ -490,7 +488,7 @@ model_06_rand_forest_randomForest$fit %>%
         title = "randomForest: Variable Importance",
         subtitle = "Model 06: randomForest Model"
     )
-
+  
 
 # 4.3 XGBOOST ----
 
@@ -509,6 +507,7 @@ model_07_boost_tree_xgboost <- boost_tree(
     fit(price ~ ., data = train_tbl %>% select(-id, -model, -model_tier))
 
 model_07_boost_tree_xgboost %>% calc_metrics(test_tbl)
+
 
 # 4.3.2 Feature Importance ----
 ?xgboost::xgb.importance
@@ -546,7 +545,7 @@ g1 <- bike_features_tbl %>%
         y = "", x = "Category 2"
     )
 
-# 5.1 NEW JEKYLL MODEL ----
+# 5.1 NEW JEKYLL MODEL ----  
 
 new_over_mountain_jekyll <- tibble(
     model = "Jekyll Al 1",
