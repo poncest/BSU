@@ -357,8 +357,8 @@ show.prp.palettes()
 # 4.2 RANDOM FOREST ----
 
 # 4.2.1 Model: ranger ----
-?rand_forest() 
-?ranger::ranger 
+?rand_forest()  
+?ranger::ranger  
 
 # BEFORE (mae 1335)
 model_05_rand_forest_ranger <- rand_forest(mode = "regression") %>% 
@@ -444,6 +444,8 @@ model_05_rand_forest_ranger$fit %>%
 # we know that the `black` feature is important but we don not know about how much 
 # it is important ($) because RF is an ensemble method
 
+ 
+
 # 4.2.3 Model randomForest ----
 ?rand_forest() 
 ?randomForest::randomForest
@@ -459,7 +461,7 @@ model_06_rand_forest_randomForest <- rand_forest("regression") %>%
 
 model_06_rand_forest_randomForest %>% calc_metrics(test_tbl)
 
-# Solution: 
+## Solution: ##  (mae 1429)
 set.seed(1234)
 model_06_rand_forest_randomForest <- rand_forest("regression") %>%
     set_engine("randomForest") %>%
