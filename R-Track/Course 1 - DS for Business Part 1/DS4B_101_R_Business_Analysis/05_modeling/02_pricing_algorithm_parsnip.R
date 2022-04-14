@@ -427,7 +427,7 @@ model_05_rand_forest_ranger <- rand_forest(
 model_05_rand_forest_ranger %>% calc_metrics(test_tbl)
 
 
-# 4.2.2 ranger: Feature Importance ----
+# 4.2.2 ranger: Feature Importance ---- 
 
 model_05_rand_forest_ranger$fit %>% 
     ranger::importance() %>%
@@ -476,9 +476,10 @@ model_06_rand_forest_randomForest %>% calc_metrics(test_tbl)
 # *** END FIX 3 *** ----
 
 
-# 4.2.4 randomForest: Feature Importance ----
+# 4.2.4 randomForest: Feature Importance ---- 
 
 model_06_rand_forest_randomForest$fit %>%
+    # returns the variable of importance
     randomForest::importance() %>%
     as_tibble(rownames = "name") %>%
     arrange(desc(IncNodePurity)) %>%
@@ -489,14 +490,14 @@ model_06_rand_forest_randomForest$fit %>%
     labs(
         title = "randomForest: Variable Importance",
         subtitle = "Model 06: randomForest Model"
-    )
-  
+    ) 
+   
 
-# 4.3 XGBOOST ----
+# 4.3 XGBOOST ---- 
 
-# 4.3.1 Model ----
-?boost_tree
-?xgboost::xgboost
+# 4.3.1 Model ---- 
+?boost_tree 
+?xgboost::xgboost 
 
 set.seed(1234)
 model_07_boost_tree_xgboost <- boost_tree(
