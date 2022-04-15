@@ -491,14 +491,25 @@ model_06_rand_forest_randomForest$fit %>%
         title = "randomForest: Variable Importance",
         subtitle = "Model 06: randomForest Model"
     ) 
-   
-
+    
+ 
 # 4.3 XGBOOST ---- 
+ 
+# 4.3.1 Model ----  
+?boost_tree  
+?xgboost::xgboost  
 
-# 4.3.1 Model ---- 
-?boost_tree 
-?xgboost::xgboost 
+# BEFORE (mae 988)
+set.seed(1234)
+model_07_boost_tree_xgboost <- boost_tree(
+    mode = "regression", 
+) %>%
+    set_engine("xgboost") %>%
+    fit(price ~ ., data = train_tbl %>% select(-id, -model, -model_tier))
 
+model_07_boost_tree_xgboost %>% calc_metrics(test_tbl)
+
+# AFTER (mae 927)
 set.seed(1234)
 model_07_boost_tree_xgboost <- boost_tree(
     mode = "regression", 
@@ -525,12 +536,13 @@ model_07_boost_tree_xgboost$fit %>%
     ggplot(aes(Gain, Feature)) +
     geom_point() +
     labs(
-        title = "XGBoost: Variable Importance",
+        title    = "XGBoost: Variable Importance",
         subtitle = "Model 07: XGBoost Model"
-    )
+    ) +
+    theme_tq()
 
 
-# 5.0 TESTING THE ALGORITHMS OUT ----
+# 5.0 TESTING THE ALGORITHMS OUT ---- 
 
 g1 <- bike_features_tbl %>%
     mutate(category_2 = as_factor(category_2) %>% 
@@ -565,18 +577,19 @@ new_over_mountain_jekyll <- tibble(
     disc       = 0
 ) 
 
-new_over_mountain_jekyll
+new_over_mountain_jekyll 
 
 # Linear Methods ----
 
 predict(model_03_linear_glmnet, new_data = new_over_mountain_jekyll)
+# price = 2433
 
 # Tree-Based Methods ----
 
 predict(model_07_boost_tree_xgboost, new_data = new_over_mountain_jekyll)
+# price = 2315
 
-
-# Iteration
+# Iteration for all models
 models_tbl <- tibble(
     model_id = str_c("Model 0", 1:7),
     model = list(
@@ -592,7 +605,7 @@ models_tbl <- tibble(
 
 models_tbl
 
-# Add Predictions
+# Add Predictions 
 
 predictions_new_over_mountain_tbl <- models_tbl %>%
     mutate(predictions = map(model, predict, new_data = new_over_mountain_jekyll)) %>%
@@ -600,7 +613,7 @@ predictions_new_over_mountain_tbl <- models_tbl %>%
     mutate(category_2 = "Over Mountain") %>%
     left_join(new_over_mountain_jekyll, by = "category_2")
     
-predictions_new_over_mountain_tbl
+predictions_new_over_mountain_tbl 
 
 # Update plot
 
@@ -610,6 +623,8 @@ g2 <- g1 +
     ggrepel::geom_text_repel(aes(label = model_id, y = .pred),
                              size = 3,
                              data = predictions_new_over_mountain_tbl)
+
+g2
 
 # 5.2 NEW TRIATHALON MODEL ----
 
@@ -631,11 +646,13 @@ new_triathalon_slice_tbl <- tibble(
 
 # Linear Methods ----
 predict(model_03_linear_glmnet, new_data = new_triathalon_slice_tbl)
+# price = -241
 
 # Tree-Based Methods ----
 predict(model_07_boost_tree_xgboost, new_data = new_triathalon_slice_tbl)
+# price = 2315
 
-# Iteration
+# Iteration for all models
 predictions_new_triathalon_tbl <- models_tbl %>%
     mutate(predictions = map(model, predict, new_data = new_triathalon_slice_tbl)) %>%
     unnest(predictions) %>%
@@ -650,9 +667,21 @@ g2 +
                data = predictions_new_triathalon_tbl) +
     ggrepel::geom_text_repel(aes(y = .pred, label = model_id), 
                              size = 3,
-                             data = predictions_new_triathalon_tbl)
+                             data = predictions_new_triathalon_tbl) 
 
-# 6.0 ADDITIONAL ADVANCED CONCEPTS ----
+# ALTERNATIVE - highlights in red model y-prediction < 0 
+g2 +
+    geom_point(data = predictions_new_triathalon_tbl, 
+               aes(y = .pred, color = .pred < 0)) +
+    
+    scale_color_manual(values = c("#79b321", "red")) +
+    
+    ggrepel::geom_text_repel(data = predictions_new_triathalon_tbl, 
+                              aes(y = .pred, label = model_id),
+                              size = 3)
+
+
+# 6.0 ADDITIONAL ADVANCED CONCEPTS ---- 
 
 # - CLASSIFICATION - Binary & Multi-Class
 # - ADVANCED ALGORITHMS
@@ -665,7 +694,6 @@ g2 +
 # - AUTOMATIC MACHINE LEARNING - H2O
 
 
-
 # 7.0 BONUS - PREPROCESSING & SVM-Regression ----
 
 library(recipes)
@@ -675,11 +703,28 @@ library(recipes)
 ?prep
 ?bake
 
-train_tbl
+train_tbl 
 
+# BEFORE
 recipe_obj <- recipe(price ~ ., data = train_tbl) %>%
+    # remove variables
+    step_rm(id, model, model_tier) %>% 
+    # preform initial calculations
+    prep()
+
+# applies the prepared recipe to the data set
+bake(recipe_obj, train_tbl) %>% glimpse()
+
+
+
+# AFTER
+recipe_obj <- recipe(price ~ ., data = train_tbl) %>%
+    # remove variables
     step_rm(id, model, model_tier) %>%
-    step_dummy(all_nominal(), one_hot = TRUE) %>%
+    # encode categorical variables
+    # all_nominal() select all categorical vars
+    # one_hot = get all categories as columns
+    step_dummy(all_nominal(), one_hot = TRUE) %>%    
     
     # *** FIX 4 *** ----
     # Error: Assigned data `log(new_data[[col_names[i]]] + object$offset, base = object$base)` must be compatible with existing data.
@@ -690,15 +735,20 @@ recipe_obj <- recipe(price ~ ., data = train_tbl) %>%
     # step_center(price) %>%
     # step_scale(price) %>%
     
+    # price transformations for SVM
+    # logarithmic
     step_log(price, skip = TRUE) %>%
+    # substract the mean of the numeric feature
     step_center(price, skip = TRUE) %>%
+    # shift the fange to (-1, 1)
     step_scale(price, skip = TRUE) %>%
     
     # *** END FIX 4 *** ----
     
+    # preform initial calculations
     prep()
 
-bake(recipe_obj, train_tbl) %>% glimpse()
+bake(recipe_obj, train_tbl) %>% glimpse() 
 
 # *** FIX *** ----
 # - Recipe interface has changed when applying recipes to the target (when skip = TRUE)
