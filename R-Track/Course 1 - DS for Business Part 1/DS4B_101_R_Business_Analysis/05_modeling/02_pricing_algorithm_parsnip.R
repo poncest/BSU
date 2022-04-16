@@ -584,7 +584,7 @@ new_over_mountain_jekyll
 predict(model_03_linear_glmnet, new_data = new_over_mountain_jekyll)
 # price = 2433
 
-# Tree-Based Methods ----
+# Tree-Based Methods ---- 
 
 predict(model_07_boost_tree_xgboost, new_data = new_over_mountain_jekyll)
 # price = 2315
@@ -716,7 +716,6 @@ recipe_obj <- recipe(price ~ ., data = train_tbl) %>%
 bake(recipe_obj, train_tbl) %>% glimpse()
 
 
-
 # AFTER
 recipe_obj <- recipe(price ~ ., data = train_tbl) %>%
     # remove variables
@@ -754,16 +753,20 @@ bake(recipe_obj, train_tbl) %>% glimpse()
 # - Recipe interface has changed when applying recipes to the target (when skip = TRUE)
 # - Need to juice() instead of bake()
 
-# train_transformed_tbl <- bake(recipe_obj, train_tbl)
+train_transformed_tbl <- bake(recipe_obj, train_tbl)
 train_transformed_tbl <- juice(recipe_obj)
 
 # *** END FIX *** ----
 
+# tibble with encoded categorical variables
 test_transformed_tbl  <- bake(recipe_obj, test_tbl)
 
+# tidying a recipe returns information
 tidy(recipe_obj)
-scale  <- tidy(recipe_obj, 5)
-center <- tidy(recipe_obj, 4)
+
+# reverse order ????=
+scale  <- tidy(recipe_obj, 5) # the num = step_number; 5 = scale
+center <- tidy(recipe_obj, 4) # 4 = center
 
 
 # SVM: Radial Basis
@@ -853,4 +856,5 @@ models_tbl <- read_rds("00_models/parsnip_models_tbl.rds")
 recipes_tbl <- read_rds("00_models/recipes_tbl.rds")
 
 calc_metrics <- read_rds("00_scripts/calc_metrics.rds")
+
 
