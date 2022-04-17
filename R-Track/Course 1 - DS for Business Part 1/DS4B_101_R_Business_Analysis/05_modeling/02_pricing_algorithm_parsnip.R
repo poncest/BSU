@@ -770,16 +770,40 @@ center <- tidy(recipe_obj, 4) # 4 = center
 
 
 # SVM: Radial Basis
-?svm_rbf
+?svm_rbf 
 ?kernlab::ksvm
 
 train_transformed_tbl %>% glimpse()
 
-model_08_svm_rbf <- svm_rbf("regression", cost = 10, rbf_sigma = 0.1, margin = 0.25) %>%
+# BEFORE (Training error : 0.091836, mae = 1704)
+model_08_svm_rbf <- svm_rbf("regression") %>%
+    set_engine("kernlab") %>%
+    # the data is now all numeric (0,1)
+    fit(price ~ ., data = train_transformed_tbl) # . = everything
+
+# we need to retransform the data
+model_08_svm_rbf %>%
+    predict(new_data = test_transformed_tbl) %>%
+    # reversing the data (scale, center, and log)
+    mutate(
+        .pred = .pred * scale$value,
+        .pred = .pred + center$value,
+        .pred = exp(.pred)
+    ) %>%
+    bind_cols(test_tbl %>% select(price)) %>%
+    yardstick::metrics(truth = price, estimate = .pred)
+
+
+# AFTER (Training error : 0.075172, mae = 992)
+model_08_svm_rbf <- svm_rbf("regression", 
+                            cost = 10, 
+                            rbf_sigma = 0.1, 
+                            margin = 0.25) %>%
+    
     set_engine("kernlab", scaled = FALSE) %>%
     fit(price ~ ., data = train_transformed_tbl)
 
-model_08_svm_rbf %>%
+model_08_svm_rbf %>% 
     predict(new_data = test_transformed_tbl) %>%
     mutate(
         .pred = .pred * scale$value,
@@ -789,10 +813,11 @@ model_08_svm_rbf %>%
     bind_cols(test_tbl %>% select(price)) %>%
     yardstick::metrics(truth = price, estimate = .pred)
 
-# Predictions
 
+# Predictions (price = 2044)
 bake(recipe_obj, new_data = new_over_mountain_jekyll) %>%
     predict(object = model_08_svm_rbf, new_data = .) %>%
+    # re-transform the data back
     mutate(
         .pred = .pred * scale$value,
         .pred = .pred + center$value,
@@ -815,46 +840,54 @@ bake(recipe_obj, new_data = new_triathalon_slice_tbl) %>%
 
 predictions_new_triathalon_tbl
 
+# comparing 'Endurance Road' price
 bike_features_tbl %>% 
     filter(category_2 == "Endurance Road") %>%
     arrange(price)
 
+## svm seems to be the best model so far
 
 # 8.0 SAVING & LOADING MODELS ----
 
-fs::dir_create("00_models")
+#fs::dir_create("00_models")
+fs::dir_create("R-Track/Course 1 - DS for Business Part 1/DS4B_101_R_Business_Analysis/00_models")
 
 models_tbl <- list(
-    "MODEL_01__LM_SIMPLE"  = model_01_linear_lm_simple,
-    "MODEL_02__LM_COMPLEX" = model_02_linear_lm_complex,
-    "MODEL_03__GLMNET"     = model_03_linear_glmnet,
+    "MODEL_01__LM_SIMPLE"       = model_01_linear_lm_simple,
+    "MODEL_02__LM_COMPLEX"      = model_02_linear_lm_complex,
+    "MODEL_03__GLMNET"          = model_03_linear_glmnet,
     "MODEL_04__DECISION_TREE"   = model_04_tree_decision_tree,
     "MODEL_05__RF_RANGER"       = model_05_rand_forest_ranger,
     "MODEL_06__RF_RANDOMFOREST" = model_06_rand_forest_randomForest,
-    "MODEL_07__XGBOOST" = model_07_boost_tree_xgboost,
-    "MODEL_08__SVM"     = model_08_svm_rbf
+    "MODEL_07__XGBOOST"         = model_07_boost_tree_xgboost,
+    "MODEL_08__SVM"             = model_08_svm_rbf
 ) %>%
+    # turns a list into a data frame (tibble)
     enframe(name = "model_id", value = "model")
 
 models_tbl
 
-models_tbl %>% write_rds("00_models/parsnip_models_tbl.rds")
+# save as rds object
+# models_tbl %>% write_rds("00_models/parsnip_models_tbl.rds")
+models_tbl %>% write_rds("R-Track/Course 1 - DS for Business Part 1/DS4B_101_R_Business_Analysis/00_models/parsnip_models_tbl.rds")
 
+# save recipe object - same as above
 recipes_tbl <- list(
-    "RECIPE_01" = recipe_obj
+    "RECIPE_01" = recipe_obj 
 ) %>%
     enframe(name = "recipe_id", value = "recipe")
 
-recipes_tbl %>% write_rds("00_models/recipes_tbl.rds")
+recipes_tbl %>% write_rds("R-Track/Course 1 - DS for Business Part 1/DS4B_101_R_Business_Analysis/00_models/recipes_tbl.rds")
 
-calc_metrics %>% write_rds("00_scripts/calc_metrics.rds")
+# save metrics (functions > scripts)
+calc_metrics %>% write_rds("R-Track/Course 1 - DS for Business Part 1/DS4B_101_R_Business_Analysis/00_scripts/calc_metrics.rds")
 
-# Reading
+ 
+# Reading 
+models_tbl <- read_rds("R-Track/Course 1 - DS for Business Part 1/DS4B_101_R_Business_Analysis/00_models/parsnip_models_tbl.rds")
 
-models_tbl <- read_rds("00_models/parsnip_models_tbl.rds")
-
-recipes_tbl <- read_rds("00_models/recipes_tbl.rds")
-
-calc_metrics <- read_rds("00_scripts/calc_metrics.rds")
+recipes_tbl <- read_rds("R-Track/Course 1 - DS for Business Part 1/DS4B_101_R_Business_Analysis/00_models/recipes_tbl.rds")
+ 
+calc_metrics <- read_rds("R-Track/Course 1 - DS for Business Part 1/DS4B_101_R_Business_Analysis/00_scripts/calc_metrics.rds")
 
 
