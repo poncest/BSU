@@ -4,7 +4,7 @@ author: "Business Science"
 date: "3/14/2019"
 output:
   html_document:
-    code_folding: none
+    code_folding: show
     df_print: paged
     highlight: tango
     number_sections: yes
@@ -107,11 +107,11 @@ Talk about code - the `tidyverse` is awesome
 
 This is Tab 1
 
-## Tab 2
+## Tab 2 
 
 This is Tab 2
 
-# Images
+# Images 
 
 ![Business Science Logo](img/business-science-logo.png){width="100px"}
 
@@ -128,14 +128,14 @@ Read in data and print to HTML. Notice effect of `df_print: paged` option for HT
 -   Try changing `results = "hide"`.
 
 ```{r}
-# bike_orderlines_tbl <- read_rds('R-Track/Course 1 - DS for Business Part 1/DS4B_101_R_Business_Analysis/00_data/bike_sales/data_wrangled/bike_orderlines.rds')
-# 
-# bike_orderlines_tbl
+# Read bike orderlines data
+path_bike_orderlines <- "../00_data/bike_sales/data_wrangled/bike_orderlines.rds"
+bike_orderlines_tbl <- read_rds(path_bike_orderlines) 
 
-
-read_rds('R-Track/Course 1 - DS for Business Part 1/DS4B_101_R_Business_Analysis/00_data/bike_sales/data_wrangled/bike_orderlines.rds, refhook = NULL')
+bike_orderlines_tbl 
 
 ```
+
 
 We can do data manipulations too. Try changing the YAML `code_folding` option from `none` to `hide` to `show`.
 
@@ -224,4 +224,5 @@ This is some text with a Footnote[^1]. This is a second Footnote[^2].
 
 [^1]: Citation for Footnote 1
 
-[^2]: Citatin for Footnote 2
+[^2]: Citation for Footnote 2
+
