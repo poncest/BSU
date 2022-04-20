@@ -3,6 +3,9 @@ title: "Communication with RMarkdown"
 author: "Business Science"
 date: "3/14/2019"
 output:
+  pdf_document:
+    toc: yes
+    toc_depth: '2'
   html_document:
     code_folding: show
     df_print: paged
@@ -11,9 +14,6 @@ output:
     theme: flatly
     toc: yes
     toc_depth: 2
-  pdf_document:
-    toc: yes
-    toc_depth: '2'
 ---
 
 ```{r setup, include=FALSE}
@@ -80,8 +80,8 @@ library(plotly)
 Free-form text.
 
 Make text **bold**.
-
-Make text *italics*.
+ 
+Make text *italics*. 
 
 Make text ***bold + italics***.
 
@@ -160,7 +160,7 @@ Plotting works as expected. Try changin:
 
 -   Potential gotcha - Interactive plots (e.g. `plotly`) will not display in PDF
 
-**Static Plots:**
+**Static Plots:** 
 
 -   Use `ggplot2`.
 
@@ -193,9 +193,9 @@ g
 ggplotly(g)
 ```
 
-# Tables
+# Tables 
 
-**Static Tables:**
+**Static Tables:** 
 
 -   `knitr` package - `knitr::kable()` - Simple to use, great with PDF
 -   [`gt` package](https://gt.rstudio.com/) - Not on CRAN yet, but really good for static tables
