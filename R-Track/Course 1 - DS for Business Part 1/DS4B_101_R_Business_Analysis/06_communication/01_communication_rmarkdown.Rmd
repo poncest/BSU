@@ -20,8 +20,8 @@ output:
 knitr::opts_chunk$set(
     echo = TRUE,
     eval = TRUE,
-    message = FALSE,
-    warning = FALSE,
+    message = FALSE, 
+    warning = FALSE, 
     dpi = 300,
     fig.align = "center"
     )
@@ -101,11 +101,13 @@ Talk about code - the `tidyverse` is awesome
 
 3.  More points
 
-# Tabset {.tabset .tabset-fade .tabset-pills}
+
+# Tabset {.tabset .tabset-fade .tabset-pills} 
 
 ## Tab 1
 
 This is Tab 1
+**Tab will not work with PDF**
 
 ## Tab 2 
 
@@ -118,7 +120,7 @@ This is Tab 2
 ```{r, out.width="100px", echo=FALSE, fig.cap="Business Science Logo"}
 knitr::include_graphics("img/business-science-logo.png")
 ```
-
+ 
 # Code
 
 Read in data and print to HTML. Notice effect of `df_print: paged` option for HTML.
