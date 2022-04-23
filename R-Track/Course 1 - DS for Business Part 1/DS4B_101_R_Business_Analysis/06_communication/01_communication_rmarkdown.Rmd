@@ -3,6 +3,9 @@ title: "Communication with RMarkdown"
 author: "Business Science"
 date: "3/14/2019"
 output:
+  pdf_document: 
+    toc: yes
+    toc_depth: '2'
   html_document:
     code_folding: show
     df_print: paged
@@ -11,9 +14,6 @@ output:
     theme: flatly
     toc: yes
     toc_depth: 2
-  pdf_document: 
-    toc: yes
-    toc_depth: '2'
 ---
 
 ```{r setup, include=FALSE} 
@@ -189,7 +189,7 @@ g
 
 **Interactive plots:**
 
--   Use `ggplotly()`.
+-   Use `ggplotly()`. 
 
 ```{r, out.height="500px", out.width="100%"}
 
@@ -197,7 +197,7 @@ g
 # ggplotly(g)
 ```
 
-# Tables 
+# Tables  
 
 **Static Tables:** 
 
@@ -218,9 +218,10 @@ table_formatted_tbl %>% knitr::kable()
 -   Can print tables without additional formatting in HTML with the `df_print: paged` option in YAML
 -   Potential Gotcha: Note that this will not print with format in PDF
 
+
 ```{r}
 table_formatted_tbl
-```
+``` 
 
 # Footnotes
 
