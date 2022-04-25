@@ -140,22 +140,33 @@ plot_total_sales(unit = 'week', date_format = '%B %d, %Y', interactive = TRUE)
 
 # 1.4 Test Our Function ----
 plot_total_sales(unit = 'day', date_format = '%B %d, %Y', interactive = TRUE)
-
 plot_total_sales(unit = 'week', date_format = '%B %d, %Y', interactive = TRUE)
-
 plot_total_sales(unit = 'month', date_format = '%B %d, %Y', interactive = TRUE)
-
 plot_total_sales(unit = 'quarter', date_format = '%B %d, %Y', interactive = TRUE)
-
 plot_total_sales(unit = 'year', date_format = '%B %d, %Y', interactive = TRUE)
+
 
 # 2.0 CATEGORY 2 SALES BY MONTH ----
 
 # 2.1 Preparing Time Series Data ----
 
-
+category_2_sales_m_tbl <- bike_orderlines_tbl %>% 
+    select(order_date, category_1, category_2, total_price) %>% 
+    mutate(date_rounded = floor_date(order_date, unit = 'month')) %>% 
+    
+    group_by(date_rounded, category_1, category_2) %>% 
+    summarise(total_sales = sum(total_price)) %>% 
+    ungroup() %>% 
+    
+    mutate(label_text = str_glue("Sales: {scales::dollar(total_sales)}
+                                 Date: {date_rounded %>%  format('%B %Y')}")) %>% 
+    
+    mutate(category_2 = as_factor(category_2) %>% fct_reorder2(date_rounded, total_sales))
+ 
 # 2.2 Interactive Plot ----
 
+# Step 1: Create
+category_2_sales_m_tbl 
 
 
 # Step 2: Use ggplotly()
