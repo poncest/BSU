@@ -166,11 +166,37 @@ category_2_sales_m_tbl <- bike_orderlines_tbl %>%
 # 2.2 Interactive Plot ----
 
 # Step 1: Create
-category_2_sales_m_tbl 
+g2 <- category_2_sales_m_tbl %>% 
+    ggplot(aes( x= date_rounded, y = total_sales, color = category_2)) + 
+    
+    # geoms
+    geom_point(aes(text = label_text),color = '#2C3E50') + 
+    geom_smooth(method = 'loess', span = 0.2) + 
+    
+    # facet
+    facet_wrap(~ category_2, scales = 'free_y', ncol = 3) + 
+    
+    # format
+    expand_limits(y = 0) + 
+    theme_tq() +
+    theme(
+        legend.position = 'none',
+        strip.text = element_text(margin = margin(5,5,5,5), size = 12)
+    )  +
+    
+    scale_y_continuous(labels = scales::dollar_format(scale = 1e-3, suffix = 'K'))+
+    scale_color_tq() + 
+    
+    labs(
+        title = 'Sales by Category 2',
+        x = '',
+        y = ''
+    )
+
 
 
 # Step 2: Use ggplotly()
-
+ggplotly(g2, tooltip = 'text')
 
 
 # 2.3 Plot Categories Function ----
