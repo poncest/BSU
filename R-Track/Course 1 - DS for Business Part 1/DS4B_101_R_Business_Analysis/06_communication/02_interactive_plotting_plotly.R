@@ -201,7 +201,63 @@ ggplotly(g2, tooltip = 'text')
 
 # 2.3 Plot Categories Function ----
 
+plot_catogories <- function(category_1 = 'All', category_2 = 'All',
+                            unit = 'month', date_format = "%B %Y",
+                            ncol = 1, scales = 'free_y',
+                            interactive = TRUE) {
+    
+    # handle data
+    
+    data_tbl <- bike_orderlines_tbl %>% 
+        select(order_date, category_1, category_2, total_price) %>% 
+        mutate(date_rounded = floor_date(order_date, unit = unit)) %>% 
+        
+        group_by(date_rounded, category_1, category_2) %>% 
+        summarise(total_sales = sum(total_price)) %>% 
+        ungroup() %>% 
+        
+        mutate(label_text = str_glue("Sales: {scales::dollar(total_sales)}
+                                 Date: {date_rounded %>%  format(date_format)}")) %>% 
+        
+        mutate(category_2 = as_factor(category_2) %>% fct_reorder2(date_rounded, total_sales))
+    
+    
+    # handle input
+    cat_1_text <- str_to_lower(category_1)
+    cat_2_text <- str_to_lower(category_2)
+    
+    
+    # create filter logic
+    if(cat_1_text != "all") {
+        
+        data_tbl <- data_tbl %>% 
+            filter(category_1 %>% 
+                       str_to_lower() %>% 
+                       str_detect(pattern = cat_1_text))
+    }
+    
+    if(cat_2_text != "all") {
+        
+        data_tbl <- data_tbl %>% 
+            filter(category_2 %>% 
+                       str_to_lower() %>% 
+                       str_detect(pattern = cat_2_text))
+    }
+    
+     
+    # make plot
+    data_tbl
+    
+    # static vs. interactive plot
+    
+    
+}
 
+ # testing formula
+plot_catogories(category_1 = 'ALL', unit = 'week')
+plot_catogories(category_1 = 'Mountain', unit = 'week')
+plot_catogories(category_1 = 'Mountain', category_2 = 'Cross Countr', unit = 'month')\
+plot_catogories(category_1 = 'all', category_2 = 'Cross country|elite|trail ', unit = 'month')
 
 # 2.4 Test Our Function ----
 
