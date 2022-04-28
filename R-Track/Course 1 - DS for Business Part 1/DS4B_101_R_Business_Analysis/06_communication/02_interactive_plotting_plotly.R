@@ -201,7 +201,7 @@ ggplotly(g2, tooltip = 'text')
 
 # 2.3 Plot Categories Function ----
 
-plot_catogories <- function(category_1 = 'All', category_2 = 'All',
+plot_categories <- function(category_1 = 'All', category_2 = 'All',
                             unit = 'month', date_format = "%B %Y",
                             ncol = 1, scales = 'free_y',
                             interactive = TRUE) {
@@ -246,27 +246,60 @@ plot_catogories <- function(category_1 = 'All', category_2 = 'All',
     
      
     # make plot
-    data_tbl
+    g2 <- data_tbl %>% 
+        ggplot(aes( x= date_rounded, y = total_sales, color = category_2)) + 
+        
+        # geoms
+        geom_point(aes(text = label_text),color = '#2C3E50') + 
+        geom_smooth(method = 'loess', span = 0.2) + 
+        
+        # facet
+        facet_wrap(~ category_2, scales = scales, ncol = ncol) + 
+        
+        # format
+        expand_limits(y = 0) + 
+        theme_tq() +
+        theme(
+            legend.position = 'none',
+            strip.text = element_text(margin = margin(5,5,5,5), size = 12)
+        )  +
+        
+        scale_y_continuous(labels = scales::dollar_format(scale = 1e-3, suffix = 'K'))+
+        scale_color_tq() + 
+        
+        labs(
+            title = 'Sales by Category 2',
+            x = '',
+            y = ''
+        )
+    
     
     # static vs. interactive plot
-    
+    if (interactive) {
+        return(ggplotly(g2, tooltip = 'text'))  # interactive
+    } else{
+        return(g2)                               # static
+    } 
     
 }
 
- # testing formula
-plot_catogories(category_1 = 'ALL', unit = 'week')
-plot_catogories(category_1 = 'Mountain', unit = 'week')
-plot_catogories(category_1 = 'Mountain', category_2 = 'Cross Countr', unit = 'month')\
-plot_catogories(category_1 = 'all', category_2 = 'Cross country|elite|trail ', unit = 'month')
+
 
 # 2.4 Test Our Function ----
+plot_categories(category_1 = 'ALL', unit = 'week')
+plot_categories(category_1 = 'Mountain', unit = 'week')
+plot_categories(category_1 = 'Mountain', category_2 = 'Cross Countr', unit = 'month')
 
 
+plot_categories(category_1 = 'All', category_2 = 'All', unit = 'month',
+                ncol = 2, scales = 'free_y')
 
 
 # 3.0 SAVE FUNCTIONS ----
 
+fs::file_create('R-Track/Course 1 - DS for Business Part 1/DS4B_101_R_Business_Analysis/00_scripts/plot_sales.R')
 
+dump(list = c('plot_total_sales', 'plot_categories'), file = 'R-Track/Course 1 - DS for Business Part 1/DS4B_101_R_Business_Analysis/00_scripts/plot_sales.R')
 
 
 
