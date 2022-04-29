@@ -17,25 +17,48 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(
+    echo = FALSE,             # hide code
+    message = FALSE,
+    warning =  FALSE,
+    out.width = '100%',       # figure size
+    out.height = '500px',       # figure size
+    fig.align = 'center',
+    dpi = 300
+    )
+``` 
+
+```{r libraries}
+library(pacman)
+p_load(tidyverse, lubridate, tidyquant, plotly)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r scripts}
+source('../00_scripts/plot_sales.R')
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+bike_orderlines_tbl <- read_rds('../00_data/bike_sales/data_wrangled/bike_orderlines.rds')
+bike_orderlines_tbl
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+# Total Sales Chart {.tabset .tabset-fade .tabset-pills}
+
+## Quarterly Sales Trend
+
+```{r}
+plot_total_sales(unit = 'quarter')
+```
+
+## Montly Sales Trend
+
+```{r}
+plot_total_sales(unit = 'month')
+``` 
+
+
+## Weekly Sales Trend
+
+```{r}
+plot_total_sales(unit = 'week', date_format = '%Y-%m-%d')
+``` 
