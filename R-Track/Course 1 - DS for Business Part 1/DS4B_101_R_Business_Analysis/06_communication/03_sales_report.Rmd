@@ -62,3 +62,10 @@ plot_total_sales(unit = 'month')
 ```{r}
 plot_total_sales(unit = 'week', date_format = '%Y-%m-%d')
 ``` 
+
+
+
+
+
+
+
