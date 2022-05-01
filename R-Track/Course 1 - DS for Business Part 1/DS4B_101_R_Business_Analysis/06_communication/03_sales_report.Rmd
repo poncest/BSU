@@ -3,6 +3,9 @@ title: "Sales Report"
 author: "Steven Ponce"
 date: "2022-02-28"
 output:
+  pdf_document:
+    toc: yes
+    toc_depth: '2'
   html_document:
     code_folding: show
     df_print: paged
@@ -11,9 +14,6 @@ output:
     toc: yes
     toc_depth: 2
     number_sections: yes
-  pdf_document:
-    toc: yes
-    toc_depth: '2'
 ---
 
 ```{r setup, include=FALSE}
@@ -27,6 +27,11 @@ knitr::opts_chunk$set(
     dpi = 300
     )
 ``` 
+
+```{r}
+# HTML = True; PDF = False
+interactive <- FALSE
+```
 
 ```{r libraries}
 library(pacman)
@@ -47,25 +52,56 @@ bike_orderlines_tbl
 ## Quarterly Sales Trend
 
 ```{r}
-plot_total_sales(unit = 'quarter')
+plot_total_sales(unit = 'quarter', interactive = interactive)
 ```
 
 ## Montly Sales Trend
 
 ```{r}
-plot_total_sales(unit = 'month')
+plot_total_sales(unit = 'month', interactive = interactive)
 ``` 
 
 
 ## Weekly Sales Trend
 
 ```{r}
-plot_total_sales(unit = 'week', date_format = '%Y-%m-%d')
+plot_total_sales(unit = 'week', date_format = '%Y-%m-%d', interactive = interactive)
 ``` 
 
 
+# Category Sales Charts {.tabset .tabset-fade .tabset-pills}
 
+## Road {.tabset .tabset-fade}
 
+### Quarterly
+```{r, fig.height=8}
+plot_categories(category_1 = 'Road', unit = 'quarter',  ncol = 1, interactive = interactive)
+```
 
+### Monthly
+```{r, fig.height=8}
+plot_categories(category_1 = 'Road', unit = 'month',  ncol = 1, interactive = interactive)
+```
 
+### Weekly
+```{r, fig.height=8}
+plot_categories(category_1 = 'Road', unit = 'month',  date_format = '%Y-%m-%d', ncol = 1, interactive = interactive)
+```
+
+## Mountain {.tabset .tabset-fade}
+
+### Quarterly
+```{r, fig.height=8}
+plot_categories(category_1 = 'Mountain', unit = 'quarter',  ncol = 1, interactive = interactive)
+```
+
+### Monthly
+```{r, fig.height=8}
+plot_categories(category_1 = 'Mountain', unit = 'month',  ncol = 1, interactive = interactive)
+```
+
+### Weekly
+```{r, fig.height=8}
+plot_categories(category_1 = 'Mountain', unit = 'month',  date_format = '%Y-%m-%d', ncol = 1, interactive = interactive)
+```
 
