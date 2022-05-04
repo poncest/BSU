@@ -24,7 +24,7 @@ library(tidyverse)
 library(tidyquant)
 library(parsnip)
 library(plotly)
-```
+``` 
 
 ```{r}
 source('../00_scripts/separete_bikes_and_outlier_detection.R')

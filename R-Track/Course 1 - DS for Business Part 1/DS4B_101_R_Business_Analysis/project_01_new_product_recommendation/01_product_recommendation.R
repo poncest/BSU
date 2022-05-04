@@ -39,10 +39,23 @@ get_bike_features()
 plot_bike_features <- function(interactive = TRUE) {
     
     # DATA MANIPULATION
-    
+    bike_feature_tbl <- get_bike_features()
     
     # VISUALIZATION
-    
+    bike_feature_tbl %>% 
+        
+        mutate(category_2 = fct_reorder(category_2, price)) %>% 
+        
+        mutate(lable_text = str_glue("Model: {model}
+                                     Price: {scales::dollar(price)}")) %>% 
+        
+        ggplot(aes(x = category_2, y = price)) +
+        geom_violin() +
+        geom_jitter(width = 0.1, color = '#2C3E50', alpha = 0.5) +
+        facet_wrap(~ frame_material) + 
+        coord_flip()  +
+        
+
     
 }
 
