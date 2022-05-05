@@ -42,31 +42,60 @@ plot_bike_features <- function(interactive = TRUE) {
     bike_feature_tbl <- get_bike_features()
     
     # VISUALIZATION
-    bike_feature_tbl %>% 
+    g <- bike_feature_tbl %>% 
         
         mutate(category_2 = fct_reorder(category_2, price)) %>% 
         
-        mutate(lable_text = str_glue("Model: {model}
+        mutate(label_text = str_glue("Model: {model}
                                      Price: {scales::dollar(price)}")) %>% 
         
         ggplot(aes(x = category_2, y = price)) +
-        geom_violin() +
-        geom_jitter(width = 0.1, color = '#2C3E50', alpha = 0.5) +
-        facet_wrap(~ frame_material) + 
-        coord_flip()  +
         
-
+        geom_violin() +
+        
+        geom_jitter(aes(text = label_text), width = 0.1, color = '#2C3E50', alpha = 0.5) +
+        
+        facet_wrap(~ frame_material) + 
+        coord_flip() +
+        
+        scale_y_continuous(labels = scales::dollar_format()) +
+        
+        labs(
+            title = 'Prodruct Gap Analysis',
+            subtitle = '',
+            x = '',
+            y = ''
+        ) +
+        
+        theme_tq(14) +
+        
+        theme(
+            plot.margin   = margin(t = 10, r = 20, b = 10, l = 20),
+            strip.text    = element_text(margin = margin(5,5,5,5, unit = 'pt')),
+            plot.title    = element_text(face = "bold", size = 20, margin = margin(t = 10, b = 5)),
+        ) 
+         
     
+    # INTERACTIVE vs. STATIC
+    
+    if (interactive) {
+        ggplotly(g, tooltip = 'text')
+        
+    } else {
+        return(g)
+    }
 }
 
 plot_bike_features()
 plot_bike_features(interactive = FALSE)
-
+plot_bike_features(interactive = TRUE)
 
 # 3.0 SAVE FUNCTIONS ----
 
 function_names <- c("get_bike_features", "plot_bike_features")
 
 dump(function_names, file = "R-Track/Course 1 - DS for Business Part 1/DS4B_101_R_Business_Analysis/00_scripts/plot_product_recommendation.R")
+
+
 
 

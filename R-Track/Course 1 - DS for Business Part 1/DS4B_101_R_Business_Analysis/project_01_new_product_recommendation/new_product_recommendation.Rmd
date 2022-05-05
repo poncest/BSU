@@ -8,7 +8,7 @@ output:
     theme: flatly
   pdf_document: default
 params:
-  interactive: FALSE
+  interactive: TRUE
 ---
 
 ```{r setup, include=FALSE}
@@ -24,7 +24,8 @@ library(tidyverse)
 library(tidyquant)
 library(parsnip)
 library(plotly)
-``` 
+```         
+
 
 ```{r}
 source('../00_scripts/separete_bikes_and_outlier_detection.R')
@@ -60,10 +61,15 @@ get_bike_features()
 
 ### Gaps
 
-__TODO: INSERT GAP ANALYSIS SUMMARY AND VISUALIZATION__
+This visualization segments the full bicycle product line by category and frame material.  This exposes two product gaps:
+
+1. New **Aluminum** line of bikes in the **Over Mountain Category**
+
+2. New **Aluminum** line of bikes in the **Triathlon**
+
 
 ```{r, out.height="600px"}
-
+plot_bike_features(interactive = params$interactive)
 ```
 
 \newpage
