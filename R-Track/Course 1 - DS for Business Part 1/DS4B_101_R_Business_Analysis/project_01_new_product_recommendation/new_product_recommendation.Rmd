@@ -3,12 +3,12 @@ title: "Product Pricing Algorithm"
 author: "Business Science"
 date: "3/19/2019"
 output:
-  html_document:
+  html_document: 
     df_print: paged
     theme: flatly
   pdf_document: default
 params:
-  interactive: TRUE
+  interactive: TRUE 
 ---
 
 ```{r setup, include=FALSE}
@@ -46,14 +46,28 @@ Research and Development wants help to determine new product ideas and pricing u
 
 ## Solution Summary
 
-__TODO: INSERT SOLUTION SUMMARY__
+We've identified several product gaps in the existing product line including:
+
+1. Aluminum Over Mountain
+
+2. Aluminum Triathalon
+
+The Data Science Team has develop a pricing model that uses predictive analytics to estimate the price of the new bicycle models based on the existing fleet. This ensure that new models are priced comparativeky to other similar bicycles.
+
+New product prediction for 2 new models:
+
+1. Trigger, Over Mountain with Aluminum Frame: $2,508
+
+2. Slice, Triathalon with Aluminum Frame: $2,231
+
+**Next Steps:** Integrate the model into a proof-of-concept web aplication that can be deployed to the R&D department.
 
 
 ## Gap Analysis
 
 ### Bike List
 
-__TODO: INSERT BIKE LIST__
+Our current product portfolio consist of 97 bike models that are analyzed.
 
 ```{r}
 get_bike_features()
@@ -71,11 +85,17 @@ This visualization segments the full bicycle product line by category and frame 
 ```{r, out.height="600px"}
 plot_bike_features(interactive = params$interactive)
 ```
-
+ 
 \newpage
 ## Price Prediction
 
-__TODO: INSERT PRICE PREDICTION SUMMARY AND TABLE__
+New product prediction for 2 new models:
+
+1. Trigger, Over Mountain with Aluminum Frame: $2,508
+
+2. Slice, Triathalon with Aluminum Frame: $2,231
+
+
 
 ```{r}
 # CREATE NEW MODELS
@@ -111,16 +131,33 @@ new_triathalon_slice_tbl <- tibble(
 
 new_bikes_tbl <- bind_rows(new_over_mountain_trigger, 
                            new_triathalon_slice_tbl)
+
+# new_bikes_tbl
 ```
 
 ```{r}
 # GET XGBOOST MODEL
 
+model_07_xgboost <- models_tbl %>% 
+    filter(model_id %>% str_detect('XGBOOST')) %>% 
+    pull(model) %>% 
+    # extract the 1st element of the list
+    pluck(1)  
 ```
+
 
 ```{r}
 # OUTPUT PREDICTIONS IN A TABLE
 
+model_07_xgboost %>% 
+    predict(new_bikes_tbl) %>% 
+    mutate(.pred = scales::dollar(.pred, accuracy = 1)) %>% 
+    bind_cols(new_bikes_tbl) %>% 
+    gather(key = 'New Model Attribute', value = 'value', -model, factor_key = TRUE) %>% 
+    spread(key = model, value = value) #%>% 
+    
+    # for PDF report, we can use
+    # knitr::kable()
 ```
 
 
