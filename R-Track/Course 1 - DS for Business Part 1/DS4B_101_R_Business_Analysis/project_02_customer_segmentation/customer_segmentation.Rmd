@@ -35,16 +35,16 @@ bike_orderlines_tbl <- read_rds("../00_data/bike_sales/data_wrangled/bike_orderl
 ```
 
 ```{r}
-# source("../00_scripts/plot_customer_segmentation.R")
+source("../00_scripts/plot_customer_segmentation.R")
 ```
 
 
 ## Problem Statement
 
-Marketing would like to increase email campaign engagement by segmenting the customer-base using their buying habbits. 
+Marketing would like to increase email campaign engagement by segmenting the customer-base using their buying habits. 
 
 ## Solution Summary
-
+ 
 __TODO: INSERT ANALYSIS AND HEAT MAP__
 
 
@@ -52,11 +52,11 @@ __TODO: INSERT ANALYSIS AND HEAT MAP__
 
 ### Heat Map
 
-__TODO: INSERT ANALYSIS AND HEAT MAP__
+Our customer-base consists of 30 bike shops. Several customers have purchasing preference for Road or Mountain Bikes based on the proportion of bikes purchased by category_1 and category_2.
 
 ```{r, fig.height=12}
 # PLOT CUSTOMER HEAT MAP
-
+plot_customer_heatmap(interactive = params$interactive)
 ```
 
 ### Customer Segmentation

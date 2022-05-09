@@ -73,7 +73,7 @@ plot_customer_heatmap <- function(interactive = TRUE) {
             labs(x = "Bike Type (Category 2)", y = "Customer")
         
         return(g)
-        
+         
     }
     
 }
@@ -87,11 +87,33 @@ plot_customer_heatmap(interactive = FALSE)  # static
 get_customer_segments <- function(k = 4, seed = 123) {
     
     # 1.0 CUSTOMER TRENDS
+    customer_trends_tbl <- bike_orderlines_tbl %>% 
+        
+        select(bikeshop_name, price, model, category_1, 
+               category_2, frame_material, quantity) %>% 
+        
+        group_by_at(vars(bikeshop_name:frame_material)) %>% 
+        summarise(total_qty = sum(quantity)) %>% 
+        ungroup() %>% 
+        
+        group_by(bikeshop_name) %>% 
+        mutate(pct = total_qty / sum(total_qty)) %>% 
+        ungroup()
     
     
+    customer_product_tbl <- customer_trends_tbl %>% 
+        select(bikeshop_name, model, pct) %>% 
+        spread(key = model, value = pct, fill = 0)
     
     # 2.0 MODELING: K-MEANS CLUSTERING
+    set.seed(seed)
+    kmeans_obj <- customer_product_tbl %>% 
+        select(-bikeshop_name) %>% 
+        kmeans(centers = k, nstart = 100)
     
+    kmeans_tbl <- kmeans_obj %>% 
+        augment(customer_product_tbl) %>% 
+        select(bikeshop_name, .cluster)
     
     # 3.0 UMAP
     
@@ -148,4 +170,5 @@ plot_customer_behavior_by_cluster(top_n_products = 10,
 function_names <- c("get_customer_segments", "plot_customer_segments",
                     "plot_customer_heatmap", "plot_customer_behavior_by_cluster")
 
-dump(function_names, file = "00_scripts/plot_customer_segmentation.R")
+dump(function_names, file = "./R-Track/Course 1 - DS for Business Part 1/DS4B_101_R_Business_Analysis/00_scripts/plot_customer_segmentation.R")
+
