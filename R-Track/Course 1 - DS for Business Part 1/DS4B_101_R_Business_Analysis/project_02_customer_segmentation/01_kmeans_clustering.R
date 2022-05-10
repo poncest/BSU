@@ -116,12 +116,34 @@ get_customer_segments <- function(k = 4, seed = 123) {
         select(bikeshop_name, .cluster)
     
     # 3.0 UMAP
+    umap_configuration <- umap.defaults
+    umap_configuration$random_state <- seed
+
+    upmap_obj <- customer_product_tbl %>% 
+        select(-bikeshop_name) %>% 
+        as.matrix() %>% 
+        umap(config = umap_configuration) 
     
+    umap_tbl <- upmap_obj %>% 
+        pluck('layout') %>% 
+        as_tibble() %>% 
+        set_names(c('X', 'Y')) %>% 
+        bind_cols(customer_product_tbl %>% select(bikeshop_name))
+
     
-    # 4.0 COMBINE UMAP & K-MEANS
+        # 4.0 COMBINE UMAP & K-MEANS
+    combined_tbl <- umap_tbl %>% 
+        left_join(kmeans_tbl, by = 'bikeshop_name') %>% 
+        mutate(label_text = str_glue("Customer: {bikeshop_name}
+                                    Cluster: {.cluster}"))
     
-    
-}
+    return(combined_tbl)
+} 
+
+# testing function
+get_customer_segments(k = 4, seed = 123)
+
+
 
 plot_customer_segments <- function(k = 4, seed = 123, interactive = TRUE) {
     

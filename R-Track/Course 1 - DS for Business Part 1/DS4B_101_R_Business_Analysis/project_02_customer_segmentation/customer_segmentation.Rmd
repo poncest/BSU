@@ -49,7 +49,7 @@ __TODO: INSERT ANALYSIS AND HEAT MAP__
 
 
 ## Customer Preferences
-
+ 
 ### Heat Map
 
 Our customer-base consists of 30 bike shops. Several customers have purchasing preference for Road or Mountain Bikes based on the proportion of bikes purchased by category_1 and category_2.
