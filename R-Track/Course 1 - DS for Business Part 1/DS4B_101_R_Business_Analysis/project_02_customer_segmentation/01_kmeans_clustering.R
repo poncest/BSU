@@ -147,17 +147,41 @@ get_customer_segments(k = 4, seed = 123)
 
 plot_customer_segments <- function(k = 4, seed = 123, interactive = TRUE) {
     
-    # DATA MANIPULATION
-    
+    # DATA MANIPULATION 
+    combined_tbl <- get_customer_segments(k = k, seed = seed)
     
     # VISUALIZATION
+    g <- combined_tbl %>% 
+        
+        ggplot(aes(X, Y, color = .cluster)) +
+        
+        # geoms
+        geom_point(aes(text = label_text)) + 
+        
+        # format
+        labs(
+            title    = 'Customer Segmentation: 2D Projection',
+            subtitle = 'UMAP 2D Projection with K-Means Cluster Assigment'
+        ) +
+        
+       scale_color_tq() +
+       theme_tq() + 
+       theme(legend.position = 'none')    
     
-    
-    # INTERACTIVE VS STATIC
-    
-    
-}
 
+    # INTERACTIVE VS STATIC
+    if (interactive) {
+        ggplotly(g, tooltip = 'text')
+        
+    } else {
+        g + 
+            geom_label_repel(aes(label = label_text),
+                             size = 2.5)
+    }
+     
+} 
+
+# testing function
 plot_customer_segments(k = 4, seed = 123, interactive = TRUE)
 plot_customer_segments(k = 4, seed = 123, interactive = FALSE)
 
