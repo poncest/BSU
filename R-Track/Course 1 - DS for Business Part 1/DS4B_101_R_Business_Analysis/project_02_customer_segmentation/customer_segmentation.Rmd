@@ -3,7 +3,11 @@ title: "Customer Segmentation"
 author: "Business Science"
 date: "3/19/2019"
 output:
-  html_document:
+  html_document: 
+    toc: TRUE
+    number_sections: FALSE
+    highlight: tango
+    code_folding: hide
     df_print: paged
     theme: flatly
   pdf_document: default
@@ -61,13 +65,13 @@ plot_customer_heatmap(interactive = params$interactive)
 
 ### Customer Segmentation
 
-__TODO: INSERT ANALYSIS AND HEAT MAP__
+This is a 2D Projection based on customer similarity that exposes 4 clusters, which are key segments in the customer base.
 
 ```{r, fig.height=5, fig.width=7}
 # PLOT CUSTOMER SEGMENTS
-
+plot_customer_segments(k = 4, seed = 123, interactive = params$interactive)
 ```
-
+ 
 
 ### Customer Preferences By Segment
 

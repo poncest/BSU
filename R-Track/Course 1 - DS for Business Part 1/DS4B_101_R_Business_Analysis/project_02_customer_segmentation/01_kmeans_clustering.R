@@ -193,14 +193,15 @@ plot_customer_behavior_by_cluster <- function(top_n_products = 10,
                                               interactive = TRUE) {
     
     # DATA MANIPULATION
-    
+    combined_tbl <- get_customer_segments(k = k, seed = seed)
      
     # VISUALIZATION
-    
+    combined_tbl %>% 
+        ggplot(aes(X, Y, color = .cluster))
     
     # INTERACTIVE VS STATIC
     
-    
+     
 }
 
 plot_customer_behavior_by_cluster(top_n_products = 10, 
