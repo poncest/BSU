@@ -160,12 +160,89 @@ function(top_n_products = 10,
                                               interactive = TRUE) {
     
     # DATA MANIPULATION
-    
+    combined_tbl <- get_customer_segments(k = k, seed = seed)
      
+    top_n_tbl <- bike_orderlines_tbl %>% 
+        select(bikeshop_name, model, category_1,category_2, price, quantity) %>% 
+        
+        group_by_at(.var = vars(bikeshop_name:price)) %>% 
+        summarise(total_qty = sum(quantity)) %>% 
+        ungroup() %>% 
+        
+        # top 10 products
+        group_by(bikeshop_name) %>% 
+        #.by_group - If TRUE, will sort first by grouping variable. 
+        # Applies to grouped data frames only.
+        arrange(desc(total_qty), .by_group = TRUE) %>% 
+        slice(1:top_n_products) %>% 
+        ungroup() %>% 
+        
+        left_join(
+            combined_tbl %>% select(bikeshop_name, .cluster), by = 'bikeshop_name'
+        ) %>% 
+        
+        # labels
+        mutate(label_text = str_glue("Bikeshop: {bikeshop_name}
+                                     Model: {model}
+                                     Category 1: {category_1}
+                                     Category 2: {category_2}
+                                     Price: {scales::dollar(price)}"))
+    
+    
     # VISUALIZATION
     
-    
+    # New facet label names for .cluster variable
+    new_labels <- c("1" = "Cluster 1", 
+                    "2" = "Cluster 2", 
+                    "3" = "Cluster 3", 
+                    "4" = "Cluster 4")
+
+    g <- top_n_tbl %>% 
+        ggplot(aes(x = category_1, y = price, color = .cluster)) +
+        
+        # geoms
+        geom_violin() +
+        
+        geom_jitter(aes(text = label_text),
+                    width = 0.2, alpha = 0.5, size = 2) +
+        
+        facet_wrap(~ .cluster, labeller = labeller(.cluster = new_labels)) + 
+        #coord_flip() + 
+        
+        # format
+        theme_tq(12) + 
+        theme(
+            legend.position = 'none',
+            strip.text = element_text(margin = margin(5,5,5,5, unit = 'pt'),
+                                      size = 16), 
+             ) +
+        
+        scale_color_tq() + 
+        scale_y_log10(labels = scales::dollar_format(accuracy = 1)) +
+        
+        # labs
+        labs(
+            title = str_glue("Top {top_n_products} Bike Models by Customer and Cluster"),
+            subtitle = '',
+            x = 'Category 1',
+            y = 'Price (Log Scale)'
+        )
+     
     # INTERACTIVE VS STATIC
-    
-    
+    if (interactive) {
+        ggplotly(g, tooltip = 'text')  
+            
+        # layout(
+        # title = list(
+        #     text = list(
+        #         text = str_glue("Top {top_n_products} Bike Models, by Customer and Cluster",
+        #                         '<br>', 
+        #                         '<sup>', 
+        #                         '',
+        #                         '</sup>'))))
+
+        
+        } else {
+            return(g)
+    }
 }

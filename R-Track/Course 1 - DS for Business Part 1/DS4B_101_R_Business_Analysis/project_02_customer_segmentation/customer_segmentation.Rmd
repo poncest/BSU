@@ -3,11 +3,10 @@ title: "Customer Segmentation"
 author: "Business Science"
 date: "3/19/2019"
 output:
-  html_document: 
+  html_document:  
     toc: TRUE
     number_sections: FALSE
     highlight: tango
-    code_folding: hide
     df_print: paged
     theme: flatly
   pdf_document: default
@@ -49,7 +48,15 @@ Marketing would like to increase email campaign engagement by segmenting the cus
 
 ## Solution Summary
  
-__TODO: INSERT ANALYSIS AND HEAT MAP__
+The data science team has identified 4 customer segments. The 4 customer segments were given descriptions based on the customer's top product purchases. 
+
+1. __Segment 1 Preferences:__ Mountain Bikes, Above $3200 (Premium Models)
+
+2. __Segment 2 Preferences:__ Road Bikes, Above $3200 (Premium Models)
+
+3. __Segment 3 Preferences:__ Road Bikes, Below $3200 (Economical Models)
+
+4. __Segment 4 Preferences:__ Both Road and Mountain, Below $3200 (Economical Models)
 
 
 ## Customer Preferences
@@ -75,10 +82,22 @@ plot_customer_segments(k = 4, seed = 123, interactive = params$interactive)
 
 ### Customer Preferences By Segment
 
-__TODO: INSERT ANALYSIS AND HEAT MAP__
+The 4 customer segments were given descriptions based on the customer's top product purchases. 
+
+1. __Segment 1 Preferences:__ Mountain Bikes, Above $3200 (Premium Models)
+
+2. __Segment 2 Preferences:__ Road Bikes, Above $3200 (Premium Models)
+
+3. __Segment 3 Preferences:__ Road Bikes, Below $3200 (Economical Models)
+
+4. __Segment 4 Preferences:__ Both Road and Mountain, Below $3200 (Economical Models)
 
 ```{r, fig.height=8}
 # PLOT CUSTOMER BEHAVIOR
-
+plot_customer_behavior_by_cluster(top_n_products = 5,
+                                  k    = 4,
+                                  seed = 123,
+                                  interactive = params$interactive
+                                  )
 ```
 
