@@ -20,4 +20,4 @@ make_project_dir <- function() {
     dir_create(dir_names)
     
     dir_ls()
-}
+} 

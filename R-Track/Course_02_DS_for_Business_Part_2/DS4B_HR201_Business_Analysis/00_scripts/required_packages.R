@@ -1,4 +1,7 @@
-pkgs <- c(
+
+
+# Specify your packages
+my_packages <- c(
     "h2o",        # High performance machine learning
     "lime",       # Explaining black-box models
     "recipes",    # Creating ML preprocessing recipes
@@ -13,4 +16,10 @@ pkgs <- c(
     "writexl"     # Writing to excel files
 )
 
-install.packages(pkgs)
+
+# Extract not installed packages                    
+not_installed <- my_packages[!(my_packages %in% installed.packages()[ , "Package"])]    
+
+# Install not installed packages
+if(length(not_installed)) install.packages(not_installed)                               
+
