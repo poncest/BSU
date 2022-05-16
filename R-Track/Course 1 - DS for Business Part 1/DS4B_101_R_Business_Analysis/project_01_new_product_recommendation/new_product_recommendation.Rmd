@@ -1,12 +1,14 @@
 ---
 title: "Product Pricing Algorithm"
-author: "Business Science"
-date: "3/19/2019"
+author: "Steven Ponce - Business Science Part 1"
+date: "2022-05-02"         ## `r Sys.Date()` current date 
 output:
   html_document: 
+    toc: TRUE
     df_print: paged
     theme: flatly
-  pdf_document: default
+    highlight: tango
+    pdf_document: default
 params:
   interactive: TRUE 
 ---
@@ -159,12 +161,4 @@ model_07_xgboost %>%
     # for PDF report, we can use
     # knitr::kable()
 ```
-
-
-
-
-
-
-
-
 
