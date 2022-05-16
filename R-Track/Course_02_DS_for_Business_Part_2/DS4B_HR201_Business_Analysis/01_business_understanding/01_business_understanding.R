@@ -1,0 +1,77 @@
+
+# Libraries
+library(pacman)
+p_load(tidyverse, tidyquant, readxl)
+
+# Load Data
+# train
+path_train <- './R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/00_data/telco_train.xlsx'
+
+train_raw_tbl <- read_excel(path_train, sheet = 1)
+
+# # test
+# path_test <- './R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/00_data/telco_test.xlsx'
+# 
+# test_tbl <- read_excel(path_test, sheet = 1)
+
+
+# Data Subset
+dept_job_role_tbl <- train_raw_tbl %>% 
+    select(EmployeeNumber, Department, JobRole, PerformanceRating, Attrition)
+
+dept_job_role_tbl
+
+# 1. Business Science Problem Framework ----
+
+# 1A. View Business as Machine ----
+
+# BSU's Department and Job Role
+# Define Objectives
+# Asses Outcomes: TBD
+
+
+dept_job_role_tbl %>% 
+    group_by(Attrition) %>% 
+    summarise(n = n()) %>% 
+    ungroup() %>% 
+    mutate(pct = n / sum(n))
+
+# 1B. Understand the Drivers ----
+
+# Investigate Objectives: 16% Attrition
+# Synthesize Outcomes: High Counts and High Percentages
+# Hypothesize Drivers: Job Role and Departments
+
+# Department ----
+dept_job_role_tbl %>% 
+    
+    group_by(Department, Attrition) %>% 
+    summarise(n = n()) %>% 
+    ungroup() %>% 
+    
+    group_by(Department) %>% 
+    mutate(pct = n / sum(n)) %>% 
+    ungroup()
+
+# Job Role ----
+dept_job_role_tbl %>% 
+    
+    group_by(Department, JobRole, Attrition) %>% 
+    summarise(n = n()) %>% 
+    ungroup() %>% 
+    
+    group_by(Department, JobRole) %>% 
+    mutate(pct = n / sum(n)) %>% 
+    ungroup() %>% 
+     
+    filter(Attrition %in% 'Yes')
+
+
+# 1C. Measure the Drivers ----
+
+# Collect Information on Employees Attrition: on going
+
+# Develop KPI's
+
+glimpse(train_raw_tbl)
+
