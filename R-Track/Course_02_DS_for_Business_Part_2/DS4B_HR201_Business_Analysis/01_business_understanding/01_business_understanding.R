@@ -71,7 +71,23 @@ dept_job_role_tbl %>%
 
 # Collect Information on Employees Attrition: on going
 
-# Develop KPI's
+# Develop KPI's: Industry KPI's 8.8%
 
-glimpse(train_raw_tbl)
-
+dept_job_role_tbl %>% 
+    
+    group_by(Department, JobRole, Attrition) %>% 
+    summarise(n = n()) %>% 
+    ungroup() %>% 
+    
+    group_by(Department, JobRole) %>% 
+    mutate(pct = n / sum(n)) %>% 
+    ungroup() %>% 
+    
+    filter(Attrition %in% 'Yes') %>% 
+    arrange(desc(pct)) %>% 
+    
+    mutate(above_industry_avg = case_when(
+        pct > 0.088 ~ 'Yes',
+        TRUE ~ 'No'
+    ))
+ 
