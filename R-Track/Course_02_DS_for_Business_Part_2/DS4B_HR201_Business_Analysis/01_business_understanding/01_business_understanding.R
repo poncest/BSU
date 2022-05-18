@@ -91,3 +91,32 @@ dept_job_role_tbl %>%
         TRUE ~ 'No'
     ))
  
+# 1.D Uncover Problems & Opportunities ----
+
+calculate_attrition_cost <- function(
+    
+    # Employees
+    n                         = 1,
+    salary                    = 80000,
+    
+    # Direct Cost
+    separation_cost           = 500,
+    vacancy_cost              = 10000,
+    acquisition_cost          = 4900,
+    placement_cost            = 3500,
+    
+    # Productivity Cost
+    net_revenue_per_employee  = 250000,
+    workdays_per_year         = 240,
+    workdays_position_open    = 40,
+    workdays_onboarding       = 60,
+    onboarding_efficiency     = 0.5
+    
+) {
+    
+
+} {
+    
+    
+}
+
