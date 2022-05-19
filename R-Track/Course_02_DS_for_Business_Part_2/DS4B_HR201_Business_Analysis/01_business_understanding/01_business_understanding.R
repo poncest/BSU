@@ -114,9 +114,27 @@ calculate_attrition_cost <- function(
     
 ) {
     
+    # Direct Costs
+    direct_cost <- sum(separation_cost, vacancy_cost, acquisition_cost, placement_cost)
+    
+    # Lost Productivity Cost
+    productivity_cost <- net_revenue_per_employee / workdays_per_year * (workdays_position_open + workdays_onboarding * onboarding_efficiency)
+        
+    # Savings of Salary & Benefits (Cost Reduction)
+    salary_benefit_reduction <- salary / workdays_per_year *workdays_position_open
+    
+    # Estimated Turnover Per Employee
+    cost_per_employee <- direct_cost + productivity_cost - salary_benefit_reduction
+    
+    # Total cost of Employee Turnover
+    total_cost <- n * cost_per_employee
+    
+    return(total_cost)
 
-} {
-    
-    
-}
+} 
+
+# g
+calculate_attrition_cost()
+calculate_attrition_cost(n=200)
+
 
