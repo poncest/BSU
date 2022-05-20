@@ -130,11 +130,12 @@ calculate_attrition_cost <- function(
     total_cost <- n * cost_per_employee
     
     return(total_cost)
-
+ 
 } 
 
 # g
 calculate_attrition_cost()
 calculate_attrition_cost(n=200)
+
 
 
