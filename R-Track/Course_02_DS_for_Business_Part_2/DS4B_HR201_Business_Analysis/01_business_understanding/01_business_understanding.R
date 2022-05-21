@@ -1,4 +1,7 @@
 
+# BUSINESS UNDERSTANDING ----
+
+
 # Libraries
 library(pacman)
 p_load(tidyverse, tidyquant, readxl)
@@ -133,9 +136,31 @@ calculate_attrition_cost <- function(
  
 } 
 
-# g
+# testing function
 calculate_attrition_cost()
 calculate_attrition_cost(n=200)
 
+# Calculate Cost by Job Role ----
+
+dept_job_role_tbl %>% 
+    
+    group_by(Department, JobRole, Attrition) %>% 
+    summarise(n = n()) %>% 
+    ungroup() %>% 
+    
+    group_by(Department, JobRole) %>% 
+    mutate(pct = n / sum(n)) %>% 
+    ungroup() %>% 
+    
+    filter(Attrition %in% 'Yes') %>% 
+    arrange(desc(pct)) %>% 
+    
+    mutate(above_industry_avg = case_when(
+        pct > 0.088 ~ 'Yes',
+        TRUE ~ 'No'
+    )) %>% 
+    
+    mutate(
+        cost_of_attrition = calculate_attrition_cost(n = n, salary = 80000)) 
 
 
