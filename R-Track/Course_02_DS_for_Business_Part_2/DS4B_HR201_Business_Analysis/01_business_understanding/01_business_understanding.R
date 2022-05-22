@@ -163,4 +163,29 @@ dept_job_role_tbl %>%
     mutate(
         cost_of_attrition = calculate_attrition_cost(n = n, salary = 80000)) 
 
+ 
+# Workflow of Attrition ----
+
+dept_job_role_tbl %>% 
+    
+    count(JobRole, Attrition) %>% 
+    
+    group_by(Department, JobRole) %>% 
+    mutate(pct = n / sum(n)) %>% 
+    ungroup() %>% 
+    
+    filter(Attrition %in% 'Yes') %>% 
+    arrange(desc(pct)) %>% 
+    
+    mutate(above_industry_avg = case_when(
+        pct > 0.088 ~ 'Yes',
+        TRUE ~ 'No'
+    )) %>% 
+    
+    mutate(
+        cost_of_attrition = calculate_attrition_cost(n = n, salary = 80000)) 
+
+
+
+
 
