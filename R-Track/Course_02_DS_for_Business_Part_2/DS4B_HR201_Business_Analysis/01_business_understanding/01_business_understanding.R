@@ -170,9 +170,7 @@ dept_job_role_tbl %>%
     
     count(JobRole, Attrition) %>% 
     
-    group_by(Department, JobRole) %>% 
-    mutate(pct = n / sum(n)) %>% 
-    ungroup() %>% 
+    count_to_pct(JobRole) %>% 
     
     filter(Attrition %in% 'Yes') %>% 
     arrange(desc(pct)) %>% 
@@ -186,6 +184,23 @@ dept_job_role_tbl %>%
         cost_of_attrition = calculate_attrition_cost(n = n, salary = 80000)) 
 
 
-
+# tidy eval - count_to_pct() function
+count_to_pct <- function(data, ..., col = n) {
+    
+    # multiple columns
+    grouping_vars_expr <- quos(...)
+    # single column
+    col_expr <- enquo(col) 
+    
+    ret <- data %>% 
+        # !!! splicing multiples group vars and evaluate them
+        # !!! - multiple; !! - single
+        group_by(!!! grouping_vars_expr) %>% 
+        mutate(pct = (!! col_expr) / sum(!! col_expr)) %>% 
+        ungroup()
+    
+    return(ret)
+    
+}
 
 
