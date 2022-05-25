@@ -214,3 +214,96 @@ dept_job_role_tbl %>%
         cost_of_attrition = calculate_attrition_cost(n = n, salary = 80000)) 
  
 
+# Visualization of Attrition Cost ----
+
+dept_job_role_tbl %>% 
+    
+    count(Department, JobRole, Attrition) %>% 
+    count_to_pct(Department, JobRole) %>% 
+    assess_attrition(Attrition, attrition_value = 'Yes', baseline_pct = 0.088) %>% 
+    mutate(
+        cost_of_attrition = calculate_attrition_cost(n = n, salary = 80000)) %>% 
+    
+    # data manipulation
+    mutate(name = str_c(Department, JobRole, sep =" : ") %>% as_factor()) %>% 
+    mutate(name =fct_reorder(name, cost_of_attrition)) %>% 
+    mutate(cost_text = str_c('$', format(cost_of_attrition / 1e6, digits = 2),
+                             'M', sep = '')) %>% 
+    
+    # plotting
+    ggplot(aes(x = cost_of_attrition, y = name)) +
+    
+    geom_segment(aes(xend = 0, yend = name), color = palette_light()[[1]]) +
+    
+    geom_point(aes(size = cost_of_attrition), color = palette_light()[[1]]) +
+    
+    geom_label(aes(label = cost_text, size = cost_of_attrition), 
+               hjust = 'inward', color = palette_light()[[1]]) +
+    
+    scale_x_continuous(labels = scales::dollar) +
+    scale_size(range = c(3, 5)) +
+    
+    labs(
+        title = 'Estimated Cost of Attrition: by Department and Job Role',
+        x = 'Cost of Attrition',
+        y = '',
+    ) +
+    
+    theme_tq() +
+    theme(legend.position = 'none')
+
+
+# ANOTHER ALTERNATIVE - FORMAT
+# Visualization of attrition cost ----
+
+dept_job_role_tbl %>%
+    
+    count(Department, JobRole, Attrition) %>% 
+    count_to_pct(Department, JobRole) %>% 
+    assess_attrition(attrition_col   = Attrition, 
+                     attrition_value = 'Yes', 
+                     baseline_pct = 0.088) %>% 
+    mutate(cost_attrition = calculate_attrition_cost(n      = n, 
+                                                     salary = 80000)
+    ) %>% 
+    
+    # Data manipulation
+    mutate(name = str_c(Department, JobRole, sep = ": ") %>% 
+               as_factor() %>% 
+               fct_reorder(cost_attrition)) %>% 
+    mutate(cost_attrition_text = scales::dollar(cost_attrition, 
+                                                scale = 1e-6, suffix = 'M')) %>% 
+    
+    #Visualization
+    ggplot(aes(x = cost_attrition, y = name)) +
+    
+    #Geoms 
+    geom_point(size = 3) + 
+    geom_label(aes(label = cost_attrition_text), 
+               hjust = -0.3) +
+    geom_segment(aes(xend = 0, yend = name)) +
+    
+    # Scales
+    scale_x_continuous(labels = scales::dollar_format(scale = 1e-6, suffix = 'M'), 
+                       limits = c(0, 5e6)) +
+    
+    #Labels
+    labs(x        = 'Cost of Attrition',
+         y        = '',
+         title    = 'Cost of Attrition by Department and Job Title',
+         subtitle = 'Cost of Attrition Units: Millions (M) USD',
+         caption  = 'Source: Business Science: DS4B 201-R - Data Science For Business With R') +
+    
+    # Theme
+    theme(panel.background  = element_rect(fill = "#e6e6fa"),
+          panel.border      = element_rect(fill = NA, color = "black"),
+          plot.background   = element_rect(fill = "#f3fcfc"),
+          plot.title        = element_text(face = "bold"),
+          axis.title        = element_text(face = "bold"),
+          axis.text         = element_text(face = "bold"),
+    )
+    
+
+
+
+
