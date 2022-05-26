@@ -304,6 +304,37 @@ dept_job_role_tbl %>%
     )
     
 
-
+# plot_attrition() function ----
+plot_attrition <- function(data, ..., .value,
+                           fct_reorder = TRUE,
+                           fct_rev     = FALSE,
+                           include_lbl = TRUE,
+                           color       = palette_light()[[1]],
+                           units       = c('0', 'K', 'M')) {
+    
+    # Inputs
+    group_vars_expr <- quos(...)
+    if(length(group_vars_expr) == 0)
+        group_vars_expr <- quos(rlang::sym(colnames(data)[[1]]))
+    
+    value_expr <- enquo(.value)
+    value_name <- quo_name(value_expr)
+    
+    units_val  <- switch(units[[1]],
+                         'M' = 1e6,
+                         'K' = 1e3,
+                         '0' = 1)
+    if (units[[1]] == '0') units <- ''
+    
+    # Data transformation / manipulation
+    usd <- scales::dollar_format(prefix = '$', largest_with_cents = 1e3)
+    
+    data_manipulated <- data %>% 
+        mutate(name = str_c(!!! group_vars_expr, sep = ' : ') %>% as_factor())
+    mutate(value_text = str_c(usd(!!! value_expr / units_val),
+                              units[[1]], sep = ''))
+    
+}
+ 
 
 
