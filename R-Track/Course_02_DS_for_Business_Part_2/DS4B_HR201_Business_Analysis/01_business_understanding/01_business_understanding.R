@@ -1,4 +1,6 @@
 
+## HR_201_Employee_Attrition_Project
+
 # BUSINESS UNDERSTANDING ----
 
 
@@ -334,7 +336,10 @@ plot_attrition <- function(data, ..., .value,
     mutate(value_text = str_c(usd(!!! value_expr / units_val),
                               units[[1]], sep = ''))
     
+    # plotting
+    ggplot(aes_string(x = 'cost_of_attrition', y = 'name')) +
+        geom_segment()
+    
 }
  
-
 
