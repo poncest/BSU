@@ -336,6 +336,22 @@ plot_attrition <- function(data, ..., .value,
     mutate(value_text = str_c(usd(!!! value_expr / units_val),
                               units[[1]], sep = ''))
     
+    if(fct_reorder) {
+        data_manipulated <- data_manipulated %>% 
+            mutate(name = forcats::fct_reorder(name, !! value_expr)) %>% 
+            arrange(name)
+        
+    }
+    
+    if(fct_rev) {
+        data_manipulated <- data_manipulated %>% 
+            mutate(name = forcats::fct_rev(name)) %>% 
+            arrange(name)
+        
+    }
+    
+    
+    
     # plotting
     ggplot(aes_string(x = 'cost_of_attrition', y = 'name')) +
         geom_segment()
