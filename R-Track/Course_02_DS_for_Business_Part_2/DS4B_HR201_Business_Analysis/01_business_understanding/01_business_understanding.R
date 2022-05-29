@@ -332,30 +332,67 @@ plot_attrition <- function(data, ..., .value,
     usd <- scales::dollar_format(prefix = '$', largest_with_cents = 1e3)
     
     data_manipulated <- data %>% 
-        mutate(name = str_c(!!! group_vars_expr, sep = ' : ') %>% as_factor())
-    mutate(value_text = str_c(usd(!!! value_expr / units_val),
+        mutate(name = str_c(!!! group_vars_expr, sep = ' : ') %>% as_factor()) %>% 
+        mutate(value_text = str_c(usd(!!! value_expr / units_val),
                               units[[1]], sep = ''))
     
     if(fct_reorder) {
         data_manipulated <- data_manipulated %>% 
             mutate(name = forcats::fct_reorder(name, !! value_expr)) %>% 
             arrange(name)
-        
     }
     
     if(fct_rev) {
         data_manipulated <- data_manipulated %>% 
             mutate(name = forcats::fct_rev(name)) %>% 
             arrange(name)
-        
     }
     
+    # visualization
+    g <- data_manipulated %>% 
+        
+    ggplot(aes(x = value_name, y = 'name')) +
+        
+    geom_segment(aes(xend = 0, yend = name), color = color) +
+        
+    geom_point(aes_string(size = value_name), color = color) +
+        
+    scale_x_continuous(labels = scales::dollar) +
+    scale_size(range = c(3, 5)) +
+        
+    theme_tq() +
+    theme(legend.position = 'none')
     
-    
-    # plotting
-    ggplot(aes_string(x = 'cost_of_attrition', y = 'name')) +
-        geom_segment()
+    if(include_lbl) {
+        g <- g +
+            
+    geom_label(aes_string(label = 'value_text', size = value_name), 
+               hjust = 'inward', color = color) 
+    }
+
+ return(g)
     
 }
- 
+
+
+# testing plot_attrition()
+dept_job_role_tbl %>% 
+    count(Department, JobRole, Attrition) %>% 
+    count_to_pct(Department, JobRole) %>% 
+    assess_attrition(Attrition, attrition_value = 'Yes', baseline_pct = 0.088) %>% 
+    mutate(
+        cost_of_attrition = calculate_attrition_cost(n = n, salary = 80000)) %>% 
+    
+    plot_attrition(Department, JobRole, .value = cost_of_attrition, units = 'M') +
+    
+    labs(
+        title = 'Estimated Cost of Attrition: by Department and Job Role',
+        x = 'Cost of Attrition',
+        y = '',
+    )
+
+
+
+
+    
 
