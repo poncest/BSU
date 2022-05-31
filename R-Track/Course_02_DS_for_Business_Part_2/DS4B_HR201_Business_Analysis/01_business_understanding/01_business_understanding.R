@@ -375,7 +375,11 @@ plot_attrition <- function(data, ..., .value,
 }
 
 
-# testing plot_attrition()
+# testing plot_attrition() 
+
+# Error in local_error_context(dots = dots, .index = i, mask = mask) : 
+#     promise already under evaluation: recursive default argument reference or earlier problems?
+    
 dept_job_role_tbl %>% 
     count(Department, JobRole, Attrition) %>% 
     count_to_pct(Department, JobRole) %>% 
