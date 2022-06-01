@@ -28,8 +28,17 @@ productivity_cost_by_role_tbl
 
 
 # Q1: Which Job Role has the highest total cost of attrition? ----
+dept_jobrole_tbl %>%
+    filter(Attrition == 'Yes') %>% 
+    left_join(productivity_cost_by_role_tbl, by = c('Department', 'JobRole')) %>% 
+    mutate(attrition_cost = calculate_attrition_cost(salary                   = Salary_Average, 
+                                                     net_revenue_per_employee = Revenue_Average)) %>% 
+    group_by(JobRole) %>% 
+    summarise(total_attrition_cost = sum(attrition_cost)) %>% 
+    ungroup() %>% 
+    arrange(desc(total_attrition_cost))
 
-
+## Sales Executive - $4,270,000
 
 # Q2: What is the total cost of attrition for the Research & Development: Research Scientist job role? ----
 
