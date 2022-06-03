@@ -45,12 +45,15 @@ dept_jobrole_productivity_tbl <- dept_jobrole_tbl %>%
 dept_jobrole_productivity_tbl %>% 
     plot_attrition(Department, JobRole, .value = attrition_cost)
 
-## Answer: Sales - Sales Executive - $4,270,000
+## Answer: Sales: Sales Executive - $4.27 M
 
 
 # Q2: What is the total cost of attrition for the Research & Development: Research Scientist job role? ----
 
+dept_jobrole_productivity_tbl %>% 
+    plot_attrition(Department, JobRole, .value = attrition_cost, units = 'M')
 
+## Answer: Research & Development: Research Scientist - $2.28 M
 
 # Q3: What percentage do the top four Job Roles account for in terms of the total cost of attrition? ----
 
