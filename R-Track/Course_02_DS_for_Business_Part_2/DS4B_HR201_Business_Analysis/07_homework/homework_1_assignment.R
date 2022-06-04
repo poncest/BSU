@@ -56,7 +56,11 @@ dept_jobrole_productivity_tbl %>%
 ## Answer: Research & Development: Research Scientist - $2.28 M
 
 # Q3: What percentage do the top four Job Roles account for in terms of the total cost of attrition? ----
-
+dept_jobrole_productivity_tbl %>% 
+    mutate(percent_attrition = attrition_cost / sum(attrition_cost)) %>% 
+    slice_max(attrition_cost, n = 4) %>% 
+    mutate(cumulative_pct_sum = cumsum(percent_attrition)) %>% 
+    select(Department, JobRole, attrition_cost, cumulative_pct_sum)
 
 
 # Q4. Which Department has the highest total cost of attrition? ----
