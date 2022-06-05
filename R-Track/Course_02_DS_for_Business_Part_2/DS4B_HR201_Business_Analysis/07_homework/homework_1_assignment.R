@@ -4,8 +4,7 @@
 library(tidyverse)
 library(tidyquant)
 library(readxl)
-# library(forcats)
-# library(stringr)
+
 
 # Source Scripts ----
 source("./R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/00_scripts/assess_attrition.R")
@@ -56,6 +55,26 @@ dept_jobrole_productivity_tbl %>%
 ## Answer: Research & Development: Research Scientist - $2.28 M
 
 # Q3: What percentage do the top four Job Roles account for in terms of the total cost of attrition? ----
+dept_jobrole_productivity_tbl %>% 
+    
+    # data manipulation 
+    arrange(desc(attrition_cost)) %>% 
+    mutate(row_num  = row_number()) %>% 
+    mutate(is_top_4 = case_when(
+        row_num <= 4 ~ 'Yes',
+        TRUE         ~ 'No'
+    )) %>% 
+    
+    # summarize cost by top-4
+    group_by(is_top_4) %>% 
+    summarise(total_attrition_cost = sum(attrition_cost)) %>% 
+    ungroup() %>% 
+    
+    # calculate % of total
+    mutate(total_attrition_pct = total_attrition_cost / sum(total_attrition_cost))
+    
+
+# ALTERNATIVE
 dept_jobrole_productivity_tbl %>% 
     mutate(percent_attrition = attrition_cost / sum(attrition_cost)) %>% 
     slice_max(attrition_cost, n = 4) %>% 
