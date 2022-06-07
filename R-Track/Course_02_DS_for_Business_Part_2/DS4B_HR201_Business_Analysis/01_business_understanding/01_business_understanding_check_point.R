@@ -1,4 +1,4 @@
-# BUSINESS UNDERSTANDING ----
+# BUSINESS UNDERSTANDING CHECKPOINT----
 
 # Libraries
 library(tidyverse)

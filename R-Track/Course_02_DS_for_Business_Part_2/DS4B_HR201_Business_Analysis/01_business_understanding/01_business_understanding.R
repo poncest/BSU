@@ -3,7 +3,6 @@
 
 # BUSINESS UNDERSTANDING ----
 
-
 # Libraries
 library(pacman)
 p_load(tidyverse, tidyquant, readxl)
