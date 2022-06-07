@@ -97,5 +97,17 @@ dept_jobrole_tbl %>%
 ## Answer: The department with the highest attrition is Sales - $5.7 M
 
 # Q5: What percentage does the top Department account for in terms of the total cost of attrition? ----
+dept_jobrole_tbl %>%
+    filter(Attrition == 'Yes') %>%
+    left_join(productivity_cost_by_role_tbl, by = c('Department', 'JobRole')) %>% 
+    mutate(attrition_cost = calculate_attrition_cost(salary                   = Salary_Average, 
+                                                     net_revenue_per_employee = Revenue_Average)) %>% 
+    group_by(Department) %>%
+    summarise(total_attrition_cost = sum(attrition_cost)) %>%
+    ungroup() %>% 
+    arrange(desc(total_attrition_cost)) %>% 
+    mutate(pct_total_attrition_cost = (total_attrition_cost / sum(total_attrition_cost)) %>% 
+               scales::percent(accuracy = 0.01))
 
 
+## Answer: The top department account account for 50.1% of total cost of attrition
