@@ -16,4 +16,14 @@ path_data_definitions <- './R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_
 train_raw_tbl         <- read_excel(path_train, sheet = 1)
 definitions_raw_tbl   <- read_excel(path_data_definitions, sheet = 1, col_names = FALSE)
 
-definitions_raw_tbl
+
+# Examining the data
+glimpse(train_raw_tbl)
+glimpse(definitions_raw_tbl)
+
+
+# Exploratory Data Analysis (EDA) ----
+
+# Step 1: Data Summarization ----
+skim(train_raw_tbl)
+
