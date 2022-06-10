@@ -27,3 +27,36 @@ glimpse(definitions_raw_tbl)
 # Step 1: Data Summarization ----
 skim(train_raw_tbl)
 
+# character data type
+train_raw_tbl %>% 
+    # select only character columns
+    select_if(is.character) %>% 
+    glimpse()
+ 
+train_raw_tbl %>% 
+    # select only character columns
+    select_if(is.character) %>% 
+    # to see the levels for each chr column
+    map(unique)
+
+train_raw_tbl %>% 
+    # select only character columns
+    select_if(is.character) %>% 
+    # proportion for each level for each chr column
+    map(~ table(.) %>% prop.table())
+ 
+# numeric data type
+train_raw_tbl %>% 
+    # select only numeric columns
+    select_if(is.numeric) %>% 
+    # proportion for each level for each num column
+    map(~ unique(.) %>% length())
+
+train_raw_tbl %>% 
+    # select only numeric columns
+    select_if(is.numeric) %>% 
+    map_df(~ unique(.) %>% length()) %>% 
+    gather() %>% 
+    arrange(desc(value)) %>% 
+    filter(value >= 10) 
+
