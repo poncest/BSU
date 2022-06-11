@@ -60,3 +60,25 @@ train_raw_tbl %>%
     arrange(desc(value)) %>% 
     filter(value >= 10) 
 
+
+# Step s: Data Visualization ----
+train_raw_tbl %>% 
+    select(Attrition, Age, Gender, MaritalStatus,NumCompaniesWorked,
+           Over18, DistanceFromHome) %>% 
+    
+    ggpairs()
+
+
+# customize 
+train_raw_tbl %>% 
+    select(Attrition, Age, Gender, MaritalStatus,NumCompaniesWorked,
+           Over18, DistanceFromHome) %>% 
+    
+    ggpairs(aes(color = Attrition), lower = 'blank', legend = 1,
+            diag = list(continous = wrap('densityDiag', alpha = 0.5))) + 
+    
+    theme(legend.position = 'bottom')
+   
+
+
+
