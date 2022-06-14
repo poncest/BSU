@@ -115,4 +115,50 @@ train_raw_tbl %>%
     plot_ggpairs(color = Attrition)
     
 
+# Explore Features by Category
+
+# 1. Descriptive features: age, gender, marital status
+train_raw_tbl %>% 
+    select(Attrition, Age, Gender, MaritalStatus, NumCompaniesWorked, Over18, DistanceFromHome) %>% 
+    plot_ggpairs(Attrition)
+
+# 2. Employment features: department, job role, job level
+train_raw_tbl %>% 
+    select(Attrition, contains('employee'), contains('department'), contains('job')) %>% 
+    plot_ggpairs(Attrition)
+
+# 3. Compensation features: hourly rate, monthly income, stock option level
+train_raw_tbl %>% 
+    select(Attrition, contains('income'), contains('rate'), contains('salary'), contains('stock')) %>% 
+    plot_ggpairs(Attrition)
+
+# 4. Survey results: satisfaction level, work life balance
+train_raw_tbl %>% 
+    select(Attrition, contains('satisfaction'),  contains('life')) %>% 
+    plot_ggpairs(Attrition)
+
+# 5. Performance data: job involvement, performance rating
+train_raw_tbl %>% 
+    select(Attrition, contains('performance'),  contains('involvement')) %>% 
+    plot_ggpairs(Attrition)
+
+# 6. work life features
+train_raw_tbl %>% 
+    select(Attrition, contains('overtime'),  contains('travel')) %>% 
+    plot_ggpairs(Attrition)
+
+# 7. training and education
+train_raw_tbl %>% 
+    select(Attrition, contains('training'),  contains('education')) %>% 
+    plot_ggpairs(Attrition)
+
+# 8. time based features: year at company and year in current role
+train_raw_tbl %>% 
+    select(Attrition, contains('years')) %>% 
+    plot_ggpairs(Attrition)
+
+
+
+
+
 
