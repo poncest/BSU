@@ -1,11 +1,12 @@
 
 ## HR_201_Employee_Attrition_Project
+## Steven Ponce 2022
 
 # DATA UNDERSTANDING ----
 
 # Libraries
 library(pacman)
-p_load(tidyverse, tidyquant, readxl, skimr, GGally)
+p_load(tidyverse, tidyquant, readxl, skimr, GGally, here)
 
 
 # Load Data
