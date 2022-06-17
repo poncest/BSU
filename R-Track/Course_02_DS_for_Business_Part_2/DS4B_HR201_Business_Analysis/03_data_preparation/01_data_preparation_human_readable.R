@@ -45,9 +45,33 @@ definitions_tbl <- definitions_raw_tbl %>%
     drop_na() %>% 
     separate(col = y, into = c('key', 'value'), sep = " '") %>% 
     mutate(value = str_remove(string = value, pattern = "'") %>% str_trim()) %>% 
-    rename(name = x)
+    rename(column_name = x)
+
+# Turning the definition tibble into a list
+definitions_list <- definitions_tbl %>% 
+    split(.$column_name) %>% 
+    map(~ select(., - column_name)) %>% 
+    map(~ mutate(., value = as_factor(value)))
     
+# calling the list
+definitions_list[[1]]
+definitions_list[['Education']] 
+
+# for loop to iterate (configure col names)
+for (i in seq_along(definitions_list)) {
     
+    list_name <- names(definitions_list)[i]
+    
+    # reset col names
+    colnames(definitions_list[[i]]) <- c(list_name, paste0(list_name, '_value'))
+    
+}
+
+# updated definition list (after running the for loop)
+definitions_list
+
+
+
 
 
 
