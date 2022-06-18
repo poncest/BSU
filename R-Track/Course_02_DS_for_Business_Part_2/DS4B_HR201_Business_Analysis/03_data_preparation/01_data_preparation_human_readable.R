@@ -43,14 +43,15 @@ definitions_tbl <- definitions_raw_tbl %>%
     rename(x = ...1, y = ...2) %>% 
     fill(x, .direction = 'down') %>% 
     drop_na() %>% 
-    separate(col = y, into = c('key', 'value'), sep = " '") %>% 
+    separate(col = y, into = c('key', 'value'), sep = " '", remove = TRUE) %>% 
     mutate(value = str_remove(string = value, pattern = "'") %>% str_trim()) %>% 
+    mutate(key = as.numeric(key)) %>%
     rename(column_name = x)
 
 # Turning the definition tibble into a list
 definitions_list <- definitions_tbl %>% 
     split(.$column_name) %>% 
-    map(~ select(., - column_name)) %>% 
+    map(~ select(., -column_name)) %>% 
     map(~ mutate(., value = as_factor(value)))
     
 # calling the list
@@ -70,8 +71,18 @@ for (i in seq_along(definitions_list)) {
 # updated definition list (after running the for loop)
 definitions_list
 
+# crating a list - human readable
+data_merged_tbl <- list(HR_Data = train_raw_tbl) %>% 
+    # adding the definition list tibble
+    append(definitions_list, after = 1) %>% 
+    # join them
+    reduce(left_join) %>% 
+    # removing column names from the definition list
+    select(-one_of(names(definitions_list))) %>%
+    # rename columns (remove _value)
+    set_names(str_replace_all(names(.), pattern = "_value", replacement = "")) %>%
+    # sort by names
+    select(sort(names(.)))
 
-
-
-
+glimpse(data_merged_tbl) 
 
