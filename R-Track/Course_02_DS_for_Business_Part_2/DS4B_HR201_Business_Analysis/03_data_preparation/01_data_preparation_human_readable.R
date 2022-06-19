@@ -86,3 +86,33 @@ data_merged_tbl <- list(HR_Data = train_raw_tbl) %>%
 
 glimpse(data_merged_tbl) 
 
+# does a feature needs to follow a specific order/levels (low, med, high)?
+data_merged_tbl %>% 
+    select_if(is.character) %>% 
+    glimpse()
+
+data_merged_tbl %>% 
+    distinct(BusinessTravel)
+
+data_merged_tbl %>% 
+    mutate_if(is.character, as.factor) %>% 
+    select(where(is.factor)) %>% 
+    glimpse()
+
+# inspecting the levels
+data_merged_tbl %>% 
+    mutate_if(is.character, as.factor) %>% 
+    select(where(is.factor)) %>% 
+    map(levels)
+
+# reodering the factors
+data_processed_tbl <- data_merged_tbl %>% 
+    mutate_if(is.character, as.factor) %>% 
+    mutate(
+        BusinessTravel = BusinessTravel %>% fct_relevel('Non-Travel', 'Travel_Rarely', 'Travel_Frequently'),
+        MaritalStatus = MaritalStatus %>% fct_relevel('Single', 'Married', 'Divorced')
+    )
+
+data_processed_tbl %>% 
+    select_if(is.factor) %>% 
+    map(levels)
