@@ -116,3 +116,57 @@ data_processed_tbl <- data_merged_tbl %>%
 data_processed_tbl %>% 
     select_if(is.factor) %>% 
     map(levels)
+
+
+# Processing Pipeline ----
+
+# new function (REVIEW)
+definitions_raw_tbl -> definitions_tbl
+train_raw_tbl       -> data
+
+process_hr_data_readable_01 <- function(data, definitions_tbl) {
+    
+    definitions_list <- definitions_tbl %>%
+        fill(`...1`, .direction = "down") %>%
+        filter(!is.na(`...2`)) %>%
+        separate(`...2`, into = c("key", "value"), sep = " '", remove = TRUE) %>%
+        rename(column_name = `...1`) %>%
+        mutate(key = as.numeric(key)) %>%
+        mutate(value = value %>% str_replace(pattern = "'", replacement = "")) %>%
+        split(.$column_name) %>%
+        map(~ select(., -column_name)) %>%
+        map(~ mutate(., value = as_factor(value))) 
+    
+    
+    # for loop to iterate (configure col names)
+    for (i in seq_along(definitions_list)) {
+        list_name <- names(definitions_list)[i]
+        # reset col names
+        colnames(definitions_list[[i]]) <- c(list_name, paste0(list_name, '_value'))
+    }
+
+    # crating a list - human readable
+    data_merged_tbl <- list(HR_Data = data) %>% 
+        # adding the definition list tibble
+        append(definitions_list, after = 1) %>% 
+        # join them
+        reduce(left_join) %>% 
+        # removing column names from the definition list
+        select(-one_of(names(definitions_list))) %>%
+        # rename columns (remove _value)
+        set_names(str_replace_all(names(.), pattern = "_value", replacement = "")) %>%
+        # sort by names
+        select(sort(names(.))) %>% 
+        mutate_if(is.character, as.factor) %>% 
+        mutate(
+            BusinessTravel = BusinessTravel %>% fct_relevel('Non-Travel', 'Travel_Rarely', 'Travel_Frequently'),
+            MaritalStatus = MaritalStatus %>% fct_relevel('Single', 'Married', 'Divorced')
+        )
+    
+    return(data_merged_tbl) 
+}
+
+# testing process_hr_data_readable_01()
+process_hr_data_readable_01(train_raw_tbl, definitions_tbl = definitions_raw_tbl) %>% 
+    glimpse()
+
