@@ -71,6 +71,44 @@ train_raw_tbl %>%
     plot_hist_facet(bins = 10, ncol = 5, fct_rev = FALSE)
 
 
+# Data Processing with Recipes ----
+
+# Plan: Correlation Analysis 
+# 1. Impute / Zero Variance Features ----
+    # If we don't have missing values, and we don't need to remove outliers (Impute)
+    # then we could focus on removing 'zero variance' features (ZV)
+    # e.g. `EmployeeCount`, `Over18`, etc.
+
+# 2. Transformation ---
+    # Changes the data to remove skew, stabilize variance, etc.
+    # e.g. `DistanceFromHome`, `MonthlyIncome`, etc.
+
+# 3. Discretize ----
+    # Making a continuous variable discrete. Sometimes it can hurt correlations.
+    # It's often best no to discretize
+    # we're going to SKIP this step
+
+# 4. Center/Scaling ----
+    # Getting the data onto a consistent scale  
+
+# 5. Dummy Variables ----
+    # Turning categorical data into separate columns of zeros and ones.
+    # This is important for ML algorithms to detect patterns in unordered data
+
+# 6. Interaction Variables / Engineered Features ---
+    # When two features have a relationship to each other they are said to interact
+    # An examples is the ratio of height and weight of a person
+    # we're going to SKIP this step
+
+# 7. Multivariate Transformation ----
+    # Examples includes (PCA) for dimensionality reduction. Useful in cases where
+    # the data is very wide and can be susceptible to overfitting.
+    # we're going to SKIP this step
+
+
+
+
+
 
 
 
