@@ -79,6 +79,24 @@ train_raw_tbl %>%
     # then we could focus on removing 'zero variance' features (ZV)
     # e.g. `EmployeeCount`, `Over18`, etc.
 
+# setting up the template
+recipe_obj <- recipe(Attrition ~ ., data = train_readable_tbl) %>% 
+    # set up attrition as the outcome
+    # then select all other variables as predictor (~ .)
+    
+    # zero variance step
+    step_zv(all_predictors())
+
+# prep the recipe for calculations
+recipe_obj %>% 
+    prep() %>%   # does not transform the data
+    bake(new_data = train_readable_tbl)   # transform the data
+
+# 3-part-process:
+# a. create the instructions with recipes and steps 
+# b. prepare the recipe
+# c. bake new data
+
 # 2. Transformation ---
     # Changes the data to remove skew, stabilize variance, etc.
     # e.g. `DistanceFromHome`, `MonthlyIncome`, etc.
