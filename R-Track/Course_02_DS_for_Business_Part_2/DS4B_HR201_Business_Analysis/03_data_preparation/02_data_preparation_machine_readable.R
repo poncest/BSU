@@ -107,7 +107,7 @@ recipe_obj %>%
     # we're going to SKIP this step
 
 # 4. Center/Scaling ----
-    # Getting the data onto a consistent scale  
+    # Getting the data onto a consistent scale   
 
 # 5. Dummy Variables ----
     # Turning categorical data into separate columns of zeros and ones.
