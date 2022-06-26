@@ -89,7 +89,7 @@ recipe_obj <- recipe(Attrition ~ ., data = train_readable_tbl) %>%
 
 # prep the recipe for calculations
 recipe_obj %>% 
-    prep() %>%   # does not transform the data
+    prep() %>%                            # does not transform the data
     bake(new_data = train_readable_tbl)   # transform the data
 
 # 3-part-process:
@@ -101,6 +101,65 @@ recipe_obj %>%
     # Changes the data to remove skew, stabilize variance, etc.
     # e.g. `DistanceFromHome`, `MonthlyIncome`, etc.
 
+# filtering out skewness
+skewed_features_names <- train_readable_tbl %>% 
+    select_if(is.numeric) %>% 
+    # high skewness features have either high positive or high negative values
+    map_df(skewness) %>% 
+    # transpose the data
+    gather(factor_key = TRUE) %>% 
+    arrange(desc(value)) %>% 
+    # selecting the features - pick a cutoff
+    filter(value > 0.8) %>% 
+    pull(key) %>% 
+    as.character()
+
+# skewed features only
+# separating non-continuous features
+# e.g. `JobLevel`, `StockOptionLevel` are a factors
+train_readable_tbl %>% 
+    select(skewed_features_names) %>% 
+    plot_hist_facet()
+
+# remove non-continuous features
+!skewed_features_names %in% c('JobLevel', 'StockOptionLevel')
+    
+skewed_features_names <- train_readable_tbl %>% 
+    select_if(is.numeric) %>% 
+    # high skewness features have either high positive or high negative values
+    map_df(skewness) %>% 
+    # transpose the data
+    gather(factor_key = TRUE) %>% 
+    arrange(desc(value)) %>% 
+    # selecting the features - pick a cutoff
+    filter(value > 0.8) %>% 
+    filter(!skewed_features_names %in% c('JobLevel', 'StockOptionLevel')) %>% 
+    pull(key) %>% 
+    as.character()
+
+# verifying the removal of factors
+train_readable_tbl %>% 
+    select(skewed_features_names) %>% 
+    plot_hist_facet()
+
+factor_names <- c('JobLevel', 'StockOptionLevel')
+
+
+# Transforming skewed features
+recipe_obj <- recipe(Attrition ~ ., data = train_readable_tbl) %>% 
+    step_zv(all_predictors()) %>% 
+    # transformation - remove skewness
+    step_YeoJohnson(skewed_features_names) %>% 
+    # convert numbers to factors
+    step_mutate_at(factor_names, fn = as.factor)
+    
+# verifying that we have successfully remove the skweness
+recipe_obj %>% 
+    prep() %>% 
+    bake(train_readable_tbl) %>% 
+    select(skewed_features_names) %>% 
+    plot_hist_facet()
+
 # 3. Discretize ----
     # Making a continuous variable discrete. Sometimes it can hurt correlations.
     # It's often best no to discretize
@@ -108,6 +167,10 @@ recipe_obj %>%
 
 # 4. Center/Scaling ----
     # Getting the data onto a consistent scale   
+
+ 
+
+ 
 
 # 5. Dummy Variables ----
     # Turning categorical data into separate columns of zeros and ones.
