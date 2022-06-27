@@ -156,7 +156,7 @@ recipe_obj <- recipe(Attrition ~ ., data = train_readable_tbl) %>%
 # verifying that we have successfully remove the skweness
 recipe_obj %>% 
     prep() %>% 
-    bake(train_readable_tbl) %>% 
+    bake(new_data = train_readable_tbl) %>% 
     select(skewed_features_names) %>% 
     plot_hist_facet()
 
@@ -166,15 +166,49 @@ recipe_obj %>%
     # we're going to SKIP this step
 
 # 4. Center/Scaling ----
-    # Getting the data onto a consistent scale   
+    # Getting the data onto a consistent scale  
 
- 
+# visualizing center & scaling
+train_readable_tbl %>% 
+    select_if(is.numeric) %>% 
+    plot_hist_facet()
+    
 
- 
+# Continue working with the recipe object
+
+# Transforming skewed features
+recipe_obj <- recipe(Attrition ~ ., data = train_readable_tbl) %>% 
+    step_zv(all_predictors()) %>% 
+    # transformation - remove skewness
+    step_YeoJohnson(skewed_features_names) %>% 
+    # convert numbers to factors
+    step_mutate_at(factor_names, fn = as.factor) %>% 
+    # center and scaling. Center before scaling
+    step_center(all_numeric())
+    step_scale(all_numeric()) 
+
+# Centers (means) before prep
+recipe_obj$steps[4] 
+
+# Centers (means) after prep
+prepared_recipe <- recipe_obj %>% prep()
+# working with list, to view the center, select step #4  
+prepared_recipe$steps[4]
+    
+
+prepared_recipe %>% 
+    bake(new_data = train_readable_tbl) %>% 
+    select_if(is.numeric) %>% 
+    plot_hist_facet()
+
 
 # 5. Dummy Variables ----
     # Turning categorical data into separate columns of zeros and ones.
     # This is important for ML algorithms to detect patterns in unordered data
+
+ 
+
+
 
 # 6. Interaction Variables / Engineered Features ---
     # When two features have a relationship to each other they are said to interact
