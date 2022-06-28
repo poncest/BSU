@@ -160,7 +160,7 @@ recipe_obj %>%
     select(skewed_features_names) %>% 
     plot_hist_facet()
 
-# 3. Discretize ----
+# 3. Discretize ---- SKIP
     # Making a continuous variable discrete. Sometimes it can hurt correlations.
     # It's often best no to discretize
     # we're going to SKIP this step
@@ -184,7 +184,7 @@ recipe_obj <- recipe(Attrition ~ ., data = train_readable_tbl) %>%
     # convert numbers to factors
     step_mutate_at(factor_names, fn = as.factor) %>% 
     # center and scaling. Center before scaling
-    step_center(all_numeric())
+    step_center(all_numeric()) %>% 
     step_scale(all_numeric()) 
 
 # Centers (means) before prep
@@ -205,23 +205,79 @@ prepared_recipe %>%
 # 5. Dummy Variables ----
     # Turning categorical data into separate columns of zeros and ones.
     # This is important for ML algorithms to detect patterns in unordered data
+    # If a factor has 3 levels, the feature is expanded into 2 cols (n-1 levels) 
 
+# before
+recipe_obj <- recipe(Attrition ~ ., data = train_readable_tbl) %>% 
+    step_zv(all_predictors()) %>% 
+    # transformation - remove skewness
+    step_YeoJohnson(skewed_features_names) %>% 
+    # convert numbers to factors
+    step_mutate_at(factor_names, fn = as.factor) %>% 
+    # center and scaling. Center before scaling
+    step_center(all_numeric()) %>% 
+    step_scale(all_numeric()) 
+
+# Before -
+recipe_obj %>% 
+    prep() %>% 
+    bake(new_data = train_readable_tbl) %>% 
+    select(contains('JobRole')) %>% 
+    plot_hist_facet()
+
+# the factors are unordered - the algorithm does not know how to process them
+# we need to create a dummy variable
+# JobRole  <fct>                    
+# [1] Sales Executive           Research Scientist        Laboratory Technician    
+# [4] Manufacturing Director    Healthcare Representative Manager                  
+# [7] Sales Representative      Research Director         Human Resources 
+
+
+# after - dummy variables
+dummied_recipe_obj <- recipe(Attrition ~ ., data = train_readable_tbl) %>% 
+    step_zv(all_predictors()) %>% 
+    # transformation - remove skewness
+    step_YeoJohnson(skewed_features_names) %>% 
+    # convert numbers to factors
+    step_mutate_at(factor_names, fn = as.factor) %>% 
+    # center and scaling. Center before scaling
+    step_center(all_numeric()) %>% 
+    step_scale(all_numeric()) %>% 
+    # all_nominal selects only the categorical data
+    step_dummy(all_nominal())
+
+dummied_recipe_obj 
  
+# renaming the recipe object
+recipe_obj <- recipe(Attrition ~ ., data = train_readable_tbl) %>% 
+    step_zv(all_predictors()) %>% 
+    # transformation - remove skewness
+    step_YeoJohnson(skewed_features_names) %>% 
+    # convert numbers to factors
+    step_mutate_at(factor_names, fn = as.factor) %>% 
+    # center and scaling. Center before scaling
+    step_center(all_numeric()) %>% 
+    step_scale(all_numeric()) %>% 
+    # all_nominal selects only the categorical data
+    step_dummy(all_nominal())
 
 
-
-# 6. Interaction Variables / Engineered Features ---
+# 6. Interaction Variables / Engineered Features --- SKIP
     # When two features have a relationship to each other they are said to interact
     # An examples is the ratio of height and weight of a person
     # we're going to SKIP this step
 
-# 7. Multivariate Transformation ----
+
+# 7. Multivariate Transformation ---- SKIP
     # Examples includes (PCA) for dimensionality reduction. Useful in cases where
     # the data is very wide and can be susceptible to overfitting.
     # we're going to SKIP this step
 
 
+# Putting all together
+# Baking the Train and Test data
 
+ 
 
 
 
