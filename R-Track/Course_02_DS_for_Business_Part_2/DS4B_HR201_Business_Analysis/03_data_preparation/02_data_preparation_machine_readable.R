@@ -274,15 +274,38 @@ recipe_obj <- recipe(Attrition ~ ., data = train_readable_tbl) %>%
     # we're going to SKIP this step
 
 
+# Final recipe ----
 # Putting all together
 # Baking the Train and Test data
 
+# preparing the recipe
+recipe_obj <- recipe(Attrition ~ ., data = train_readable_tbl) %>% 
+    step_zv(all_predictors()) %>% 
+    # transformation - remove skewness
+    step_YeoJohnson(skewed_features_names) %>% 
+    # convert numbers to factors
+    step_mutate_at(factor_names, fn = as.factor) %>% 
+    # center and scaling. Center before scaling
+    step_center(all_numeric()) %>% 
+    step_scale(all_numeric()) %>% 
+    # all_nominal selects only the categorical data
+    step_dummy(all_nominal()) %>% 
+    prep()
+
+recipe_obj
+
+# baking our recipe (transforming our data)
+train_readable_tbl
+test_readable_tbl
+
+train_tbl <- bake(object = recipe_obj, new_data = train_readable_tbl)
+glimpse(train_tbl)
+
+test_tbl <- bake(object = recipe_obj, new_data = test_readable_tbl)
+glimpse(test_tbl)
+
+
  
-
-
-
-
-
 
 
 
