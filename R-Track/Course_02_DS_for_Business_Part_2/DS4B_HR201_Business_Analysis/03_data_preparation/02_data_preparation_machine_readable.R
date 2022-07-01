@@ -305,8 +305,18 @@ test_tbl <- bake(object = recipe_obj, new_data = test_readable_tbl)
 glimpse(test_tbl)
 
 
- 
+# Correlation Analysis ----
 
-
+get_cor <- function(data, target, use = 'paiwise.complete.obs',
+                    fct_reorder =FALSE, fct_rev = FALSE) {
+    
+    feature_expr <- enquo(target)
+    feature_name <- quo_name(feature_expr)
+    
+    data_cor <- data %>% 
+        mutate_if(is.character, as.factor) %>% 
+        mutate_if(is.factor, as.numeric)
+    ....
+} 
 
 
