@@ -307,6 +307,12 @@ glimpse(test_tbl)
 
 # Correlation Analysis ----
 
+data         <- train_tbl
+feature_expr <- quo(Attrition_Yes)
+
+## quo() is used outside of functions
+## enquo() is used inside
+
 get_cor <- function(data, target, use = "pairwise.complete.obs",
                     fct_reorder = FALSE, fct_rev = FALSE) {
     
@@ -321,7 +327,7 @@ get_cor <- function(data, target, use = "pairwise.complete.obs",
         mutate(feature = names(.)) %>% 
         select(feature, !! feature_expr) %>% 
         filter(!(feature == feature_name)) %>% 
-        mutate_if(is.character, as_factor)
+        mutate_if(is.character, as_factor)  
     
     if(fct_reorder) {
         data_cor <- data_cor %>% 
@@ -342,6 +348,7 @@ get_cor <- function(data, target, use = "pairwise.complete.obs",
 # testing 
 train_tbl %>% 
     get_cor(target = Attrition_Yes, fct_reorder = T, fct_rev = T)
+ 
 
 
 
