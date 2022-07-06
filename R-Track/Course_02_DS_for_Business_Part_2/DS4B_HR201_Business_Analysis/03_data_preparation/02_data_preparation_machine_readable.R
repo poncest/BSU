@@ -397,9 +397,71 @@ plot_cor(data = train_tbl, target = Attrition_Yes,
 
 train_tbl %>% 
     select(Attrition_Yes, contains('JobRole')) %>% 
-    plot_cor(target = Attrition_Yes, fct_reorder = T, fct_rev = T)
+    plot_cor(target = Attrition_Yes, fct_reorder = T, fct_rev = F)
+
+# Correlation Evaluation ----
+
+# 1. Descriptive features: age, gender, marital status
+train_tbl %>% 
+    select(Attrition_Yes, Age, contains("Gender"), contains("MaritalStatus"),
+           NumCompaniesWorked, contains("Over18"), DistanceFromHome) %>% 
+    plot_cor(target = Attrition_Yes, fct_reorder = T, fct_rev = F)
+
+## In this case, a negative correlation is good - as age increases, it has a negative effect in attrition. Higher the age, lower the probability of leaving the company
 
 
+# 2. Employment features: department, job role, job level
+train_tbl %>% 
+    select(Attrition_Yes, contains('employee'), contains('department'), 
+           contains('job')) %>% 
+    plot_cor(target = Attrition_Yes, fct_reorder = T, fct_rev = F)
+
+## Q. which 3 job roles are lest likely to leave?
+## A. Research Director, Manufacturing Director, and Manager
+
+## Q. Employees in which Job Level have the lowest likelihood of leaving?
+## A. job level 2
+
+## Q. Which feature is irrelevant for modeling (i.e. offers little predictive value)?
+## A. employee number
+
+
+# 3. Compensation features: hourly rate, monthly income, stock option level
+train_tbl %>% 
+    select(Attrition_Yes, contains('income'), contains('rate'), 
+           contains('salary'), contains('stock')) %>% 
+    plot_cor(target = Attrition_Yes, fct_reorder = T, fct_rev = F)
+
+## Q. Employees with higher Hourly Rate are more likely to?
+## A. irrelevant feature
+
+## Q. Employees with greater monthly income are more likely to?
+## A. stay 
+
+# 4. Survey results: satisfaction level, work life balance
+train_tbl %>% 
+    select(Attrition_Yes, contains('satisfaction'),  contains('life')) %>% 
+    plot_cor(target = Attrition_Yes, fct_reorder = T, fct_rev = F)
+
+# 5. Performance data: job involvement, performance rating
+train_tbl %>% 
+    select(Attrition_Yes, contains('performance'),  contains('involvement')) %>% 
+    plot_cor(target = Attrition_Yes, fct_reorder = T, fct_rev = F)
+
+# 6. work life features
+train_tbl %>% 
+    select(Attrition_Yes, contains('overtime'),  contains('travel')) %>% 
+    plot_cor(target = Attrition_Yes, fct_reorder = T, fct_rev = F)
+
+# 7. training and education
+train_tbl %>% 
+    select(Attrition_Yes, contains('training'),  contains('education')) %>% 
+    plot_cor(target = Attrition_Yes, fct_reorder = T, fct_rev = F)
+
+# 8. time based features: year at company and year in current role
+train_tbl %>% 
+    select(Attrition_Yes, contains('years')) %>% 
+    plot_cor(target = Attrition_Yes, fct_reorder = T, fct_rev = F)
 
 
 
