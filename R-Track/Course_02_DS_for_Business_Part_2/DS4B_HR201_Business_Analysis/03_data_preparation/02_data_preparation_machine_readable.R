@@ -443,28 +443,52 @@ train_tbl %>%
     select(Attrition_Yes, contains('satisfaction'),  contains('life')) %>% 
     plot_cor(target = Attrition_Yes, fct_reorder = T, fct_rev = F)
 
+## Q. Employees with Work-Life Balance of which level are most likely to leave?
+## A. Best
+
+## Q. Employees with which Job Satisfaction level are most likely to stay?
+## A. Very High
+
 # 5. Performance data: job involvement, performance rating
 train_tbl %>% 
     select(Attrition_Yes, contains('performance'),  contains('involvement')) %>% 
     plot_cor(target = Attrition_Yes, fct_reorder = T, fct_rev = F)
+
+## Q. Employees with "Excellent" Performance Rating are most likely to:
+## A. irrelevant feature
+
+## Q. What effect does high Job Involvement seem to have on employee attrition?
+## A. as job involvement increases, attrition tends to decrease
 
 # 6. work life features
 train_tbl %>% 
     select(Attrition_Yes, contains('overtime'),  contains('travel')) %>% 
     plot_cor(target = Attrition_Yes, fct_reorder = T, fct_rev = F)
 
+## Q. As Over Time increases:
+## A. as over time increases, attrition tends to increase
+
 # 7. training and education
 train_tbl %>% 
     select(Attrition_Yes, contains('training'),  contains('education')) %>% 
     plot_cor(target = Attrition_Yes, fct_reorder = T, fct_rev = F)
+
+## Q. Which Education level is most likely to leave?
+## A. bachelor
+
+## Q. Employees with increased training tend to:
+## A. stay
 
 # 8. time based features: year at company and year in current role
 train_tbl %>% 
     select(Attrition_Yes, contains('years')) %>% 
     plot_cor(target = Attrition_Yes, fct_reorder = T, fct_rev = F)
 
+## Q. As employee tenure increases, what happens to the likelihood of turnover?
+## A. it decreases
 
-
+## Q. Overall: If you could reduce one feature to lessen turnover, which would you reduce?
+## A. overt time
 
 
 
