@@ -1,19 +1,14 @@
+## HR_201_Employee_Attrition_Project
+## Steven Ponce 2022
+
 # H2O MODELING -----
 
 # 1. Setup ----
 
 # Load Libraries 
+library(pacman)
+p_load(h2o, recipes, readxl, tidyverse, tidyquant, stringr, forcats, cowplot, fs,glue)
 
-library(h2o)
-library(recipes)
-library(readxl)
-library(tidyverse)
-library(tidyquant)
-library(stringr)
-library(forcats)
-library(cowplot)
-library(fs)
-library(glue)
 
 # Load Data
 path_train            <- (here::here('./R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/00_data/telco_train.xlsx'))
@@ -27,27 +22,22 @@ definitions_raw_tbl   <- read_excel(path_data_definitions, sheet = 1, col_names 
 
 
 # Processing Pipeline
-# * FIX 1 - Make sure to use updated preprocessing recipe that works with new naming system ----
 source(here::here('R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/00_scripts/data_processing_pipeline_rev1.R'))
 train_readable_tbl <- process_hr_data_readable(train_raw_tbl, definitions_raw_tbl)
 test_readable_tbl  <- process_hr_data_readable(test_raw_tbl, definitions_raw_tbl)
 
-# ML Preprocessing 
 
+# ML Preprocessing 
 recipe_obj <- recipe(Attrition ~ ., data = train_readable_tbl) %>%
+    # remove zero variance
     step_zv(all_predictors()) %>%
-    
-    # * FIX 2 - step_num2factor is no longer preferred for converting numeric to categorical ----
-    #   - Use step_mutate_at()
+    # factor variables
     step_mutate_at(JobLevel, StockOptionLevel, fn = factor) %>%
-    # step_num2factor(JobLevel, StockOptionLevel) %>%
-    
     prep()
 
 recipe_obj
 
-
-# * FIX 3 - bake(new_data) ----
+# bake
 train_tbl <- bake(recipe_obj, new_data = train_readable_tbl)
 test_tbl  <- bake(recipe_obj, new_data = test_readable_tbl)
 
@@ -55,7 +45,7 @@ test_tbl  <- bake(recipe_obj, new_data = test_readable_tbl)
 # 2. Modeling ----
 # * UPDATED AUTOML METHOD ----
 
-library(h2o)
+# library(h2o)
 
 h2o.init()
 
