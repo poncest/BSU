@@ -43,10 +43,11 @@ test_tbl  <- bake(recipe_obj, new_data = test_readable_tbl)
 
 
 # 2. Modeling ----
-# * UPDATED AUTOML METHOD ----
+# * UPDATED AUTOML METHOD ---- 
 
 # library(h2o)
 
+# initialize
 h2o.init()
 
 train_h2o <- as.h2o(train_tbl)
@@ -208,7 +209,7 @@ typeof(performance_h2o)
 performance_h2o %>% slotNames()
 
 performance_h2o@metrics
-
+ 
 # Classifier Summary Metrics
 
 h2o.auc(performance_h2o, train = T, valid = T, xval = T)
@@ -218,7 +219,7 @@ h2o.logloss(performance_h2o)
 h2o.confusionMatrix(stacked_ensemble_h2o)
 h2o.confusionMatrix(performance_h2o)
 
-# Precision vs Recall Plot
+# Precision vs Recall Plot 
 
 performance_tbl <- performance_h2o %>%
     h2o.metric() %>%
