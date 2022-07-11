@@ -45,26 +45,41 @@ test_tbl  <- bake(recipe_obj, new_data = test_readable_tbl)
 # 2. Modeling ----
 # * UPDATED AUTOML METHOD ---- 
 
-# library(h2o)
-
 # initialize
 h2o.init()
 
-train_h2o <- as.h2o(train_tbl)
-test_h2o  <- as.h2o(test_tbl)
+# import a DF (or tibble) to an h2o cloud as an h20 frame.
+as.h2o(train_tbl)
+as.h2o(test_tbl)
+
+# splitting the h2o DF into multiple DF's - validation DF
+split_h2o <- h2o.splitFrame(as.h2o(train_tbl), ratios = c(0.85), seed = 1234)
+
+# Training, Validation, ad Test data set
+train_h2o <- split_h2o[[1]]   # 85%
+valid_h2o <- split_h2o[[2]]   # 15%
+test_h20  <- as.h2o(test_tbl) 
+
+
+# Specifying the columns
+# target - attrition
+# predictor - everything else
 
 y <- "Attrition"
-x <- setdiff(names(train_h2o), y)
+x <- setdiff(names(train_h2o), y)  # all names except (y) attrition
 
+# 
 automl_models_h2o <- h2o.automl(
     x = x,
     y = y,
-    training_frame   = train_h2o,
+    training_frame   = train_h2o,    # training set (85%)
+    # validation_frame = valid_h2o,  # validation set (15%)
+    # leaderboard_frame = test_set,  # test set
     max_runtime_secs = 30,
     nfolds           = 5
 )
 
-automl_models_h2o@leaderboard
+automl_models_h2o@leaderboard 
 
 automl_models_h2o@leader
 
