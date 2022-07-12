@@ -79,16 +79,20 @@ automl_models_h2o <- h2o.automl(
     nfolds           = 5
 )
 
-automl_models_h2o@leaderboard 
+typeof(automl_models_h2o)        # similar to class
+slotNames(automl_models_h2o)     # get the names
 
-automl_models_h2o@leader
+automl_models_h2o@leaderboard    # summary of the model produced by automl
+automl_models_h2o@leader         # leading, top model
 
-h2o.getModel("GLM_grid_0_AutoML_20180503_035824_model_0")
+# getting different models that are not the leader
+h2o.getModel('StackedEnsemble_BestOfFamily_4_AutoML_1_20220712_64212')
 
-h2o.getModel("DeepLearning_0_AutoML_20180503_035824")
+automl_models_h2o@leaderboard %>% head(23)
+h2o.getModel("DeepLearning_grid_1_AutoML_1_20220712_64212_model_1")
 
 
-# Saving & Loading
+# Saving & Loading  
 
 h2o.getModel("StackedEnsemble_BestOfFamily_0_AutoML_20180503_035824") %>%
     h2o.saveModel(path = "04_Modeling/h2o_models/")
