@@ -61,9 +61,9 @@ valid_h2o <- split_h2o[[2]]   # 15%
 test_h20  <- as.h2o(test_tbl) 
 
 
-# Specifying the columns
-# target - attrition
-# predictor - everything else
+# Specifying the columns 
+# target - attrition 
+# predictor - everything else 
 
 y <- "Attrition"
 x <- setdiff(names(train_h2o), y)  # all names except (y) attrition
@@ -94,13 +94,13 @@ h2o.getModel("DeepLearning_grid_1_AutoML_1_20220712_64212_model_1")
 
 # Saving & Loading  
 
-h2o.getModel("StackedEnsemble_BestOfFamily_0_AutoML_20180503_035824") %>%
+h2o.getModel("StackedEnsemble_BestOfFamily_0_AutoML_20180503_035824") %>% 
     h2o.saveModel(path = "04_Modeling/h2o_models/")
 
-h2o.getModel("GLM_grid_0_AutoML_20180503_035824_model_0") %>%
+h2o.getModel("GLM_grid_0_AutoML_20180503_035824_model_0") %>% 
     h2o.saveModel(path = "04_Modeling/h2o_models/")
 
-h2o.getModel("DeepLearning_0_AutoML_20180503_035824") %>%
+h2o.getModel("DeepLearning_0_AutoML_20180503_035824") %>% 
     h2o.saveModel(path = "04_Modeling/h2o_models/")
 
 deeplearning_h2o <- h2o.loadModel("04_Modeling/h2o_models/DeepLearning_0_AutoML_20180503_035824")
