@@ -89,12 +89,42 @@ automl_models_h2o@leader         # leading, top model
 h2o.getModel('StackedEnsemble_BestOfFamily_4_AutoML_1_20220712_64212')
 
 automl_models_h2o@leaderboard %>% head(23)
-h2o.getModel("DeepLearning_grid_1_AutoML_1_20220712_64212_model_1")
+h2o.getModel("DeepLearning_grid_1_AutoML_1_20220712_64212_model_1") 
+
+
+# extract h20 model by position
+# BEFORE - manual
+automl_models_h2o@leaderboard %>% 
+    as_tibble() %>% 
+    slice(1) %>% 
+    pull(model_id) %>% 
+    h2o.getModel()
+
+# AFTER - function
+extract_h2o_model_name_by_position <- function(h2o_leaderboard, 
+                                               n = 1,             # position 
+                                               verbose = TRUE) {
+    
+    model_name <- h2o_leaderboard %>% 
+        as_tibble() %>% 
+        slice(n) %>% 
+        pull(model_id) 
+    
+    if (verbose) message(model_name)
+    
+    return(model_name)
+    
+}  
+
+# testing extract_h2o_model_name_by_position()
+automl_models_h2o@leaderboard %>% 
+    extract_h2o_model_name_by_position(n = 2) %>% 
+    h2o.getModel()
 
 
 # Saving & Loading  
 
-h2o.getModel("StackedEnsemble_BestOfFamily_0_AutoML_20180503_035824") %>% 
+h2o.getModel("StackedEnsemble_BestOfFamily_0_AutoML_20180503_035824") %>% -
     h2o.saveModel(path = "04_Modeling/h2o_models/")
 
 h2o.getModel("GLM_grid_0_AutoML_20180503_035824_model_0") %>% 
