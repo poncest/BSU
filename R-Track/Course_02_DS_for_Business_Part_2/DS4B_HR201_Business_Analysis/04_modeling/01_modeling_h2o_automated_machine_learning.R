@@ -118,24 +118,33 @@ extract_h2o_model_name_by_position <- function(h2o_leaderboard,
 
 # testing extract_h2o_model_name_by_position()
 automl_models_h2o@leaderboard %>% 
-    extract_h2o_model_name_by_position(n = 2) %>% 
+    extract_h2o_model_name_by_position(n = 1) %>% 
     h2o.getModel()
 
 
-# Saving & Loading  
+# Saving Models 
+h2o.getModel("GLM_1_AutoML_3_20220715_102232") %>% 
+    h2o.saveModel(path = "R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/04_modeling/h2o_models/")
 
-h2o.getModel("StackedEnsemble_BestOfFamily_0_AutoML_20180503_035824") %>% -
-    h2o.saveModel(path = "04_Modeling/h2o_models/")
+h2o.getModel("StackedEnsemble_AllModels_2_AutoML_3_20220715_102232") %>% 
+    h2o.saveModel(path = "R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/04_modeling/h2o_models/")
 
-h2o.getModel("GLM_grid_0_AutoML_20180503_035824_model_0") %>% 
-    h2o.saveModel(path = "04_Modeling/h2o_models/")
+h2o.getModel("StackedEnsemble_BestOfFamily_1_AutoML_3_20220715_102232") %>% 
+    h2o.saveModel(path = "R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/04_modeling/h2o_models/")
 
-h2o.getModel("DeepLearning_0_AutoML_20180503_035824") %>% 
-    h2o.saveModel(path = "04_Modeling/h2o_models/")
+h2o.getModel("DeepLearning_1_AutoML_3_20220715_102232") %>% 
+    h2o.saveModel(path = "R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/04_modeling/h2o_models/")
+ 
 
-deeplearning_h2o <- h2o.loadModel("04_Modeling/h2o_models/DeepLearning_0_AutoML_20180503_035824")
+# Loading Models
+h2o.loadModel("R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/04_modeling/h2o_models/GLM_1_AutoML_3_20220715_102232")
 
-glm_h2o <- h2o.loadModel("04_Modeling/h2o_models/GLM_grid_0_AutoML_20180503_035824_model_0")
+h2o.loadModel("R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/04_modeling/h2o_models/StackedEnsemble_BestOfFamily_1_AutoML_3_20220715_102232")
+
+h2o.loadModel("R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/04_modeling/h2o_models/DeepLearning_1_AutoML_3_20220715_102232")   
+
+
+
 
 
 # Making Predictions
