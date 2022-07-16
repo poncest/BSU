@@ -145,22 +145,26 @@ h2o.loadModel("R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Anal
 
 
 
-
-
 # Making Predictions
 # stacked_ensemble_h2o <- automl_models_h2o@leader
 
-stacked_ensemble_h2o <- h2o.loadModel("04_Modeling/h2o_models/StackedEnsemble_BestOfFamily_0_AutoML_20180503_035824")
+glm_h2o <- h2o.loadModel("R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/04_modeling/h2o_models/GLM_1_AutoML_3_20220715_102232")
 
-stacked_ensemble_h2o
+glm_h2o   
 
-predictions <- h2o.predict(stacked_ensemble_h2o, newdata = as.h2o(test_tbl))
+predictions <- h2o.predict(glm_h2o, newdata = as.h2o(test_tbl))
 
 typeof(predictions)
 
-predictions_tbl <- predictions %>% as.tibble()
+predictions_tbl <- predictions %>% as_tibble()
 predictions_tbl
 
+
+
+deeplearning_h2o <- h2o.loadModel("R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/04_modeling/h2o_models/DeepLearning_1_AutoML_3_20220715_102232")   
+
+?h2o.deeplearning
+deeplearning_h2o@allparameters
 
 
 # 3. Visualizing The Leaderboard ----
