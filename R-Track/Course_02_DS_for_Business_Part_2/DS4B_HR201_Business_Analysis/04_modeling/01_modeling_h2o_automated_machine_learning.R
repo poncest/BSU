@@ -192,7 +192,7 @@ data_transformed %>%
          subtitle = paste0("Ordered by: auc"),
          y = "Model Postion, Model ID", x = "")
 
-
+ 
 h2o_leaderboard <- automl_models_h2o@leaderboard
 
 plot_h2o_leaderboard <- function(h2o_leaderboard, order_by = c("auc", "logloss"), 
