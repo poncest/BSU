@@ -171,7 +171,7 @@ deeplearning_h2o@allparameters
 
 data_transformed <- automl_models_h2o@leaderboard %>% 
     as_tibble() %>%
-    mutate(model_type = str_split(model_id, "_", simplify = T)[,1]) %>%
+    mutate(model_type = str_split(model_id, "_", simplify = T)[,1]) %>% 
     slice(1:10) %>%
     rownames_to_column() %>%
     mutate(
@@ -182,7 +182,7 @@ data_transformed <- automl_models_h2o@leaderboard %>%
     mutate(model_id = paste0(rowname, ". ", model_id) %>% as_factor() %>% fct_rev()) 
 
 data_transformed %>%
-    ggplot(aes(value, model_id, color = model_type)) +
+    ggplot(aes(x = value, y = model_id, color = model_type)) +
     geom_point(size = 3) +
     geom_label(aes(label = round(value, 2), hjust = "inward")) +
     facet_wrap(~ key, scales = "free_x") +
@@ -193,10 +193,15 @@ data_transformed %>%
          y = "Model Postion, Model ID", x = "")
 
  
+# plot_h2o_leaderboard()
 h2o_leaderboard <- automl_models_h2o@leaderboard
 
-plot_h2o_leaderboard <- function(h2o_leaderboard, order_by = c("auc", "logloss"), 
-                                 n_max = 20, size = 4, include_lbl = TRUE) {
+plot_h2o_leaderboard <- function(h2o_leaderboard, 
+                                 order_by = c("auc", "logloss", "aucpr",
+                                              "mean_per_class_error", "rmse", "mse"), 
+                                 n_max = 20, 
+                                 size = 4, 
+                                 include_lbl = TRUE) {
     
     # Setup inputs
     order_by <- tolower(order_by[[1]])
@@ -208,7 +213,7 @@ plot_h2o_leaderboard <- function(h2o_leaderboard, order_by = c("auc", "logloss")
         mutate(model_id = paste0(rowname, ". ", as.character(model_id)) %>% as.factor())
     
     # Transformation
-    if (order_by == "auc") {
+    if (order_by == "auc") {                                          ############
         
         data_transformed_tbl <- leaderboard_tbl %>%
             slice(1:n_max) %>%
@@ -219,7 +224,7 @@ plot_h2o_leaderboard <- function(h2o_leaderboard, order_by = c("auc", "logloss")
             gather(key = key, value = value, 
                    -c(model_id, model_type, rowname), factor_key = T) 
         
-    } else if (order_by == "logloss") {
+    } else if (order_by == "logloss") {                                 ############
         
         data_transformed_tbl <- leaderboard_tbl %>%
             slice(1:n_max) %>%
