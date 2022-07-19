@@ -193,9 +193,10 @@ data_transformed %>%
          y = "Model Postion, Model ID", x = "")
 
  
-# plot_h2o_leaderboard()
 h2o_leaderboard <- automl_models_h2o@leaderboard
 
+
+# plot_h2o_leaderboard() - this function could be simplified using tidy eval
 plot_h2o_leaderboard <- function(h2o_leaderboard, 
                                  order_by = c("auc", "logloss", "aucpr",
                                               "mean_per_class_error", "rmse", "mse"), 
@@ -207,13 +208,13 @@ plot_h2o_leaderboard <- function(h2o_leaderboard,
     order_by <- tolower(order_by[[1]])
     
     leaderboard_tbl <- h2o_leaderboard %>%
-        as.tibble() %>%
+        as_tibble() %>%
         mutate(model_type = str_split(model_id, "_", simplify = T)[,1]) %>%
         rownames_to_column(var = "rowname") %>%
         mutate(model_id = paste0(rowname, ". ", as.character(model_id)) %>% as.factor())
     
     # Transformation
-    if (order_by == "auc") {                                          ############
+    if (order_by == "auc") {                                          
         
         data_transformed_tbl <- leaderboard_tbl %>%
             slice(1:n_max) %>%
@@ -224,7 +225,7 @@ plot_h2o_leaderboard <- function(h2o_leaderboard,
             gather(key = key, value = value, 
                    -c(model_id, model_type, rowname), factor_key = T) 
         
-    } else if (order_by == "logloss") {                                 ############
+    } else if (order_by == "logloss") {                                 
         
         data_transformed_tbl <- leaderboard_tbl %>%
             slice(1:n_max) %>%
@@ -233,6 +234,56 @@ plot_h2o_leaderboard <- function(h2o_leaderboard,
                 model_type = as.factor(model_type)
             ) %>%
             gather(key = key, value = value, -c(model_id, model_type, rowname), factor_key = T)
+        
+    } else if (order_by == "logloss") {                                 
+        
+        data_transformed_tbl <- leaderboard_tbl %>%
+            slice(1:n_max) %>%
+            mutate(
+                model_id   = as_factor(model_id) %>% reorder(logloss) %>% fct_rev(),
+                model_type = as.factor(model_type)
+            ) %>%
+            gather(key = key, value = value, -c(model_id, model_type, rowname), factor_key = T)
+        
+    } else if (order_by == "aucpr") {                          
+        
+        data_transformed_tbl <- leaderboard_tbl %>%
+            slice(1:n_max) %>%
+            mutate(
+                model_id   = as_factor(model_id) %>% reorder(aucpr) %>% fct_rev(),
+                model_type = as.factor(model_type)
+            ) %>%
+            gather(key = key, value = value, -c(model_id, model_type, rowname), factor_key = T)    
+        
+    } else if (order_by == "mean_per_class_error") {                                
+        
+        data_transformed_tbl <- leaderboard_tbl %>%
+            slice(1:n_max) %>%
+            mutate(
+                model_id   = as_factor(model_id) %>% reorder(mean_per_class_error) %>% fct_rev(),
+                model_type = as.factor(model_type)
+            ) %>%
+            gather(key = key, value = value, -c(model_id, model_type, rowname), factor_key = T)
+        
+    } else if (order_by == "rmse") {     
+        
+        data_transformed_tbl <- leaderboard_tbl %>%
+            slice(1:n_max) %>%
+            mutate(
+                model_id   = as_factor(model_id) %>% reorder(rmse) %>% fct_rev(),
+                model_type = as.factor(model_type)
+            ) %>%
+            gather(key = key, value = value, -c(model_id, model_type, rowname), factor_key = T)
+        
+    } else if (order_by == "mse") {                                              
+        
+        data_transformed_tbl <- leaderboard_tbl %>%
+            slice(1:n_max) %>%
+            mutate(
+                model_id   = as_factor(model_id) %>% reorder(mse) %>% fct_rev(),
+                model_type = as.factor(model_type)
+            ) %>%
+            gather(key = key, value = value, -c(model_id, model_type, rowname), factor_key = T)    
         
     } else {
         stop(paste0("order_by = '", order_by, "' is not a permitted option."))
@@ -253,8 +304,9 @@ plot_h2o_leaderboard <- function(h2o_leaderboard,
     
     return(g)
     
-}
+} 
 
+# Testing plot_h2o_leaderboard
 automl_models_h2o@leaderboard %>%
     plot_h2o_leaderboard(order_by = "logloss")
 
