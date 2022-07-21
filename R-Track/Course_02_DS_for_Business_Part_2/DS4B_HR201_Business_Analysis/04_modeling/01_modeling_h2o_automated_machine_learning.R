@@ -311,6 +311,50 @@ automl_models_h2o@leaderboard %>%
     plot_h2o_leaderboard(order_by = "logloss")
 
 
+# 4. BONUS: GRID SEARCH & CV ----
+
+deeplearning_h2o <- h2o.loadModel('R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/04_modeling/h2o_models/DeepLearning_1_AutoML_3_20220715_102232')
+deeplearning_h2o
+
+test_tbl
+
+h2o.performance(deeplearning_h2o, newdata = as.h2o(test_tbl))
+## currently, the accuracy is 100-12.7 = 87.3
+## can we improve the accuracy using grid search?
+
+# |- Grid Search ----
+?h2o.grid() 
+?h2o.deeplearning
+deeplearning_h2o@allparameters
+
+
+deeplearning_grid_01 <- h2o.grid(
+    algorithm = 'deeplearning',
+    grid_id   = 'deeplearning_grid_01',
+    
+    # h2o.deeplearning()
+    x                = x,    # predictors -age -> YearsWithCurrManager
+    y                = y,    # target - Attrition
+    training_frame   = train_h2o,
+    validation_frame = valid_h2o,
+    nfolds           = 5,
+    hyper_params     = list(
+        hidden = list(c(10, 10, 10), c(50, 20, 10), c(20, 20, 20)),
+        epochs = c(10, 50, 100)
+    )
+) 
+ 
+
+
+
+
+
+
+
+
+
+
+
 
 # 4. Assessing Performance ----
 
