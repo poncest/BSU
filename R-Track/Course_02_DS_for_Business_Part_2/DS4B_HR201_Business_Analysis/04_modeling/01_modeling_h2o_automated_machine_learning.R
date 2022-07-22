@@ -338,21 +338,31 @@ deeplearning_grid_01 <- h2o.grid(
     training_frame   = train_h2o,
     validation_frame = valid_h2o,
     nfolds           = 5,
+    
+    # Hyperparamters: Use deeplearning_h2o@allparameters to see all
     hyper_params     = list(
+        # Use some combinations (the first one was the original)
         hidden = list(c(10, 10, 10), c(50, 20, 10), c(20, 20, 20)),
         epochs = c(10, 50, 100)
     )
 ) 
+
+deeplearning_grid_01
+
+# examining the results
+h2o.getGrid(grid_id = "deeplearning_grid_01", sort_by = "auc", decreasing = TRUE)
+
+
+deeplearning_grid_01_model_3 <- h2o.getModel("deeplearning_grid_01_model_3")
+
+deeplearning_grid_01_model_3 %>% h2o.auc(train = T, valid = T, xval = T)
+# the model seem to be overfitting b/c the difference between training AUC and 
+# the validation / cross validation AUC
+
+deeplearning_grid_01_model_3 %>%
+    h2o.performance(newdata = as.h2o(test_tbl))
+
  
-
-
-
-
-
-
-
-
-
 
 
 
