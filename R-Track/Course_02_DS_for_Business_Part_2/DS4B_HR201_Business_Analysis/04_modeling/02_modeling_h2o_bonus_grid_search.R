@@ -1,4 +1,4 @@
-# BONUS: GRID SEARCH & CV ----
+# BONUS: GRID SEARCH & CV ---- 
 
 deeplearning_h2o <- h2o.loadModel("04_Modeling/h2o_models/DeepLearning_0_AutoML_20180503_035824")
 deeplearning_h2o

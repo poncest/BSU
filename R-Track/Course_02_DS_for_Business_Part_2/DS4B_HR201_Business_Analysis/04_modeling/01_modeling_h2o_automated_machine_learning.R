@@ -358,6 +358,8 @@ deeplearning_grid_01_model_3 <- h2o.getModel("deeplearning_grid_01_model_3")
 deeplearning_grid_01_model_3 %>% h2o.auc(train = T, valid = T, xval = T)
 # the model seem to be overfitting b/c the difference between training AUC and 
 # the validation / cross validation AUC
+#     train     valid      xval 
+#   0.9993800 0.7827500 0.7531956 
 
 deeplearning_grid_01_model_3 %>%
     h2o.performance(newdata = as.h2o(test_tbl))
