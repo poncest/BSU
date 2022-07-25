@@ -168,7 +168,6 @@ deeplearning_h2o@allparameters
 
 
 # 3. Visualizing The Leaderboard ----
-
 data_transformed <- automl_models_h2o@leaderboard %>% 
     as_tibble() %>%
     mutate(model_type = str_split(model_id, "_", simplify = T)[,1]) %>% 
@@ -367,14 +366,13 @@ deeplearning_grid_01_model_3 %>%
  
 
 
-
 # 4. Assessing Performance ----
 
-stacked_ensemble_h2o <- h2o.loadModel("04_Modeling/h2o_models/StackedEnsemble_BestOfFamily_0_AutoML_20180503_035824")
+deeplearning_h2o <- h2o.loadModel("R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/04_modeling/h2o_models/DeepLearning_1_AutoML_3_20220715_102232")   
 
-deeplearning_h2o <- h2o.loadModel("04_Modeling/h2o_models/DeepLearning_0_AutoML_20180503_035824")
+stacked_ensemble_h2o <- h2o.loadModel("R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/04_modeling/h2o_models/StackedEnsemble_BestOfFamily_1_AutoML_3_20220715_102232")
 
-glm_h2o <- h2o.loadModel("04_Modeling/h2o_models/GLM_grid_0_AutoML_20180503_035824_model_0")
+glm_h2o <- h2o.loadModel("R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/04_modeling/h2o_models/GLM_1_AutoML_3_20220715_102232")
 
 
 
@@ -384,9 +382,9 @@ typeof(performance_h2o)
 performance_h2o %>% slotNames()
 
 performance_h2o@metrics
- 
-# Classifier Summary Metrics
+  
 
+# Classifier Summary Metrics
 h2o.auc(performance_h2o, train = T, valid = T, xval = T)
 h2o.giniCoef(performance_h2o)
 h2o.logloss(performance_h2o)
@@ -394,11 +392,11 @@ h2o.logloss(performance_h2o)
 h2o.confusionMatrix(stacked_ensemble_h2o)
 h2o.confusionMatrix(performance_h2o)
 
-# Precision vs Recall Plot 
 
+# Precision vs Recall Plot 
 performance_tbl <- performance_h2o %>%
     h2o.metric() %>%
-    as.tibble() 
+    as_tibble() 
 performance_tbl
 
 performance_tbl %>%
