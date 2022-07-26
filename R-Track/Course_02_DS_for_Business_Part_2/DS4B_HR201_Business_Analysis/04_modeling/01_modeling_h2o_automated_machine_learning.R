@@ -58,7 +58,7 @@ split_h2o <- h2o.splitFrame(as.h2o(train_tbl), ratios = c(0.85), seed = 1234)
 # Training, Validation, ad Test data set
 train_h2o <- split_h2o[[1]]   # 85%
 valid_h2o <- split_h2o[[2]]   # 15%
-test_h20  <- as.h2o(test_tbl) 
+test_h2o  <- as.h2o(test_tbl) 
 
 
 # Specifying the columns 
@@ -385,9 +385,9 @@ performance_h2o@metrics
   
 
 # Classifier Summary Metrics
-h2o.auc(performance_h2o, train = T, valid = T, xval = T)
-h2o.giniCoef(performance_h2o)
-h2o.logloss(performance_h2o)
+h2o.auc(performance_h2o, train = T, valid = T, xval = T)  
+h2o.giniCoef(performance_h2o)  
+h2o.logloss(performance_h2o)  
 
 h2o.confusionMatrix(stacked_ensemble_h2o)
 h2o.confusionMatrix(performance_h2o)
