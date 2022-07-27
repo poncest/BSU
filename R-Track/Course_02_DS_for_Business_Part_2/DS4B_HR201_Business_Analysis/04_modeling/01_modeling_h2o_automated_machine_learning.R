@@ -392,15 +392,38 @@ h2o.logloss(performance_h2o)
 h2o.confusionMatrix(stacked_ensemble_h2o)
 h2o.confusionMatrix(performance_h2o)
 
+# Important measures that vary by threshold:
+
+# F1: Optimal balance between precision and recall. Typically the threshold that maximizes F1 is used as threshold/ cutoff for turning class probability into 0/1. However, this is not always the best case! An expected value optimization is required when costs of false positives and false negatives are known.
+
+# Precision: Measures false positives (e.g. predicted to leave but actually stayed)
+ 
+# Recall: Measures false negatives (e.g. predicted to stay but actually left)
+ 
+# True positives (tps), true negative (tns), false positives (fps) and false negatives (fns): Often converted to rates to understand the cost/benefit of a classifier. The rates are included as tpr, tnr, fpr and fnr.
+
+
 
 # Precision vs Recall Plot 
+
+# Precision = TP / (TP + FP)  It indicates how often we incorrectly say people will leave 
+# when they actually will stay
+
+# Recall = TP / (FN + TP)  It indicates how often we miss people that will leave by 
+# incorrectly predicting they will stay. 
+
+# In business context, recall i typically more important than precision.
+
+# F1 score = 2 x [(precision * recall) / (precision + recall)]  It is a balance metrics
+# We're interested in the Threshold that maximize the F1 Score 
+
 performance_tbl <- performance_h2o %>%
     h2o.metric() %>%
     as_tibble() 
-performance_tbl
+performance_tbl 
 
 performance_tbl %>%
-    filter(f1 == max(f1))
+    filter(f1 == max(f1)) 
 
 performance_tbl %>%
     ggplot(aes(x = threshold)) +
