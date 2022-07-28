@@ -436,7 +436,7 @@ performance_tbl %>%
 
 # ROC Plot
 
-path <- "04_Modeling/h2o_models/DeepLearning_0_AutoML_20180503_035824"
+path <- "R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/04_modeling/h2o_models/DeepLearning_1_AutoML_3_20220715_102232"
 
 load_model_performance_metrics <- function(path, test_tbl) {
     
@@ -445,16 +445,16 @@ load_model_performance_metrics <- function(path, test_tbl) {
     
     perf_h2o %>%
         h2o.metric() %>%
-        as.tibble() %>%
+        as_tibble() %>%
         mutate(auc = h2o.auc(perf_h2o)) %>%
         select(tpr, fpr, auc)
     
-}
+} 
 
-model_metrics_tbl <- fs::dir_info(path = "04_Modeling/h2o_models/") %>%
+# we want to get the performance metrics for all three models
+model_metrics_tbl <- fs::dir_info(path = "R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/04_modeling/h2o_models/") %>%
     select(path) %>%
     mutate(metrics = map(path, load_model_performance_metrics, test_tbl)) %>%
-    # * FIX 4: unnest requires cols ----
     unnest(cols = metrics)
 
 model_metrics_tbl %>%
