@@ -473,7 +473,6 @@ model_metrics_tbl %>%
     )
 
 # Precision vs Recall
-
 load_model_performance_metrics <- function(path, test_tbl) {
     
     model_h2o <- h2o.loadModel(path)
