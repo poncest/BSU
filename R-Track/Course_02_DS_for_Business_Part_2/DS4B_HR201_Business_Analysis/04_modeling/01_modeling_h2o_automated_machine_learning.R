@@ -123,17 +123,14 @@ automl_models_h2o@leaderboard %>%
 
 
 # Saving Models 
-h2o.getModel("GLM_1_AutoML_3_20220715_102232") %>% 
-    h2o.saveModel(path = "R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/04_modeling/h2o_models/")
-
-h2o.getModel("StackedEnsemble_AllModels_2_AutoML_3_20220715_102232") %>% 
-    h2o.saveModel(path = "R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/04_modeling/h2o_models/")
-
-h2o.getModel("StackedEnsemble_BestOfFamily_1_AutoML_3_20220715_102232") %>% 
-    h2o.saveModel(path = "R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/04_modeling/h2o_models/")
-
-h2o.getModel("DeepLearning_1_AutoML_3_20220715_102232") %>% 
-    h2o.saveModel(path = "R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/04_modeling/h2o_models/")
+# h2o.getModel("GLM_1_AutoML_3_20220715_102232") %>% 
+#     h2o.saveModel(path = "R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/04_modeling/h2o_models/")
+# 
+# h2o.getModel("StackedEnsemble_BestOfFamily_1_AutoML_3_20220715_102232") %>% 
+#     h2o.saveModel(path = "R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/04_modeling/h2o_models/")
+# 
+# h2o.getModel("DeepLearning_1_AutoML_3_20220715_102232") %>% 
+#     h2o.saveModel(path = "R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/04_modeling/h2o_models/")
  
 
 # Loading Models
@@ -366,7 +363,7 @@ deeplearning_grid_01_model_3 %>%
  
 
 
-# 4. Assessing Performance ----
+# 5. Assessing Performance ----
 
 deeplearning_h2o <- h2o.loadModel("R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/04_modeling/h2o_models/DeepLearning_1_AutoML_3_20220715_102232")   
 
@@ -434,7 +431,7 @@ performance_tbl %>%
     labs(title = "Precision vs Recall", y = "value")
 
 
-# ROC Plot
+# ROC Plot - receiver operating characteristic curve
 
 path <- "R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/04_modeling/h2o_models/DeepLearning_1_AutoML_3_20220715_102232"
 
@@ -457,21 +454,26 @@ model_metrics_tbl <- fs::dir_info(path = "R-Track/Course_02_DS_for_Business_Part
     mutate(metrics = map(path, load_model_performance_metrics, test_tbl)) %>%
     unnest(cols = metrics)
 
+
+# tidydata & ROC plot
 model_metrics_tbl %>%
     mutate(
-        path = str_split(path, pattern = "/", simplify = T)[,3] %>% as_factor(),
+        # extract the model name
+        path = str_split(path, pattern = "/", simplify = T)[,6] %>% as_factor(),
+        # convert the auc values to factors so they can be used as labels
         auc  = auc %>% round(3) %>% as.character() %>% as_factor()
-        ) %>%
-    ggplot(aes(fpr, tpr, color = path, linetype = auc)) +
+        ) %>% 
+    
+    ggplot(aes(x = fpr, y = tpr, color = path, linetype = auc)) +
     geom_line(size = 1) +
     theme_tq() +
     scale_color_tq() +
     theme(legend.direction = "vertical") +
     labs(
-        title = "ROC Plot",
+        title    = "ROC Plot",
         subtitle = "Performance of 3 Top Performing Models"
     )
-
+ 
 # Precision vs Recall
 load_model_performance_metrics <- function(path, test_tbl) {
     
