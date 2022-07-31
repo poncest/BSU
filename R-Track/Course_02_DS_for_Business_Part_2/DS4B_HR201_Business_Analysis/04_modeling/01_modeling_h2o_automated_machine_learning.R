@@ -482,19 +482,18 @@ load_model_performance_metrics <- function(path, test_tbl) {
     
     perf_h2o %>%
         h2o.metric() %>%
-        as.tibble() %>%
+        as_tibble() %>%
         mutate(auc = h2o.auc(perf_h2o)) %>%
-        select(tpr, fpr, auc, precision, recall)
+        select(tpr, fpr, auc, precision, recall) 
     
 }
 
-model_metrics_tbl <- fs::dir_info(path = "04_Modeling/h2o_models/") %>%
+model_metrics_tbl <- fs::dir_info(path = "R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/04_modeling/h2o_models/") %>%
     select(path) %>%
     mutate(metrics = map(path, load_model_performance_metrics, test_tbl)) %>%
-    # * FIX 4: unnest requires cols ----
     unnest(metrics)
 
-model_metrics_tbl %>%
+model_metrics_tbl %>%                                                               ###
     mutate(
         path = str_split(path, pattern = "/", simplify = T)[,3] %>% as_factor(),
         auc  = auc %>% round(3) %>% as.character() %>% as_factor()
@@ -505,10 +504,11 @@ model_metrics_tbl %>%
     scale_color_tq() +
     theme(legend.direction = "vertical") +
     labs(
-        title = "Precision vs Recall Plot",
+        title    = "Precision vs Recall Plot",
         subtitle = "Performance of 3 Top Performing Models"
     )
 
+  
 # Gain & Lift
 
 ranked_predictions_tbl <- predictions_tbl %>%
