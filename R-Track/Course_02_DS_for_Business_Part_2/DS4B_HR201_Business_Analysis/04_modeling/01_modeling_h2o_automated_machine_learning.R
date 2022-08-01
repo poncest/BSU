@@ -493,7 +493,7 @@ model_metrics_tbl <- fs::dir_info(path = "R-Track/Course_02_DS_for_Business_Part
     mutate(metrics = map(path, load_model_performance_metrics, test_tbl)) %>%
     unnest(metrics)
 
-model_metrics_tbl %>%                                                               ###
+model_metrics_tbl %>%                                                               
     mutate(
         path = str_split(path, pattern = "/", simplify = T)[,3] %>% as_factor(),
         auc  = auc %>% round(3) %>% as.character() %>% as_factor()
@@ -516,18 +516,33 @@ ranked_predictions_tbl <- predictions_tbl %>%
     select(predict:Yes, Attrition) %>%
     arrange(desc(Yes))
 
+## without the model we only expected an attrition of 1.6 pp or 16%
+# How do we come up with 16%?
+train_readable_tbl %>%
+    rbind(test_readable_tbl) %>%
+    group_by(Attrition) %>%
+    summarize(n = n()) %>%
+    ungroup() %>%   
+    mutate(pct = n/sum(n)) %>%
+    ungroup()
+
+## For our test data the total number of expected quitters is 220 * 0.16 = 35.
+## Gain: If 35 people expected to quit, we gained 9 of 35 or 25.7% in first 10 cases
+## Lift: If expectation is 1.6 people, we beat the expectation by 9 / 1.6 = 5.6X in first 10 cases.
+
+    
 calculated_gain_lift_tbl <- ranked_predictions_tbl %>%
     mutate(ntile = ntile(Yes, n = 10)) %>%
     group_by(ntile) %>%
     summarise(
-        cases = n(),
+        cases     = n(),
         responses = sum(Attrition == "Yes")
     ) %>%
     arrange(desc(ntile)) %>%
     mutate(group = row_number()) %>%
     select(group, cases, responses) %>%
     mutate(
-        cumulative_responses = cumsum(responses),
+        cumulative_responses = cumsum(responses),                             ######
         pct_responses        = responses / sum(responses),
         gain                 = cumsum(pct_responses),
         cumulative_pct_cases = cumsum(cases) / sum(cases),
@@ -538,10 +553,13 @@ calculated_gain_lift_tbl <- ranked_predictions_tbl %>%
 
 calculated_gain_lift_tbl 
 
+## ntile() breaks continuous value into “n” buckets or groups. This allows us to group the response (attrition) based on the ntile column.
+
+## 10th Decile. This group had the highest class probability for leaving. 18 of 22 actually left.
 
 gain_lift_tbl <- performance_h2o %>%
     h2o.gainsLift() %>%
-    as.tibble()
+    as_tibble()
 
 gain_transformed_tbl <- gain_lift_tbl %>% 
     select(group, cumulative_data_fraction, cumulative_capture_rate, cumulative_lift) %>%
