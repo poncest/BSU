@@ -539,10 +539,14 @@ calculated_gain_lift_tbl <- ranked_predictions_tbl %>%
         responses = sum(Attrition == "Yes")
     ) %>%
     arrange(desc(ntile)) %>%
+    
+    # add group numbers (opposite of ntile)
     mutate(group = row_number()) %>%
     select(group, cases, responses) %>%
+    
+    # calculations
     mutate(
-        cumulative_responses = cumsum(responses),                             ######
+        cumulative_responses = cumsum(responses),                             
         pct_responses        = responses / sum(responses),
         gain                 = cumsum(pct_responses),
         cumulative_pct_cases = cumsum(cases) / sum(cases),
