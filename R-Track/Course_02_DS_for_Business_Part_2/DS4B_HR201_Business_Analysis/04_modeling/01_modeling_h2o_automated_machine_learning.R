@@ -565,42 +565,54 @@ gain_lift_tbl <- performance_h2o %>%
     h2o.gainsLift() %>%
     as_tibble()
 
+# data transformation
 gain_transformed_tbl <- gain_lift_tbl %>% 
     select(group, cumulative_data_fraction, cumulative_capture_rate, cumulative_lift) %>%
     select(-contains("lift")) %>%
     mutate(baseline = cumulative_data_fraction) %>%
-    rename(gain = cumulative_capture_rate) %>%
-    gather(key = key, value = value, gain, baseline)
+    rename(gain     = cumulative_capture_rate) %>%
+    # prepare the data for the plotting (for the color and group aesthetics)
+    pivot_longer(cols      = c(gain, baseline), 
+                 values_to = "value", 
+                 names_to  = "key")
 
+
+# gain chart
 gain_transformed_tbl %>%
     ggplot(aes(x = cumulative_data_fraction, y = value, color = key)) +
     geom_line(size = 1.5) +
-    theme_tq() +
     scale_color_tq() +
     labs(
         title = "Gain Chart",
-        x = "Cumulative Data Fraction",
-        y = "Gain"
-    )
+        x     = "Cumulative Data Fraction",
+        y     = "Gain"
+    ) + 
+    theme_tq() 
 
+# data transformation
 lift_transformed_tbl <- gain_lift_tbl %>% 
     select(group, cumulative_data_fraction, cumulative_capture_rate, cumulative_lift) %>%
     select(-contains("capture")) %>%
-    mutate(baseline = 1) %>%
-    rename(lift = cumulative_lift) %>%
-    gather(key = key, value = value, lift, baseline)
+    # the reason baseline is 1 is b/c the `cumulative_pct_cases` and `gain_baseline` are equal
+    mutate(baseline = 1) %>%                               
+    rename(lift     = cumulative_lift) %>%
+    pivot_longer(cols      = c(gain, baseline), 
+                 values_to = "value", 
+                 names_to  = "key")
 
+
+# lift chart
 lift_transformed_tbl %>%
     ggplot(aes(x = cumulative_data_fraction, y = value, color = key)) +
     geom_line(size = 1.5) +
-    theme_tq() +
     scale_color_tq() +
     labs(
         title = "Lift Chart",
-        x = "Cumulative Data Fraction",
-        y = "Lift"
-    )
-
+        x     = "Cumulative Data Fraction",
+        y     = "Lift"
+    ) + 
+    theme_tq() 
+  
 
 # 5. Performance Visualization ----  
 
