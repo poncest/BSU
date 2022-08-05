@@ -616,31 +616,32 @@ lift_transformed_tbl %>%
 
 # 5. Performance Visualization ----  
 
+# Leaderboard Visualization
 h2o_leaderboard <- automl_models_h2o@leaderboard
-newdata <- test_tbl
-order_by <- "auc"
-max_models <- 4
-size <- 1
+newdata         <- test_tbl
+order_by        <- "auc"
+max_models      <- 4
+size            <- 1
 
+# arguments
 plot_h2o_performance <- function(h2o_leaderboard, newdata, order_by = c("auc", "logloss"),
                                  max_models = 3, size = 1.5) {
     
     # Inputs
-    
     leaderboard_tbl <- h2o_leaderboard %>%
-        as.tibble() %>%
+        as_tibble() %>%
         slice(1:max_models)
     
     newdata_tbl <- newdata %>%
-        as.tibble()
+        as_tibble()
     
-    order_by <- tolower(order_by[[1]])
+    order_by      <- tolower(order_by[[1]])
     order_by_expr <- rlang::sym(order_by)
     
     h2o.no_progress()
     
-    # 1. Model metrics
     
+    # 1. Model metrics
     get_model_performance_metrics <- function(model_id, test_tbl) {
         
         model_h2o <- h2o.getModel(model_id)
@@ -674,7 +675,6 @@ plot_h2o_performance <- function(h2o_leaderboard, newdata, order_by = c("auc", "
     
     
     # 1A. ROC Plot
-    
     p1 <- model_metrics_tbl %>%
         ggplot(aes_string("fpr", "tpr", color = "model_id", linetype = order_by)) +
         geom_line(size = size) +
@@ -684,7 +684,6 @@ plot_h2o_performance <- function(h2o_leaderboard, newdata, order_by = c("auc", "
         theme(legend.direction = "vertical")
     
     # 1B. Precision vs Recall
-    
     p2 <- model_metrics_tbl %>%
         ggplot(aes_string("recall", "precision", color = "model_id", linetype = order_by)) +
         geom_line(size = size) +
@@ -695,7 +694,6 @@ plot_h2o_performance <- function(h2o_leaderboard, newdata, order_by = c("auc", "
     
     
     # 2. Gain / Lift
-    
     get_gain_lift <- function(model_id, test_tbl) {
         
         model_h2o <- h2o.getModel(model_id)
@@ -731,8 +729,8 @@ plot_h2o_performance <- function(h2o_leaderboard, newdata, order_by = c("auc", "
             lift = cumulative_lift
         ) 
     
-    # 2A. Gain Plot
     
+    # 2A. Gain Plot
     p3 <- gain_lift_tbl %>%
         ggplot(aes_string("cumulative_data_fraction", "gain", 
                           color = "model_id", linetype = order_by)) +
@@ -746,8 +744,8 @@ plot_h2o_performance <- function(h2o_leaderboard, newdata, order_by = c("auc", "
              x = "Cumulative Data Fraction", y = "Gain") +
         theme(legend.position = "none")
     
-    # 2B. Lift Plot
     
+    # 2B. Lift Plot
     p4 <- gain_lift_tbl %>%
         ggplot(aes_string("cumulative_data_fraction", "lift", 
                           color = "model_id", linetype = order_by)) +
