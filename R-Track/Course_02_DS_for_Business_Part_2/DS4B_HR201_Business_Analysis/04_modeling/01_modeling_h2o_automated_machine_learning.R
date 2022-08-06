@@ -617,6 +617,9 @@ lift_transformed_tbl %>%
 # 5. Performance Visualization ----  
 
 # Leaderboard Visualization
+
+# Setup inputs
+# adjust input so that all formats are working
 h2o_leaderboard <- automl_models_h2o@leaderboard
 newdata         <- test_tbl
 order_by        <- "auc"
@@ -638,7 +641,7 @@ plot_h2o_performance <- function(h2o_leaderboard, newdata, order_by = c("auc", "
     order_by      <- tolower(order_by[[1]])
     order_by_expr <- rlang::sym(order_by)
     
-    h2o.no_progress()
+    h2o.no_progress()   # turn off progress bar
     
     
     # 1. Model metrics
