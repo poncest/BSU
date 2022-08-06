@@ -16,11 +16,11 @@ There are 5 Courses in this series:
 
 1.  [Course 1: Data Science for Business Part 1](https://github.com/poncest/BSU/tree/main/R-Track/Course%201%20-%20DS%20for%20Business%20Part%201/DS4B_101_R_Business_Analysis)
     -   [Course Project: Company Segmentation](https://rpubs.com/poncest/885397)
-2.  Course 2: Data Science for Business Part 2
-    -   Course Project: Title
+2.  [Course 2: Data Science for Business Part 2](https://github.com/poncest/BSU/tree/main/R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis)
+    -   Course Project:
 3.  Course 3: Shiny Web Applications Part 1
-    -   Course Project: Title
+    -   Course Project:
 4.  Course 4: Shiny Web Applications Part 2
-    -   Course Project: Title
+    -   Course Project:
 5.  Course 5: High Performance Time Series
-    -   Course Project: Title
+    -   Course Project:
