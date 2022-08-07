@@ -12,7 +12,11 @@ There are 5 Courses in this series:
 
 ------------------------------------------------------------------------
 
-## Table of Contents
+<details>
+
+<summary>Table of Contents (click to expand)</summary>
+
+<!-- toc -->
 
 1.  [Data Science for Business Part 1](https://github.com/poncest/BSU/tree/main/R-Track/Course%201%20-%20DS%20for%20Business%20Part%201/DS4B_101_R_Business_Analysis)
     -   [Project: Company Segmentation](https://rpubs.com/poncest/885397)
@@ -24,3 +28,6 @@ There are 5 Courses in this series:
     -   Project:
 5.  High Performance Time Series
     -   Project:
+    
+<!-- tocstop -->
+</details>
