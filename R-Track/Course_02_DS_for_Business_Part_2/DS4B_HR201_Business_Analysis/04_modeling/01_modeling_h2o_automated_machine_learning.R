@@ -644,7 +644,7 @@ plot_h2o_performance <- function(h2o_leaderboard, newdata, order_by = c("auc", "
     h2o.no_progress()   # turn off progress bar
     
     
-    # 1. Model metrics
+    # 1. Model metrics 
     get_model_performance_metrics <- function(model_id, test_tbl) {
         
         model_h2o <- h2o.getModel(model_id)
@@ -659,10 +659,10 @@ plot_h2o_performance <- function(h2o_leaderboard, newdata, order_by = c("auc", "
     
     model_metrics_tbl <- leaderboard_tbl %>%
         mutate(metrics = map(model_id, get_model_performance_metrics, newdata_tbl)) %>%
-        # * FIX 4: unnest requires cols ----
         unnest(metrics) %>%
         mutate(
             model_id = as_factor(model_id) %>% 
+                # order by expression
                 fct_reorder(!! order_by_expr, .desc = ifelse(order_by == "auc", TRUE, FALSE)),
             auc  = auc %>% 
                 round(3) %>% 
@@ -677,8 +677,11 @@ plot_h2o_performance <- function(h2o_leaderboard, newdata, order_by = c("auc", "
         )
     
     
-    # 1A. ROC Plot
+    # 1A. ROC Plot 
     p1 <- model_metrics_tbl %>%
+        
+        # `aes_string()` and `aes_()` are particularly useful when writing functions that create plots
+        # because you can use strings or quoted names/calls to define the aesthetic mappings
         ggplot(aes_string("fpr", "tpr", color = "model_id", linetype = order_by)) +
         geom_line(size = size) +
         theme_tq() +
@@ -686,17 +689,18 @@ plot_h2o_performance <- function(h2o_leaderboard, newdata, order_by = c("auc", "
         labs(title = "ROC", x = "FPR", y = "TPR") +
         theme(legend.direction = "vertical")
     
+    
     # 1B. Precision vs Recall
     p2 <- model_metrics_tbl %>%
         ggplot(aes_string("recall", "precision", color = "model_id", linetype = order_by)) +
         geom_line(size = size) +
         theme_tq() +
         scale_color_tq() +
-        labs(title = "Precision Vs Recall", x = "Recall", y = "Precision") +
+        labs(title = "Precision Vs. Recall", x = "Recall", y = "Precision") +
         theme(legend.position = "none")
+     
     
-    
-    # 2. Gain / Lift
+    # 2. Gain / Lift 
     get_gain_lift <- function(model_id, test_tbl) {
         
         model_h2o <- h2o.getModel(model_id)
