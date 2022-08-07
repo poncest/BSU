@@ -10,11 +10,9 @@ There are 5 Courses in this series:
 -   Shiny Developer with AWS - Build Scalable Data Science Applications using `R`, `Shiny`, and `AWS` Cloud Technology.
 -   High-Performance Time Series - Learn state-of-the-art forecasting using `modeltime`, `timetk`, and `GluonTS` machine learning.
 
-------------------------------------------------------------------------
-
 <details>
 
-<summary>Table of Contents (click to expand)</summary>
+<summary><h2><strong>Table of Contents (click to expand)</strong></h2></summary>
 
 <!-- toc -->
 
@@ -28,6 +26,7 @@ There are 5 Courses in this series:
     -   Project:
 5.  High Performance Time Series
     -   Project:
-    
+
 <!-- tocstop -->
+
 </details>
