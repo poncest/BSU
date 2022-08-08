@@ -455,7 +455,7 @@ model_metrics_tbl <- fs::dir_info(path = "R-Track/Course_02_DS_for_Business_Part
     unnest(cols = metrics)
 
 
-# tidydata & ROC plot
+# tidydata & ROC plot 
 model_metrics_tbl %>%
     mutate(
         # extract the model name
@@ -596,7 +596,7 @@ lift_transformed_tbl <- gain_lift_tbl %>%
     # the reason baseline is 1 is b/c the `cumulative_pct_cases` and `gain_baseline` are equal
     mutate(baseline = 1) %>%                               
     rename(lift     = cumulative_lift) %>%
-    pivot_longer(cols      = c(gain, baseline), 
+    pivot_longer(cols      = c(lift, baseline), 
                  values_to = "value", 
                  names_to  = "key")
 
@@ -708,14 +708,13 @@ plot_h2o_performance <- function(h2o_leaderboard, newdata, order_by = c("auc", "
         
         perf_h2o %>%
             h2o.gainsLift() %>%
-            as.tibble() %>%
+            as_tibble() %>%
             select(group, cumulative_data_fraction, cumulative_capture_rate, cumulative_lift)
         
     }
     
     gain_lift_tbl <- leaderboard_tbl %>%
         mutate(metrics = map(model_id, get_gain_lift, newdata_tbl)) %>%
-        # * FIX 4: unnest requires cols ----
         unnest(metrics) %>%
         mutate(
             model_id = as_factor(model_id) %>% 
@@ -734,14 +733,15 @@ plot_h2o_performance <- function(h2o_leaderboard, newdata, order_by = c("auc", "
         rename(
             gain = cumulative_capture_rate,
             lift = cumulative_lift
-        ) 
+            ) 
     
     
-    # 2A. Gain Plot
+    # 2A. Gain Plot 
     p3 <- gain_lift_tbl %>%
-        ggplot(aes_string("cumulative_data_fraction", "gain", 
+        ggplot(aes_string(x = "cumulative_data_fraction", y = "gain", 
                           color = "model_id", linetype = order_by)) +
         geom_line(size = size) +
+        # trick yo set up the baseline
         geom_segment(x = 0, y = 0, xend = 1, yend = 1, 
                      color = "black", size = size) +
         theme_tq() +
@@ -754,9 +754,10 @@ plot_h2o_performance <- function(h2o_leaderboard, newdata, order_by = c("auc", "
     
     # 2B. Lift Plot
     p4 <- gain_lift_tbl %>%
-        ggplot(aes_string("cumulative_data_fraction", "lift", 
+        ggplot(aes_string(x = "cumulative_data_fraction", y = "lift", 
                           color = "model_id", linetype = order_by)) +
         geom_line(size = size) +
+        # trick yo set up the baseline
         geom_segment(x = 0, y = 1, xend = 1, yend = 1, 
                      color = "black", size = size) +
         theme_tq() +
