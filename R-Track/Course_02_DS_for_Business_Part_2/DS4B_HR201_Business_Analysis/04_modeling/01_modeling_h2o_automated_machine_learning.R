@@ -7,7 +7,7 @@
 
 # Load Libraries 
 library(pacman)
-p_load(h2o, recipes, readxl, tidyverse, tidyquant, stringr, forcats, cowplot, fs,glue)
+p_load(h2o, recipes, readxl, tidyverse, tidyquant, stringr, forcats, cowplot, fs, glue)
 
 
 # Load Data
@@ -617,6 +617,7 @@ lift_transformed_tbl %>%
 # 5. Performance Visualization ----  
 
 # Leaderboard Visualization
+# Model Diagnostic Dashboard using the cowplot package
 
 # Setup inputs
 # adjust input so that all formats are working
@@ -769,21 +770,25 @@ plot_h2o_performance <- function(h2o_leaderboard, newdata, order_by = c("auc", "
     
     
     # Combine using cowplot
-    p_legend <- get_legend(p1)
-    p1 <- p1 + theme(legend.position = "none")
+    p_legend <- cowplot::get_legend(p1)               # extract the legend from a ggplot object
+    p1 <- p1 + theme(legend.position = "none")        # remove the legend from p1
     
-    p <- cowplot::plot_grid(p1, p2, p3, p4, ncol = 2) 
+    p <- cowplot::plot_grid(p1, p2, p3, p4, ncol = 2) # combine all 4 plots (2x1)
     
-    p_title <- ggdraw() + 
-        draw_label("H2O Model Metrics", size = 18, fontface = "bold", 
+    # adding titles and subtitle
+    p_title <- cowplot::ggdraw() + 
+        cowplot::draw_label("H2O Model Metrics", size = 18, fontface = "bold", 
                    colour = palette_light()[[1]])
     
-    p_subtitle <- ggdraw() + 
-        draw_label(glue("Ordered by {toupper(order_by)}"), size = 10,  
+    p_subtitle <- cowplot::ggdraw() + 
+        cowplot::draw_label(glue("Ordered by {toupper(order_by)}"), size = 10,  
                    colour = palette_light()[[1]])
     
-    ret <- plot_grid(p_title, p_subtitle, p, p_legend, 
-                     ncol = 1, rel_heights = c(0.05, 0.05, 1, 0.05 * max_models))
+    # Combine everything
+    ret <- cowplot::plot_grid(p_title, p_subtitle, p, p_legend, 
+                     ncol = 1, 
+                     # Adjust the relative spacing, so that the legends always fits
+                     rel_heights = c(0.05, 0.05, 1, 0.05 * max_models))  
     
     h2o.show_progress()
     
@@ -791,6 +796,7 @@ plot_h2o_performance <- function(h2o_leaderboard, newdata, order_by = c("auc", "
     
 }
 
+# testing
 automl_models_h2o@leaderboard %>%
     plot_h2o_performance(newdata = test_tbl, order_by = "logloss", 
                          size = 1, max_models = 4)
