@@ -1200,6 +1200,23 @@
         "rlang"
       ]
     },
+    "lime": {
+      "Package": "lime",
+      "Version": "0.5.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "b9881995e5cacd76cf952dc0016ed0fb",
+      "Requirements": [
+        "Matrix",
+        "Rcpp",
+        "RcppEigen",
+        "assertthat",
+        "ggplot2",
+        "glmnet",
+        "gower",
+        "stringi"
+      ]
+    },
     "listenv": {
       "Package": "listenv",
       "Version": "0.8.0",
