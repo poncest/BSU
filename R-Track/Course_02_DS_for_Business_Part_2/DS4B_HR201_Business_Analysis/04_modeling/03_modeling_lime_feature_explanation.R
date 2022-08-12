@@ -39,7 +39,6 @@ train_tbl <- bake(recipe_obj, new_data = train_readable_tbl)
 test_tbl  <- bake(recipe_obj, new_data = test_readable_tbl)
 
 
-
 # 2. Models ----
 
 # initialize
@@ -50,6 +49,26 @@ automl_leader <- h2o.loadModel("R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR
 
 automl_leader
 
+# 3. LIME ----
+
+# 3.1 Making Predictions ----
+
+predictions_tbl <- automl_leader %>% 
+    h2o.predict(newdata = as.h2o(test_tbl)) %>% 
+    as_tibble() %>% 
+    bind_cols(
+        test_tbl %>% 
+            select(Attrition, EmployeeNumber)
+    )
+
+
+# Let’s investigate the 1st employee, that did indeed leave the company:
+test_tbl %>% 
+    slice(5) %>%   # first yes (atttrition) from the prediction_tbl
+    glimpse()
+
+
+# |- Lime for single explanation, Part 1 ---- 
 
 
 
