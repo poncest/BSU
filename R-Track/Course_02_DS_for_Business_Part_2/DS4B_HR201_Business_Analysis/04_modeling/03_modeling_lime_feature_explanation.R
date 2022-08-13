@@ -90,23 +90,69 @@ explainer
 
 
 # |- Lime for single explanation, Part 2 ---- 
+# LIME Algorithm 6 Steps:
+   
+# 1. Given an observation, permute it to create replicated feature data with slight value modifications.
+# 2. Compute similarity distance measure between original observation and permuted observations.
+# 3. Apply selected machine learning model to predict outcomes of permuted data.
+# 4. Select m number of features to best describe predicted outcomes.
+# 5. Fit a simple model to the permuted data, explaining the complex model outcome with m features from 
+#    the permuted data weighted by its similarity to the original observation.
+# 6. Use the resulting feature weights to explain local behavior.
+
+
 ?lime::explain
 
+# kernel_width: Affects the lime linear model fit (R-squared value) and therefore should be 
+# tuned to make sure you get the best explanations.
+
 explanation <- test_tbl %>%
-    slice(1) %>%
+    slice(5) %>%
     select(-Attrition) %>%
     lime::explain(
         
         # Pass our explainer object
-        explainer = explainer,
+        explainer      = explainer,
         # Because it is a binary classification model: 1
-        n_labels   = 1,
+        n_labels       = 1,
         # number of features to be returned
-        n_features = 8,
+        n_features     = 8,
         # number of localized linear models
         n_permutations = 5000,
         # Let's start with 1
-        kernel_width   = 1
+        kernel_width   = 1.5
     )
 
 explanation
+
+# In my case the R-squared value (model_r2) is a little bit low. This is what you want to look at for lime. 
+# This is how you investigate your lime models. You want those values as high as possible and you can 
+# adjust that using your kernel_width (0.5 or 1.5 gave me better results).
+
+# kernel_width   = 0.5; model_r2 = 0.318
+# kernel_width   = 1.0; model_r2 = 0.331
+# kernel_width   = 1.0; model_r2 = 0.338
+
+
+# Let’s select the columns, that are important to us.
+explanation %>%
+    as_tibble() %>%
+    select(feature:prediction) 
+
+
+# Visualizing feature importance for a single explanation
+# plot_feature()
+g <- plot_features(explanation = explanation, ncol = 1)
+g
+ 
+
+
+
+
+
+
+
+
+
+
+
