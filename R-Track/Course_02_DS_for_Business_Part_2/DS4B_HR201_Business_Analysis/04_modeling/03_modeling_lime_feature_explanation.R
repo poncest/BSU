@@ -64,12 +64,49 @@ predictions_tbl <- automl_leader %>%
 
 # Let’s investigate the 1st employee, that did indeed leave the company:
 test_tbl %>% 
-    slice(5) %>%   # first yes (atttrition) from the prediction_tbl
+    slice(5) %>%   # first yes (attrition) from the prediction_tbl
     glimpse()
 
 
 # |- Lime for single explanation, Part 1 ---- 
+# LIME is used to determine which features contribute to the prediction (& by how much) for a single observation (i.e. local). h2o, keras & caret R packages have been integrated into lime.  Using Lime is is a 2 steps process:
+
+# 1. Build an explainer with lime() (“recipe” for creating an explanation. It contains the ML model & feature distributions (bins) for the training data.)
+# 2. Create an explanation with explain()
 
 
+# 3.2 Single Explanation ----
+# step 1 lime()
+explainer <- train_tbl %>%
+    select(-Attrition) %>%
+    lime(
+        model           = automl_leader,
+        bin_continuous  = TRUE,
+        n_bins          = 4,
+        quantile_bins   = TRUE
+    )
+
+explainer
 
 
+# |- Lime for single explanation, Part 2 ---- 
+?lime::explain
+
+explanation <- test_tbl %>%
+    slice(1) %>%
+    select(-Attrition) %>%
+    lime::explain(
+        
+        # Pass our explainer object
+        explainer = explainer,
+        # Because it is a binary classification model: 1
+        n_labels   = 1,
+        # number of features to be returned
+        n_features = 8,
+        # number of localized linear models
+        n_permutations = 5000,
+        # Let's start with 1
+        kernel_width   = 1
+    )
+
+explanation
