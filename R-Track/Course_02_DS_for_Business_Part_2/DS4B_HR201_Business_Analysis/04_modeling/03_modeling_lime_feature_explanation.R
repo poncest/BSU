@@ -144,15 +144,35 @@ explanation %>%
 # plot_feature()
 g <- plot_features(explanation = explanation, ncol = 1)
 g
- 
+
+# Info: 4 < NumCompaniesWorked Note that this label is the result of the continuous variable binning strategy.
+# One of the cuts is at 4, which is how we get this label.
 
 
+# 3.3 Multiple Explanations ----
+#|- Visualizing Feature Importance For Multiple Explanations ----
+explanation <- test_tbl %>%
+    slice(1:20) %>%              # return the first 20 observations
+    select(-Attrition) %>%
+    lime::explain(
+        explainer = explainer,
+        n_labels   = 1,
+        n_features = 8,
+        n_permutations = 5000,
+        kernel_width   = 1.5
+    )
 
+explanation %>%
+    as_tibble()
 
+plot_features(explanation, ncol = 4)
 
+# The plot will be pretty messy. You can change that a little bit by expanding it. But it will still be a little bit messy 
+# and tough to read. It’s too much information to be reported for 20 different cases. If we did only 3 or 4 cases, we could 
+# analyze it that way. But for more cases we need a better method to analyze it. That’s why the next function 
+# comes into play plot_explanations():
 
-
-
+plot_explanations(explanation)
 
 
 
