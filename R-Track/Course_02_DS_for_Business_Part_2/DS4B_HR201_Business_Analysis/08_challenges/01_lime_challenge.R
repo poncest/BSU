@@ -225,48 +225,51 @@ data_transformed %>%
 
 plot_features_tq <- function(explanation, ncol) {
     
-    # Transformation
-    data_transformed <- case_1 %>% 
-        as_tibble() %>% 
-        mutate(
-            feature_desc = as_factor(feature_desc) %>% 
-                fct_reorder(abs(feature_weight), .desc = FALSE),
-            
-            key = ifelse(feature_weight > 0, 'Supports', 'Contradicts') %>% 
-                fct_relevel('Supports'),
-            
-            case_text  = glue('Case: {case}'),
-            label_text = glue('Label: {label}'),
-            prob_text  = glue('Probability: {round(label_prob, 2)}'),
-            r2_text    = glue('Explanation Fit: {round(model_r2, 2)}'),
-        ) %>% 
-        
-        select(feature_desc, feature_weight, key, case_text:r2_text)
+        # Transformation
+        data_transformed <- explanation %>%
+            as_tibble() %>%
+            mutate(
+                feature_desc = as_factor(feature_desc) %>%
+                    fct_reorder(abs(feature_weight), .desc = FALSE),
+                
+                key = ifelse(feature_weight > 0, "Supports", "Contradicts") %>%
+                    fct_relevel("Supports"),
+                
+                total_text   = glue("Case: {case}
+                                     Label: {label}
+                                     Probability: {round(label_prob, 2)}
+                                     Explanation Fit: {round(model_r2, 2)}")) %>%
+            select(feature_desc, feature_weight, key, total_text)
     
     # Visualization
-    data_transformed %>% 
+    data_transformed %>%
         ggplot(aes(feature_desc, feature_weight, fill = key)) +
-        geom_bar(stat = 'identity') +
+        geom_col() +
         coord_flip() +
-        scale_fill_tq() +
         theme_tq() +
-        labs(x = 'Feature', y = 'Weight') + 
-        theme(title = element_text(size = 9)) +
-        facet_wrap(~ case_text + label_text + prob_text + r2_text,
-                   ncol = 1, scales = 'free')
+        scale_fill_tq() +
+        labs(y = "Weight", x = "Feature") +
+        facet_wrap(~ total_text, ncol = ncol, scales = 'free') +
+        theme(strip.placement  = "inside",
+              strip.text       = element_text(color = "black", face = "bold", hjust = 0),
+              strip.background = element_rect(fill="white", color = "white"))
     
 }
 
 # testing
-plot_features_tq(explanation = explanation, ncol = 1)
 
-# ERROR
+# single case
+case_1 <- explanation %>%
+    filter(case == 1)
+
+plot_features_tq(explanation = case_1, ncol = 1)
+
+# six cases
 explanation %>% 
     filter(case %in% 1:6) %>% 
     plot_features_tq(ncol = 3)
-
-
-
+ 
+ 
 
 
 # Part 2: Recreate plot_explanations() ----
@@ -274,12 +277,98 @@ explanation %>%
 # Take the full explanation data and recreate the second plot.
 # You will need at least the layers geom_tile() and facet_wrap().
 
-
-
-
-
 # HINTS:
     
 # If you do get stuck on this challenge, because this is actually a rather difficult challenge, I highly recommend checking out the library lime from Thomas Pedersens’ github page https://github.com/thomasp85/lime. All of the R code is in the folder R. 
+
+explanation %>% 
+    as_tibble()
+
+plot_explanations(explanation)
+
+
+# Transformation
+data_transformed <- explanation %>% 
+    as_tibble() %>% 
+    mutate(
+        case    =  as_factor(case),
+        order_1 = rank(feature)
+    ) %>% 
+    
+    group_by(feature) %>% 
+    mutate(
+        order_2 = rank(feature_value)
+        ) %>% 
+    ungroup() %>% 
+    
+    mutate(
+        order = order_1 * 1000 + order_2
+        ) %>% 
+    
+    mutate(
+        feature_desc = as.factor(feature_desc) %>% 
+            fct_reorder(order, .desc = TRUE)
+    ) %>% 
+    select(case, feature_desc, feature_weight, label)
+            
+  
+# Visualization
+data_transformed %>%
+    ggplot(aes(case, feature_desc)) +
+    geom_tile(aes(fill = feature_weight)) +
+    facet_wrap(~ label) +
+    theme_tq() +
+    scale_fill_gradient2(
+        low   = palette_light()[[2]],
+        mid   = 'white',
+        high = palette_light()[[1]],
+    ) +
+    labs(y = "Feature", x = "Case", fill = glue("Feature Weight")) +
+    theme(
+        panel.grid      = element_blank(),
+        legend.position = 'right',
+        axis.text.x     = element_text(angle = 45,
+                                       hjust = 1,
+                                       vjust = 1)
+    )
+
+# function
+plot_explanations_tq <- function(explanation){
+    
+}
+     
+    
+
+
+
+
+
+
+
+            
+            
+            
+    
+                          
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    
+
+
+
+
+
+
+
+
+
 
 
