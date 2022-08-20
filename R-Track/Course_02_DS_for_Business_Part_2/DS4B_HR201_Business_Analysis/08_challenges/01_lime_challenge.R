@@ -286,7 +286,6 @@ explanation %>%
 
 plot_explanations(explanation)
 
-
 # Transformation
 data_transformed <- explanation %>% 
     as_tibble() %>% 
@@ -321,7 +320,7 @@ data_transformed %>%
     scale_fill_gradient2(
         low   = palette_light()[[2]],
         mid   = 'white',
-        high = palette_light()[[1]],
+        high  = palette_light()[[1]],
     ) +
     labs(y = "Feature", x = "Case", fill = glue("Feature Weight")) +
     theme(
@@ -335,40 +334,58 @@ data_transformed %>%
 # function
 plot_explanations_tq <- function(explanation){
     
+    # Transformation
+    data_transformed <- explanation %>% 
+        as_tibble() %>% 
+        mutate(
+            case    =  as_factor(case),
+            order_1 = rank(feature)
+        ) %>% 
+        
+        group_by(feature) %>% 
+        mutate(
+            order_2 = rank(feature_value)
+        ) %>% 
+        ungroup() %>% 
+        
+        mutate(
+            order = order_1 * 1000 + order_2
+        ) %>% 
+        
+        mutate(
+            feature_desc = as.factor(feature_desc) %>% 
+                fct_reorder(order, .desc = TRUE)
+        ) %>% 
+        select(case, feature_desc, feature_weight, label)
+    
+    
+    # Visualization
+    data_transformed %>%
+        ggplot(aes(case, feature_desc)) +
+        geom_tile(aes(fill = feature_weight)) +
+        facet_wrap(~ label) +
+        theme_tq() +
+        scale_fill_gradient2(
+            low   = palette_light()[[2]],
+            mid   = 'white',
+            high  = palette_light()[[1]],
+        ) +
+        labs(y = "Feature", x = "Case", fill = glue("Feature Weight")) +
+        theme(
+            panel.grid      = element_blank(),
+            legend.position = 'right',
+            axis.text.x     = element_text(angle = 45,
+                                           hjust = 1,
+                                           vjust = 1)
+        )
 }
-     
-    
+
+# Testing     
+explanation %>% 
+    as_tibble() %>% 
+    plot_explanations_tq()
 
 
 
-
-
-
-
-            
-            
-            
-    
-                          
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-    
-
-
-
-
-
-
-
-
-
-
+ 
 
