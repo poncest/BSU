@@ -106,11 +106,34 @@ total_ev_with_OT_tbl <- ev_with_OT_tbl %>%
     summarise(total_expected_attrition_cost_0 = sum(expected_attrition_cost))
 
  
-
-
 # 3.2 Calculating Expected Value With Targeted OT ----
 
+# remove OT
+test_without_OT_tbl <- test_tbl %>% 
+    mutate(OverTime = fct_recode(OverTime, 'No' = 'Yes'))
 
+# predictions
+preditions_without_OT_tbl <- automl_leader %>% 
+    ## with OT (employee #5 prob = 0.685353505)
+    #h2o.predict(newdata = as.h2o(test_tbl))
+
+    ## without OT (employee #5 prob = 0.317736051)
+    h2o.predict(newdata = as.h2o(test_without_OT_tbl)) %>% 
+   
+     as_tibble() %>% 
+    bind_cols(
+        test_tbl %>% 
+            select(EmployeeNumber, MonthlyIncome, OverTime),
+        
+        test_without_OT_tbl %>% 
+            select(OverTime)
+        ) %>% 
+    
+    rename(
+        OverTime_0 = `OverTime...6`,  # initial state
+        OverTime_1 = `OverTime...7`   # new state
+    )
+ 
 
 
 # 3.3 Savings Calculation ----
