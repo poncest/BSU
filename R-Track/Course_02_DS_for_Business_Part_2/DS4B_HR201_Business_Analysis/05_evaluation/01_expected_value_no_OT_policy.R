@@ -83,6 +83,7 @@ predictions_with_OT_tbl <- automl_leader %>%
 
 ev_with_OT_tbl <- predictions_with_OT_tbl %>% 
     mutate( 
+        # attrition cost 
         attrition_cost = calculate_attrition_cost(
             n = 1,
             salary = MonthlyIncome * 12, 
@@ -93,13 +94,14 @@ ev_with_OT_tbl <- predictions_with_OT_tbl %>%
         cost_of_policy_change =  0  # baseline case
     ) %>% 
     
-    # expected value
     mutate(
+        # expected value
         expected_attrition_cost =  
             Yes * (attrition_cost + cost_of_policy_change) +
             No  * (cost_of_policy_change)
     ) 
-            
+
+## the cost of attrition (EV) with overtime for employee # 5 was $59,586.    
 
 # total EV with OT
 total_ev_with_OT_tbl <- ev_with_OT_tbl %>% 
@@ -133,7 +135,44 @@ preditions_without_OT_tbl <- automl_leader %>%
         OverTime_0 = `OverTime...6`,  # initial state
         OverTime_1 = `OverTime...7`   # new state
     )
- 
+
+
+avg_overtime_pct <- 0.10
+    
+ev_without_EV_tbl <- preditions_without_OT_tbl %>% 
+    # attrition cost 
+    mutate( 
+        # attrition cost 
+        attrition_cost = calculate_attrition_cost(
+            n = 1,
+            salary = MonthlyIncome * 12, 
+            net_revenue_per_employee = 250000)
+    ) %>% 
+    
+    mutate(
+        cost_of_policy_change =  case_when(
+            OverTime_0 == 'Yes' & OverTime_1 == 'No' ~ avg_overtime_pct * attrition_cost,
+            TRUE ~ 0
+            )
+    ) %>% 
+    
+    mutate(
+        # expected value
+        expected_attrition_cost =  
+            Yes * (attrition_cost + cost_of_policy_change) +
+            No  * (cost_of_policy_change)
+    ) 
+
+ev_with_OT_tbl
+## the cost of attrition (EV) with overtime for employee # 5 was $59,586.  
+
+ev_without_EV_tbl
+## now, the prediction of EV without overtime or employee # 5 is $36,319
+
+
+total_ev_without_OT_tbl <- ev_without_EV_tbl %>% 
+    summarise(total_expected_attrition_cost_1 = sum(expected_attrition_cost))
+
 
 
 # 3.3 Savings Calculation ----
