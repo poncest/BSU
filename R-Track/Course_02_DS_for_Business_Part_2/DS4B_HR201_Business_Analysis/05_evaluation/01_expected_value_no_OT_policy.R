@@ -1,5 +1,5 @@
 # EVALUATION: EXPECTED VALUE OF POLICY CHANGE ----
-# NO OVERTIME POLICY ----
+# NO OVERTIME POLICY ---- 
 
 # 1. Setup ----
  
@@ -176,4 +176,23 @@ total_ev_without_OT_tbl <- ev_without_EV_tbl %>%
 
 
 # 3.3 Savings Calculation ----
+
+# number of observations
+train_obs <- dim(train_tbl)[1]  # 1250
+test_obs  <- dim(test_tbl)[1]   # 220
+factor <- (train_obs + test_obs) / test_obs 
+    
+# Factor
+# (1250 + 220) / 220 = 6.7
+
+
+bind_cols( total_ev_with_OT_tbl, total_ev_without_OT_tbl) %>% 
+    mutate(
+        savings        = total_expected_attrition_cost_0 - total_expected_attrition_cost_1,
+        pct_savings    = savings / total_expected_attrition_cost_0,
+        annualized_savings = savings * factor
+        )
+
+
+
 
