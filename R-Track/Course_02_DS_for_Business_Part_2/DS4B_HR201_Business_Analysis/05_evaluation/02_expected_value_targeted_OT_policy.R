@@ -65,9 +65,36 @@ automl_models_h2o <- h2o.automl(
 
 automl_leader <- automl_models_h2o@leader 
 
+
+
 # 3. Primer: Working With Threshold & Rates ----
+performance_h2o <- automl_leader %>% 
+    h2o.performance(newdata = as.h2o(test_tbl))
+
+performance_h2o %>% 
+    h2o.confusionMatrix()
 
 
+rates_by_treshold_tbl <- performance_h2o %>% 
+    h2o.metric() %>% 
+    as_tibble() 
+
+rates_by_treshold_tbl %>% glimpse()  # focus  from tns to tpr
+
+# tns - tps = confusion matrix
+# tnr - tpr = confusion matrix values converted to probabilities
+
+# tnr & fpr are related. They total to 1 (100%)
+# tpr & fnr also related.
+
+
+rates_by_treshold_tbl %>%
+    select(threshold, f1, tnr:tpr)
+
+rates_by_treshold_tbl %>%
+    select(threshold, f1, tnr:tpr) %>% 
+    filter(f1 == max(f1)) %>% 
+    slice(1)
 
 
 # 4. Expected Value ----
