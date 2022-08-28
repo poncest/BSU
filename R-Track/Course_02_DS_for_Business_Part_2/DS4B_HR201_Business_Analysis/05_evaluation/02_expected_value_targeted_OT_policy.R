@@ -97,6 +97,30 @@ rates_by_treshold_tbl %>%
     slice(1)
 
 
+rates_by_treshold_tbl %>%
+    select(threshold, f1, tnr:tpr) %>% 
+    pivot_longer(
+        cols         = tnr:tpr,
+        names_to     = "key",
+        values_to    = "value",
+        names_ptypes = list(key = factor())
+    ) %>% 
+   # gather(key = key, value = value, tnr:tpr, factor_key = TRUE) %>% 
+    mutate(key = fct_reorder2(key, threshold, value)) %>% 
+    
+    ggplot(aes(threshold, value, color = key)) +
+    geom_point() +
+    geom_smooth() +
+    scale_color_tq() +
+    labs(
+        x = "Value", y = "Threshold",
+        title = "Expected Rates",
+    ) +
+    theme_tq() + 
+    theme(legend.position = 'right')
+
+    
+
 # 4. Expected Value ----
 
 # 4.1 Calculating Expected Value With OT ----
