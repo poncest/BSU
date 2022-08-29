@@ -125,6 +125,52 @@ rates_by_treshold_tbl %>%
 
 # 4.1 Calculating Expected Value With OT ----
 
+source(here::here("R-Track/Course_02_DS_for_Business_Part_2/DS4B_HR201_Business_Analysis/00_scripts/assess_attrition.R"))
+
+
+predictions_with_OT_tbl <- automl_leader %>% 
+    h2o.predict(newdata = as.h2o(test_tbl)) %>% 
+    as_tibble() %>% 
+    bind_cols(
+        test_tbl %>% 
+            select(EmployeeNumber, MonthlyIncome, OverTime)
+    )
+
+ev_with_OT_tbl <- predictions_with_OT_tbl %>% 
+    mutate( 
+        # attrition cost 
+        attrition_cost = calculate_attrition_cost(
+            n = 1,
+            salary = MonthlyIncome * 12, 
+            net_revenue_per_employee = 250000)
+    ) %>% 
+    
+    mutate(
+        cost_of_policy_change =  0  # baseline case
+    ) %>% 
+    
+    mutate(
+        # expected value
+        expected_attrition_cost =  
+            Yes * (attrition_cost + cost_of_policy_change) +
+            No  * (cost_of_policy_change)
+    ) 
+
+## the cost of attrition (EV) with overtime for employee # 5 was $65,605.     
+
+# total EV with OT
+total_ev_with_OT_tbl <- ev_with_OT_tbl %>% 
+    summarise(total_expected_attrition_cost_0 = sum(expected_attrition_cost))
+
+
+
+
+
+
+
+
+
+
 # 4.2 Calculating Expected Value With Targeted OT ----
 
 # 4.3 Savings Calculation ----
