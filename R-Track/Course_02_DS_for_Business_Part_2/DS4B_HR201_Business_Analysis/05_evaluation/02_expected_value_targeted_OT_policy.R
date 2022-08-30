@@ -113,7 +113,7 @@ rates_by_treshold_tbl %>%
     geom_smooth() +
     scale_color_tq() +
     labs(
-        x = "Value", y = "Threshold",
+        x = "Threshold", y = "Value",
         title = "Expected Rates",
     ) +
     theme_tq() + 
@@ -163,15 +163,61 @@ total_ev_with_OT_tbl <- ev_with_OT_tbl %>%
     summarise(total_expected_attrition_cost_0 = sum(expected_attrition_cost))
 
 
-
-
-
-
-
-
-
-
 # 4.2 Calculating Expected Value With Targeted OT ----
+
+max_f1_tbl <- rates_by_treshold_tbl |> 
+    select(threshold, f1, tnr:tpr) |> 
+    filter(f1 == max(f1)) |> 
+    slice(1)
+
+
+tnr <- max_f1_tbl$tnr
+fnr <- max_f1_tbl$fnr
+fpr <- max_f1_tbl$fpr
+tpr <- max_f1_tbl$tpr 
+
+threshold <- max_f1_tbl$threshold
+
+
+## What is happening?
+## Anyone with Yes >= 0.31 (threshold) and OT = Yes, had their OT toggled to NO
+test_targeted_OT_tbl <- test_tbl |> 
+    add_column(Yes = predictions_with_OT_tbl$Yes) |> 
+    mutate(
+        OverTime = case_when(
+            Yes >= threshold ~ factor('No', levels = levels(test_tbl$OverTime)),
+            TRUE ~ OverTime
+        )
+    ) |> 
+    select(-Yes)
+
+## Making some predictions
+## running h2o.predict() on the modified data will give us the class probability of
+## attrition = Yes implementing the policy
+
+# BEFORE 
+automl_leader |> 
+    h2o.predict(newdata = as.h2o(test_tbl))                 # yes = 0.69
+
+# AFTER - OT policy
+automl_leader |> 
+    h2o.predict(newdata = as.h2o(test_targeted_OT_tbl))     # yes = 0.32
+
+# employee 5 when from 0.69 down to 0.32 percent after implementing the policy change
+
+poredictions_targeted_OT_tbl <- automl_leader |> 
+    h2o.predict(newdata = as.h2o(test_targeted_OT_tbl)) |> 
+    as_tibble() |> 
+    bind_cols(
+        test_tbl |> 
+            select(EmployeeNumber, MonthlyIncome, OverTime),
+        test_targeted_OT_tbl |> 
+            select(OverTime)
+    ) |> 
+    rename(
+        OverTime_0 = OverTime...6,
+        OverTime_1 = OverTime...7
+    )  
 
 # 4.3 Savings Calculation ----
 
