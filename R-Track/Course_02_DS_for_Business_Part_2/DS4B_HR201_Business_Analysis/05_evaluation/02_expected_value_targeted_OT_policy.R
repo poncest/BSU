@@ -205,7 +205,7 @@ automl_leader |>
 
 # employee 5 when from 0.69 down to 0.32 percent after implementing the policy change
 
-poredictions_targeted_OT_tbl <- automl_leader |> 
+predictions_targeted_OT_tbl <- automl_leader |> 
     h2o.predict(newdata = as.h2o(test_targeted_OT_tbl)) |> 
     as_tibble() |> 
     bind_cols(
@@ -218,6 +218,47 @@ poredictions_targeted_OT_tbl <- automl_leader |>
         OverTime_0 = OverTime...6,
         OverTime_1 = OverTime...7
     )  
+
+
+avg_overtime_pct <- 0.10
+
+predictions_targeted_OT_tbl |> 
+    
+    # attrition
+    mutate( 
+        attrition_cost = calculate_attrition_cost(
+            n = 1,
+            salary = MonthlyIncome * 12, 
+            net_revenue_per_employee = 250000)
+    ) |> 
+    
+    # cost of policy change
+    mutate(
+    cost_of_policy_change =  case_when(
+        OverTime_0 == "Yes" & OverTime_1 == "No" ~ attrition_cost * avg_overtime_pct,
+        TRUE ~ 0
+        )
+    ) %>% 
+    
+    # cost benefits (cb)   
+    mutate(
+        # cost of an employee staying
+        cb_tn = cost_of_policy_change,
+        
+        # cost of predicting leave when the employee stays
+        cb_fp = cost_of_policy_change,
+        
+        # cost of an employee leaving
+        cb_tp = cost_of_policy_change + attrition_cost,
+        
+        # cost of predicting leaving when we predict to stays
+        cb_fn = cost_of_policy_change + attrition_cost,
+        
+        expected_attrition_cost = 
+            Yes * (tpr*cb_tp + fnr*cb_fn) +
+            No  * (tnr*cb_tn + fpr*cb_fp)
+    ) 
+
 
 # 4.3 Savings Calculation ----
 
