@@ -269,20 +269,28 @@ total_ev_targeted_OT_tbl <- ev_targted_OT_tbl |>
         total_expected_attrition_cost_1 = sum(expected_attrition_cost)
     )
 
+
+
+# 4.3 Savings Calculation ----  
+
 # BEFORE policy change - $3,136,943
 total_ev_with_OT_tbl
 
-# AFTER policy change - $2,802,246
+# AFTER policy change - $2,802,246 (10.7%)
 total_ev_targeted_OT_tbl
 
 # total savings - $334,697
 total_ev_with_OT_tbl - total_ev_targeted_OT_tbl
 
 
-# 4.3 Savings Calculation ----
-
-
-
+savings_tbl <- bind_cols(
+    total_ev_with_OT_tbl,
+    total_ev_targeted_OT_tbl
+) |> 
+    mutate(
+        savings     = total_expected_attrition_cost_0 - total_expected_attrition_cost_1,
+        pct_savings = savings / total_expected_attrition_cost_0
+    )
 
 
 # 5. Optimizing By Threshold ----
