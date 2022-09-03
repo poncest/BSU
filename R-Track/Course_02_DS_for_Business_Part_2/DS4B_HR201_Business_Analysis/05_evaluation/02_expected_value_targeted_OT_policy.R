@@ -160,7 +160,9 @@ ev_with_OT_tbl <- predictions_with_OT_tbl %>%
 
 # total EV with OT
 total_ev_with_OT_tbl <- ev_with_OT_tbl %>% 
-    summarise(total_expected_attrition_cost_0 = sum(expected_attrition_cost))
+    summarise(
+        total_expected_attrition_cost_0 = sum(expected_attrition_cost)
+        )
 
 
 # 4.2 Calculating Expected Value With Targeted OT ----
@@ -222,7 +224,7 @@ predictions_targeted_OT_tbl <- automl_leader |>
 
 avg_overtime_pct <- 0.10
 
-predictions_targeted_OT_tbl |> 
+ev_targted_OT_tbl <- predictions_targeted_OT_tbl |> 
     
     # attrition
     mutate( 
@@ -258,6 +260,23 @@ predictions_targeted_OT_tbl |>
             Yes * (tpr*cb_tp + fnr*cb_fn) +
             No  * (tnr*cb_tn + fpr*cb_fp)
     ) 
+
+# employee 5, is targeted by the policy change.
+
+
+total_ev_targeted_OT_tbl <- ev_targted_OT_tbl |> 
+    summarise(
+        total_expected_attrition_cost_1 = sum(expected_attrition_cost)
+    )
+
+# BEFORE policy change - $3,136,943
+total_ev_with_OT_tbl
+
+# AFTER policy change - $2,802,246
+total_ev_targeted_OT_tbl
+
+# total savings - $334,697
+total_ev_with_OT_tbl - total_ev_targeted_OT_tbl
 
 
 # 4.3 Savings Calculation ----
