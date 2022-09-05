@@ -422,6 +422,27 @@ calculate_savings_by_threshold <- function(data, h2o_model, threshold = 0,
     
 }
 
+
+# No OT Policy - savings $388,211
+test_tbl %>% 
+    calculate_savings_by_threshold(h2o_model = automl_leader,   
+                                   threshold = 0,
+                                   tnr = 0,
+                                   fnr = 0,
+                                   tpr = 1,
+                                   fpr = 1
+    )
+
+# Do Nothing Policy - savings $0
+test_tbl %>% 
+    calculate_savings_by_threshold(h2o_model = automl_leader,
+                                   threshold = 1,
+                                   tnr = 1,
+                                   fnr = 1,
+                                   tpr = 0,
+                                   fpr = 0
+                                   )
+
 # threshold @ max F1
 rates_by_treshold_tbl %>% 
     select(threshold, f1, tnr:tpr) %>% 
@@ -438,28 +459,35 @@ calculate_savings_by_threshold(data = test_tbl, h2o_model = automl_leader,
                                )
 
 
-# No OT Policy - savings $388,211
-test_tbl %>% 
-    calculate_savings_by_threshold(h2o_model = automl_leader,   
-                                   threshold = 0,
-                                   tnr = 0,
-                                   fnr = 0,
-                                   tpr = 1,
-                                   fpr = 1
-                                   )
-
-# Do Nothing Policy - savings $0
-test_tbl %>% 
-    calculate_savings_by_threshold(h2o_model = automl_leader,
-                                   threshold = 1,
-                                   tnr = 1,
-                                   fnr = 1,
-                                   tpr = 0,
-                                   fpr = 0
-    )
-
 # 5.2 Optimization ----
 # threshold optimization with purr
+
+smpl <- seq(1, 220, length.out = 20) %>% round(digits = 0)
+
+# since the arguments data and h2o_model does not change, we can partially upload the 
+# calculate_savings_by_threshold() function
+partial(.f = calculate_savings_by_threshold, data = test_tbl, h2o_model = automl_leader)
+
+
+rates_by_treshold_optimized <- tbl <- rates_by_treshold_tbl %>% 
+    select(threshold, f1, tnr:tpr) %>% 
+    slice(smpl) %>% 
+    mutate(
+        # map multiple columns using a list as an input
+        savings = pmap_dbl(
+            # store a list of values that map the function argument
+            .l = list(
+                threshold = threshold , 
+                tnr = tnr,
+                fnr = fnr,
+                tpr = tpr,
+                fpr = fpr
+                ),
+            # 
+            .f = partial(.f = calculate_savings_by_threshold, data = test_tbl, h2o_model = automl_leader)
+            )
+    )
+
 
 
 # 6 Sensitivity Analysis ----
