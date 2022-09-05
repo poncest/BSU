@@ -354,7 +354,7 @@ calculate_savings_by_threshold <- function(data, h2o_model, threshold = 0,
         add_column(Yes = pred_0_tbl$Yes) %>%
         mutate(
             OverTime = case_when(
-                Yes >= threshold ~ factor("No", levels = levels(data_0_tbl$OverTime)),
+                Yes  >= threshold ~ factor("No", levels = levels(data_0_tbl$OverTime)),
                 TRUE ~ OverTime
             )
         ) %>%
@@ -422,6 +422,12 @@ calculate_savings_by_threshold <- function(data, h2o_model, threshold = 0,
     
 }
 
+# threshold @ max F1
+rates_by_treshold_tbl %>% 
+    select(threshold, f1, tnr:tpr) %>% 
+    filter(f1 == max(f1))
+
+
 # BEFORE optimization - savings $359,198
 calculate_savings_by_threshold(data = test_tbl, h2o_model = automl_leader, 
                                threshold = max_f1_tbl$threshold, 
@@ -432,9 +438,28 @@ calculate_savings_by_threshold(data = test_tbl, h2o_model = automl_leader,
                                )
 
 
+# No OT Policy - savings $388,211
+test_tbl %>% 
+    calculate_savings_by_threshold(h2o_model = automl_leader,   
+                                   threshold = 0,
+                                   tnr = 0,
+                                   fnr = 0,
+                                   tpr = 1,
+                                   fpr = 1
+                                   )
+
+# Do Nothing Policy - savings $0
+test_tbl %>% 
+    calculate_savings_by_threshold(h2o_model = automl_leader,
+                                   threshold = 1,
+                                   tnr = 1,
+                                   fnr = 1,
+                                   tpr = 0,
+                                   fpr = 0
+    )
 
 # 5.2 Optimization ----
-
+# threshold optimization with purr
 
 
 # 6 Sensitivity Analysis ----
