@@ -450,7 +450,7 @@ rates_by_treshold_tbl %>%
 
 
 # BEFORE optimization - savings $359,198
-calculate_savings_by_threshold(data = test_tbl, h2o_model = automl_leader, 
+max_f1_savings <- calculate_savings_by_threshold(data = test_tbl, h2o_model = automl_leader, 
                                threshold = max_f1_tbl$threshold, 
                                tnr = max_f1_tbl$tnr,
                                fnr = max_f1_tbl$fnr,
@@ -488,6 +488,48 @@ rates_by_treshold_optimized <- tbl <- rates_by_treshold_tbl %>%
             )
     )
 
+# visualizing the optimized savings
+rates_by_treshold_optimized %>% 
+    ggplot(aes(threshold, savings)) + 
+    
+    # geoms
+    geom_line(color = palette_light()[[1]]) + 
+    geom_point(color = palette_light()[[1]]) +
+    
+    # optimal point
+    geom_point(data = rates_by_treshold_optimized %>% filter(savings == max(savings)),
+               shape = 21, size = 5, color = palette_light()[[3]]) +
+    
+    geom_label(data = rates_by_treshold_optimized %>% filter(savings == max(savings)),
+               aes(label = scales::dollar(savings)),
+               vjust = -1, color = palette_light()[[3]]) +
+    
+    # F1 Max
+    geom_vline(xintercept = max_f1_tbl$threshold,
+               color = palette_light()[[5]], size = 2) +
+    
+    annotate(geom  = 'label', 
+             label = scales::dollar(max_f1_savings),
+             x     = max_f1_tbl$threshold,
+             y     = max_f1_savings,
+             vjust = -1,
+             color = palette_light()[[1]]
+             ) +
+    
+    # aesthetics
+    theme_tq() +
+    expand_limits(x = c(-0.1, 1.1), y = c(8e5)) + 
+    
+    scale_x_continuous(labels = scales::percent,
+                       breaks = seq(0, 1, by = 0.2)) + 
+   
+    scale_y_continuous(labels = scales::dollar)
+    
+
+        
+    
+    
+    
 
 
 # 6 Sensitivity Analysis ----
