@@ -75,11 +75,11 @@ performance_h2o %>%
     h2o.confusionMatrix()
 
 
-rates_by_treshold_tbl <- performance_h2o %>% 
+rates_by_threshold_tbl <- performance_h2o %>% 
     h2o.metric() %>% 
     as_tibble() 
 
-rates_by_treshold_tbl %>% glimpse()  # focus  from tns to tpr
+rates_by_threshold_tbl %>% glimpse()  # focus  from tns to tpr
 
 # tns - tps = confusion matrix
 # tnr - tpr = confusion matrix values converted to probabilities
@@ -88,16 +88,16 @@ rates_by_treshold_tbl %>% glimpse()  # focus  from tns to tpr
 # tpr & fnr also related.
 
 
-rates_by_treshold_tbl %>%
+rates_by_threshold_tbl %>%
     select(threshold, f1, tnr:tpr)
 
-rates_by_treshold_tbl %>%
+rates_by_threshold_tbl %>%
     select(threshold, f1, tnr:tpr) %>% 
     filter(f1 == max(f1)) %>% 
     slice(1)
 
 
-rates_by_treshold_tbl %>%
+rates_by_threshold_tbl %>%
     select(threshold, f1, tnr:tpr) %>% 
     pivot_longer(
         cols         = tnr:tpr,
@@ -167,7 +167,7 @@ total_ev_with_OT_tbl <- ev_with_OT_tbl %>%
 
 # 4.2 Calculating Expected Value With Targeted OT ----
 
-max_f1_tbl <- rates_by_treshold_tbl |> 
+max_f1_tbl <- rates_by_threshold_tbl |> 
     select(threshold, f1, tnr:tpr) |> 
     filter(f1 == max(f1)) |> 
     slice(1)
@@ -444,7 +444,7 @@ test_tbl %>%
                                    )
 
 # threshold @ max F1
-rates_by_treshold_tbl %>% 
+rates_by_threshold_tbl %>% 
     select(threshold, f1, tnr:tpr) %>% 
     filter(f1 == max(f1))
 
@@ -469,7 +469,7 @@ smpl <- seq(1, 220, length.out = 20) %>% round(digits = 0)
 partial(.f = calculate_savings_by_threshold, data = test_tbl, h2o_model = automl_leader)
 
 
-rates_by_treshold_optimized <- tbl <- rates_by_treshold_tbl %>% 
+rates_by_threshold_optimized_tbl <- rates_by_threshold_tbl %>% 
     select(threshold, f1, tnr:tpr) %>% 
     slice(smpl) %>% 
     mutate(
@@ -489,18 +489,18 @@ rates_by_treshold_optimized <- tbl <- rates_by_treshold_tbl %>%
     )
 
 # visualizing the optimized savings
-rates_by_treshold_optimized %>% 
+rates_by_threshold_optimized_tbl %>%           
     ggplot(aes(threshold, savings)) + 
     
     # geoms
     geom_line(color = palette_light()[[1]]) + 
     geom_point(color = palette_light()[[1]]) +
     
-    # optimal point
-    geom_point(data = rates_by_treshold_optimized %>% filter(savings == max(savings)),
+    # Max Savings (optimal point)
+    geom_point(data = rates_by_threshold_optimized_tbl %>% filter(savings == max(savings)),
                shape = 21, size = 5, color = palette_light()[[3]]) +
     
-    geom_label(data = rates_by_treshold_optimized %>% filter(savings == max(savings)),
+    geom_label(data = rates_by_threshold_optimized_tbl %>% filter(savings == max(savings)),
                aes(label = scales::dollar(savings)),
                vjust = -1, color = palette_light()[[3]]) +
     
@@ -513,23 +513,46 @@ rates_by_treshold_optimized %>%
              x     = max_f1_tbl$threshold,
              y     = max_f1_savings,
              vjust = -1,
-             color = palette_light()[[1]]
+             color = palette_light()[[2]]
              ) +
+    
+    # No OT Policy
+    geom_point(data = rates_by_threshold_optimized_tbl %>% filter(threshold == min(threshold)),
+               shape = 21, size = 5, color = palette_light()[[2]]) +
+    
+    geom_label(data = rates_by_threshold_optimized_tbl %>% filter(threshold == min(threshold)),
+               aes(label = scales::dollar(savings)),
+               vjust = -1, color = palette_light()[[2]]) +
+    
+    # Do Nothing Policy
+    geom_point(data = rates_by_threshold_optimized_tbl %>% filter(threshold == max(threshold)),
+               shape = 21, size = 5, color = palette_light()[[2]]) +
+    
+    geom_label(data = rates_by_threshold_optimized_tbl %>% filter(threshold == max(threshold)),
+               aes(label = scales::dollar(round(savings), 1)),
+               vjust = -1, color = palette_light()[[2]]) +
+    
     
     # aesthetics
     theme_tq() +
-    expand_limits(x = c(-0.1, 1.1), y = c(8e5)) + 
+    expand_limits(x = c(-0.1, 1.1), y = c(6e5)) + 
     
     scale_x_continuous(labels = scales::percent,
                        breaks = seq(0, 1, by = 0.2)) + 
    
-    scale_y_continuous(labels = scales::dollar)
+    scale_y_continuous(labels = scales::dollar) +
     
+    labs(
+        title = str_glue("Optimization Results: Expected Savings Maximized At {
+        rates_by_threshold_optimized_tbl %>% 
+            filter(savings == max(savings)) %>% 
+            pull(threshold) %>% scales::percent(accuracy = 0.01)}"),
+        x = "Threshold (%)", 
+        y = "Savings (USD)"
+            )
+    
+ 
 
-        
-    
-    
-    
 
 
 # 6 Sensitivity Analysis ----
