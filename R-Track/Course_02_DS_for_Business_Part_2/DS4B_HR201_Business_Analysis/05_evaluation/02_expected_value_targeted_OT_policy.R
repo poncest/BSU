@@ -621,7 +621,6 @@ calculate_savings_by_threshold_2 <- function(data, h2o_model, threshold = 0,
             data_1_tbl %>%
                 select(OverTime)
         ) %>%
-        # * FIX 3 ----
     rename(
         OverTime_0 = OverTime...6,
         OverTime_1 = OverTime...7
@@ -693,3 +692,67 @@ test_tbl %>%
 
 
 # 6.2 Sensitivity Analysis ----
+
+max_savings_rate_tbl <- rates_by_threshold_optimized_tbl %>% 
+    filter(savings == max(savings))
+
+
+calculate_savings_by_threshold_2(data = test_tbl, 
+                                 h2o_model = automl_leader,
+                                 threshold = max_savings_rate_tbl$threshold, 
+                                 tnr = max_savings_rate_tbl$tnr,
+                                 fnr = max_savings_rate_tbl$fnr,
+                                 fpr = max_savings_rate_tbl$fpr,
+                                 tpr = max_savings_rate_tbl$tpr
+                                 )
+
+# with these parameters, the max savings is $453,462
+
+# Using partial function (.f) to create a pre-load version of the
+# calculate_savings_by_threshold_2() function
+
+calculate_savings_by_threshold_2_preloaded <- partial(
+    .f = calculate_savings_by_threshold_2,
+        # Function Arguments
+        data = test_tbl, 
+        h2o_model = automl_leader,
+        threshold = max_savings_rate_tbl$threshold, 
+        tnr = max_savings_rate_tbl$tnr,
+        fnr = max_savings_rate_tbl$fnr,
+        fpr = max_savings_rate_tbl$fpr,
+        tpr = max_savings_rate_tbl$tpr
+    )
+
+# testing
+calculate_savings_by_threshold_2_preloaded(
+    avg_overtime_pct = 0.10, 
+    net_revenue_per_employee = 250000)
+
+
+# similar to a Cartesian grid search
+sensitivity_tbl <- list(
+    avg_overtime_pct = seq(0.05, 0.30, by = 0.05), 
+    net_revenue_per_employee = seq(200000, 400000, by = 50000)
+) %>% 
+    cross_df() %>% 
+    
+    # iterating with pmap() - purr
+    mutate(
+        savings = pmap_dbl(
+            .l = list(
+                avg_overtime_pct         = avg_overtime_pct,
+                net_revenue_per_employee = net_revenue_per_employee
+            ),
+            .f = calculate_savings_by_threshold_2_preloaded)
+    )
+    
+    
+sensitivity_tbl
+
+
+
+
+
+
+
+
