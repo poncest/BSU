@@ -747,7 +747,41 @@ sensitivity_tbl <- list(
     )
     
     
-sensitivity_tbl
+sensitivity_tbl %>% 
+    ggplot(aes(x = avg_overtime_pct, y = net_revenue_per_employee)) + 
+    
+    # geoms
+    geom_tile(aes(fill = savings)) +
+    geom_label(aes(label = scales::dollar(round(savings, 1)))) +
+    
+    # scales
+    scale_fill_gradient2(
+        low  = palette_light()[[2]],
+        mid  = "white",
+        high = palette_light()[[1]],
+        midpoint = 0                                                # mean(sensitivity_tbl$savings)  
+    ) +
+    
+    scale_x_continuous(labels = scales::percent,
+                       breaks = seq(0.05, 0.30, by = 0.05)         # breaks = scales::breaks_pretty(6)
+    ) +
+    
+    scale_y_continuous(labels = scales::dollar,
+                       breaks = seq(200000, 400000, by = 50000)
+    ) +
+    
+    # labs
+    labs(
+        title    = "Profitability Heatmap: Expected Savings Sensitivity Analysis",
+        subtitle = "How Sensitive is savings to net revenue per employee and average overtime percentage?", 
+        x = "Average Overtime Percentage",
+        y = "Net Revenue Per Employee"
+    ) +
+    
+    # theme
+    theme_tq() +
+    theme(legend.position = "none")
+
 
 
 
