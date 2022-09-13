@@ -968,6 +968,97 @@ max_f1_savings <- calculate_savings_by_threshold_3(data = test_tbl, h2o_model = 
                                                  stock_option_cost = 5000)
 
 # Optimization
+smpl <- seq(1, 220, length.out = 20) %>% round(digits = 0)
+
+calculate_savings_by_threshold_3_preloaded <- partial(calculate_savings_by_threshold_3,
+                                                       data                     = test_tbl, 
+                                                       h2o_model                = automl_leader,
+                                                       avg_overtime_pct         = 0.10,
+                                                       net_revenue_per_employee = 250000,
+                                                       stock_option_cost        = 5000)
+
+
+rates_by_threshold_optimized_tbl_3 <- rates_by_threshold_tbl %>% 
+    select(threshold, tnr:tpr) %>% 
+    slice(smpl) %>% 
+    mutate(
+        savings = pmap_dbl(
+            .l = list(
+                threshold = threshold, 
+                tnr = tnr,
+                fnr = fnr,
+                tpr = tpr,
+                fpr = fpr
+            ),
+            .f = calculate_savings_by_threshold_3_preloaded
+        )
+    )
+
+
+rates_by_threshold_optimized_tbl_3 %>% 
+    filter(savings == max(savings)) 
+
+# Visualization    
+rates_by_threshold_optimized_tbl_3 %>% 
+    ggplot(aes(threshold, savings)) +
+    
+    # v-lines
+    geom_vline(xintercept = max_f1_tbl$threshold,
+               color      = palette_light()[[5]], size = 2) +
+    
+    geom_vline(data       = rates_by_threshold_optimized_tbl_3 %>% filter(savings == max(savings)),
+               mapping    = aes(xintercept = threshold),
+                                color      = palette_light()[[3]], size = 2) +
+    
+    # Points
+    geom_line(color = palette_light()[[1]]) +
+    geom_point(color = palette_light()[[1]]) +
+    
+    # F1 Max
+    annotate(geom  = "label",
+             label = scales::dollar(max_f1_savings),
+             x     = max_f1_tbl$threshold,
+             y     = max_f1_savings,
+             vjust = -1,
+             color = palette_light()[[1]]) +
+    
+    # Optimal Point
+    geom_point(data  = rates_by_threshold_optimized_tbl_3 %>% filter(savings == max(savings)),
+               shape = 21, size = 5, color = palette_light()[[3]]) +
+    
+    geom_label(data    = rates_by_threshold_optimized_tbl_3 %>% filter(savings == max(savings)),
+               mapping = aes(label = scales::dollar(savings)),
+               vjust = -2, color = palette_light()[[3]]) +
+    
+    # No OT Policy
+    geom_point(data  = rates_by_threshold_optimized_tbl_3 %>% filter(threshold == min(threshold)),
+               shape = 21, size = 5, color = palette_light()[[2]]) +
+    
+    geom_label(data    = rates_by_threshold_optimized_tbl_3 %>% filter(threshold == min(threshold)),
+               mapping = aes(label = scales::dollar(round(savings, 0))),
+               vjust = -1, color = palette_light()[[2]]) +
+    
+    # Do Nothing Policy
+    geom_point( 
+        
+        
+        
+        
+        
+    
+    
+    
+    
+    
+
+
+
+
+
+
+
+
+
 
 
 
