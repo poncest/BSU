@@ -1039,26 +1039,28 @@ rates_by_threshold_optimized_tbl_3 %>%
                vjust = -1, color = palette_light()[[2]]) +
     
     # Do Nothing Policy
-    geom_point( 
-        
-        
-        
-        
-        
+    geom_point(data  = rates_by_threshold_optimized_tbl_3 %>% filter(threshold == max(threshold)),
+               shape = 21, size = 5, color = palette_light()[[2]]) +
     
+    geom_label(data    = rates_by_threshold_optimized_tbl_3 %>% filter(threshold == max(threshold)),
+               mapping = aes(label = scales::dollar(round(savings, 0))),
+               vjust = -1, color = palette_light()[[2]]) +
     
+    # Aesthetics
+    theme_tq() +
     
+    scale_x_continuous(breaks = seq(0, 1, by = 0.2),
+                       labels = scales::percent,
+                       limits = c(-0.1, 1.1)) +
+
+    scale_y_continuous(labels = scales::dollar,
+                       limits = c(0, 12e5)) +
     
-    
-
-
-
-
-
-
-
-
-
-
-
+    labs(
+        title = str_glue("Optimization Results: Expected Savings Maximized At {
+            rates_by_threshold_optimized_tbl %>% 
+                filter(savings == max(savings)) %>% 
+                pull(threshold) %>% scales::percent(accuracy = 0.1)}"),
+        x = "Threshold (%)", 
+        y = "Savings (USD)"  ) 
 
