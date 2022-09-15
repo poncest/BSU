@@ -784,9 +784,9 @@ sensitivity_tbl %>%
 
 
 # 4. CHALLENGE ----
-# This is a two part challenge:
 
-# Part 1: Find optimal threshold ----
+# People with No Stock Option Are Leaving
+# This is a two part challenge:
 
 # Inputs
 
@@ -1063,4 +1063,68 @@ rates_by_threshold_optimized_tbl_3 %>%
                 pull(threshold) %>% scales::percent(accuracy = 0.1)}"),
         x = "Threshold (%)", 
         y = "Savings (USD)"  ) 
+
+
+# Part 2: Sensitivity Analysis for Stock Options ----
+
+# Find optimal threshold ----
+
+avg_overtime_pct <- 0.10
+net_revenue_per_employee <- 250000
+stock_option_cost <- 5000
+
+# Perform sensitivity analysis at optimal threshold ----
+
+net_revenue_per_employee <- 250000
+avg_overtime_pct <-  seq(0.05, 0.30, by = 0.05)
+stock_option_cost <- seq(5000, 25000, by = 5000)
+
+
+# Part 2: Solution ----
+
+max_savings_rate_tbl_3 <- rates_by_threshold_optimized_tbl_3 %>% 
+    filter(savings == max(savings))
+
+
+calculate_savings_by_threshold_3_preloaded <- partial(calculate_savings_by_threshold_3,
+                                                     data      = test_tbl, 
+                                                     h2o_model = automl_leader,
+                                                     threshold = max_savings_rate_tbl_3$threshold, 
+                                                     tnr       = max_savings_rate_tbl_3$tnr,
+                                                     fnr       = max_savings_rate_tbl_3$fnr,
+                                                     fpr       = max_savings_rate_tbl_3$fpr,
+                                                     tpr       = max_savings_rate_tbl_3$tpr)
+
+
+calculate_savings_by_threshold_3_preloaded(
+    avg_overtime_pct = 0.10,
+    net_revenue_per_employee = 250000,
+    stock_option_cost = 5000,
+)
+
+
+sensitivity_tbl_3 <- list(
+    net_revenue_per_employee =  250000,
+    avg_overtime_pct  = seq(0.05, 0.30, by = 0.05),
+    stock_option_cost = seq(5000, 25000, by = 5000)
+    ) %>% 
+    cross_df() %>% 
+    
+    # iterating with pmap() - purr
+    mutate(
+        savings = pmap_dbl(
+            .l = list(
+                avg_overtime_pct         = avg_overtime_pct,
+                net_revenue_per_employee = net_revenue_per_employee,
+                stock_option_cost        = stock_option_cost
+            ),
+            .f = calculate_savings_by_threshold_3_preloaded)
+    )
+
+sensitivity_tbl_3 
+
+
+
+
+
 
