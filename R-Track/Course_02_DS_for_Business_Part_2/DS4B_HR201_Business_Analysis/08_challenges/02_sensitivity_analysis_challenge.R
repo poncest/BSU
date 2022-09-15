@@ -1121,9 +1121,44 @@ sensitivity_tbl_3 <- list(
             .f = calculate_savings_by_threshold_3_preloaded)
     )
 
-sensitivity_tbl_3 
-
-
+# Visualization
+sensitivity_tbl_3 %>% 
+    ggplot(aes(avg_overtime_pct, stock_option_cost)) +
+    
+    # geoms
+    geom_tile(aes(fill = savings)) + 
+    geom_label(aes(label = scales::dollar(round(savings, 0)))) +
+    
+    # scales
+    scale_fill_gradient2(
+        low  = palette_light()[[2]],
+        mid  = "white",
+        high = palette_light()[[1]],
+        midpoint = 0
+    ) +
+    
+    scale_x_continuous(
+        labels = scales::percent,
+        breaks = seq(0.05, 0.30, by = 0.05)
+        ) + 
+    
+    scale_y_continuous(
+        labels = scales::dollar,
+        breaks = seq(5000, 25000, by = 5000) 
+    ) +
+    
+    # labs
+    labs(
+        title    = "Profitability Heatmap: Expected Savings Sensitivity Analysis",
+        subtitle = "How sensitive is savings to stock option cost and average overtime percentage",
+        
+        x = "Average Overtime Percentage",
+        y = "Average Stock Option Cost"
+    ) +
+    
+    # theme
+    theme_tq() +
+    theme(legend.position = "none")
 
 
 
