@@ -38,21 +38,24 @@ train_readable_tbl
 # factor names
 factor_names <- c("JobLevel", "StockOptionLevel")
 
-# Recipe - ERROR!
+# Recipe 
 # modified the final recipe from `02_data_preparation_machine_readable.R`
-recipe(Attrition ~ ., data = train_readable_tbl) %>% 
+
+recipe_obj <- recipe(Attrition ~ ., data = train_readable_tbl) %>% 
     step_zv(all_predictors()) %>% 
-    
     step_mutate_at(factor_names, fn = as.factor) %>% 
-    
-    step_num2factor(factor_names, levels = ) %>%     # ERROR !
-    
     step_discretize(all_numeric(), min_unique = 1) %>%             # bins
-    
-    step_dummy(all_nominal()) %>% 
-    
+    step_dummy(all_nominal(), one_hot = TRUE) %>% 
     prep()
 
+recipe_obj
+
+train_corr_tbl <- bake(object = recipe_obj, new_data = train_readable_tbl)
+train_corr_tbl %>% glimpse()
+
+tidy(recipe_obj)
+tidy(recipe_obj, number = 3)
+ 
 
 
 
