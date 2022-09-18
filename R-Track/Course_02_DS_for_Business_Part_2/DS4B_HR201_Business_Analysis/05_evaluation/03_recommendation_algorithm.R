@@ -57,11 +57,32 @@ tidy(recipe_obj)
 tidy(recipe_obj, number = 3)
  
 
-
-
-
 # 2.2 Correlation Visualization ----
 
+# Manipulate Data
+
+correlation_results_tbl <- train_corr_tbl %>% 
+    select(-Attrition_No) %>% 
+    get_cor(target = Attrition_Yes, fct_reorder = TRUE, fct_rev = TRUE) %>% 
+    filter(abs(Attrition_Yes) >= 0.02) %>% 
+    mutate(
+        relationship = case_when(
+            Attrition_Yes > 0 ~ "Supports",
+            TRUE              ~ "Contradicts"
+        )
+    ) %>% 
+    
+    mutate(feature_text = as.character(feature)) %>% 
+    separate(feature_text, into = "feature_base", sep = "_", extra = "drop") %>% 
+    mutate(feature_base = as_factor(feature_base) %>%  fct_rev())
+    
+
+correlation_results_tbl %>% 
+    select(feature_base) %>% 
+    mutate(level = as.numeric(feature_base))
+
+
+# Create Visualization 
 
 
 
