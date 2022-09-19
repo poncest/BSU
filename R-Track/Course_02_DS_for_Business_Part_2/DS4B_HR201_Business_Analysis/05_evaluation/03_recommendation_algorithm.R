@@ -61,10 +61,12 @@ tidy(recipe_obj, number = 3)
 
 # Manipulate Data
 
+cor_level <- 0.06
+
 correlation_results_tbl <- train_corr_tbl %>% 
     select(-Attrition_No) %>% 
     get_cor(target = Attrition_Yes, fct_reorder = TRUE, fct_rev = TRUE) %>% 
-    filter(abs(Attrition_Yes) >= 0.02) %>% 
+    filter(abs(Attrition_Yes) >= cor_level) %>% 
     mutate(
         relationship = case_when(
             Attrition_Yes > 0 ~ "Supports",
@@ -77,14 +79,38 @@ correlation_results_tbl <- train_corr_tbl %>%
     mutate(feature_base = as_factor(feature_base) %>%  fct_rev())
     
 
-correlation_results_tbl %>% 
-    select(feature_base) %>% 
-    mutate(level = as.numeric(feature_base))
-
 
 # Create Visualization 
 
+legnth_unique_groups <- correlation_results_tbl %>% 
+    pull(feature_base) %>% 
+    unique() %>% 
+    length()
 
+
+correlation_results_tbl %>% 
+    ggplot(aes(Attrition_Yes, feature_base, color = relationship)) +
+    
+    # geoms
+    geom_point() +
+    geom_label(aes(label = feature, vjust = -0.5)) +
+    
+    #  scales
+    expand_limits(x = c(-0.3, 0.3), y = c(1, legnth_unique_groups + 1)) +
+    scale_x_continuous() +
+    scale_y_discrete() + 
+    scale_color_tq() +
+    
+    # labs
+    labs(
+        title = "Correlation Analysiss: Recommendation Strategy Development",
+        subtitle = "Discretizing features to help idientify a strategy"
+    ) +
+    
+    # themes
+    theme_tq()
+
+    
 
 # 3.0 Recommendation Strategy Development Worksheet ----
 
