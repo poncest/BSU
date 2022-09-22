@@ -114,18 +114,62 @@ correlation_results_tbl %>%
 
 # 3.0 Recommendation Strategy Development Worksheet ----
 
-
-
-
 # 4.0 Recommendation Algorithm Development ----
 
-# 4.1 Personal Development (Mentorship, Education) ----
+# 4.1 Strategy Group: Personal Development (Mentorship, Education) ----
+
+# YearsAtCompany	
+# YAC -High - Likely to stay /  YAC - Low - Likely to leave	
+# Tie promotion if low to advance faster / Mentor if YAC low
+
+# TotalWorkingYears	
+# TWY -High - Likely to stay /  TWYC - Low - Likely to leave	
+# Tie Low TWY to training & formation/mentorship
+
+# Yea rsInCurrentRole	
+# More time in current role related to lower attrition	
+# Incentivize specialize or promote / Mentorship Role
+
+# JobInvolvement	
+# High JI - Likely to stay / Low JI - Likely to leave	
+# Create personal development plan if low / High - seek leadership role	
+
+# JobSatisfaction	
+# JS -High - Likely to stay /  JS - Low - Likely to leave	
+# Low - create personal development plan / High - mentorship roles
+
+
+
+# (Worst Case) Create Personal Development Plan: JobInvolment, JobSatisfaction, PerformanceRating
+
+# (Better Case) Promote Training and Formation 
+
+# (Best Case 1) Seek Mentorship Role 
+
+# (Best Case 2) Seek Leadership Role 
+
 
 
 # 4.2 Professional Development (Promotion Readiness) ----
 
 
 # 4.3 Work Life Balance ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
