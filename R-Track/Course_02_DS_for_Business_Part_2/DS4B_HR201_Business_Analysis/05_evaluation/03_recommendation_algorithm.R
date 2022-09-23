@@ -126,7 +126,7 @@ correlation_results_tbl %>%
 # TWY -High - Likely to stay /  TWYC - Low - Likely to leave	
 # Tie Low TWY to training & formation/mentorship
 
-# Yea rsInCurrentRole	
+# YearsInCurrentRole	
 # More time in current role related to lower attrition	
 # Incentivize specialize or promote / Mentorship Role
 
@@ -138,15 +138,53 @@ correlation_results_tbl %>%
 # JS -High - Likely to stay /  JS - Low - Likely to leave	
 # Low - create personal development plan / High - mentorship roles
 
+# PerformanceRating
+# Low - personal development plan / High - mentorship roles
 
+
+# Good, Better, Best Approach
 
 # (Worst Case) Create Personal Development Plan: JobInvolment, JobSatisfaction, PerformanceRating
 
-# (Better Case) Promote Training and Formation 
+# (Better Case) Promote Training and Formation: YearsAtCompany, TotalWorkingYears
 
-# (Best Case 1) Seek Mentorship Role 
+# (Best Case 1) Seek Mentorship Role: YearsInCurrentRole, YearsAtCompany, PerformanceRating, JobSatisfaction
 
-# (Best Case 2) Seek Leadership Role 
+# (Best Case 2) Seek Leadership Role: JobInvolvement, JobSatisfaction, PerformanceRating
+
+
+# verifying the level for `JobInvolvment` feature
+train_readable_tbl %>% 
+    pull(JobInvolvement) %>% 
+    levels()
+
+
+train_readable_tbl %>% 
+    select(YearsAtCompany, TotalWorkingYears, YearsInCurrentRole,
+           JobInvolvement, JobSatisfaction, PerformanceRating) %>% 
+    
+    # convert factors to numeric
+    mutate(across(where(is.factor), as.numeric)) %>% 
+    
+    mutate(
+        personal_development_startegy = case_when(
+            
+            # (Worst Case) Create Personal Development Plan: JobInvolment, JobSatisfaction, PerformanceRating
+            
+            # (Better Case) Promote Training and Formation: YearsAtCompany, TotalWorkingYears
+            
+            # (Best Case 1) Seek Mentorship Role: YearsInCurrentRole, YearsAtCompany, PerformanceRating, JobSatisfaction
+            
+            # (Best Case 2) Seek Leadership Role: JobInvolvement, JobSatisfaction, PerformanceRating
+            
+            # Catch All
+            TRUE ~ "Retain and Maintain"
+        )
+    )
+    
+
+
+
 
 
 
