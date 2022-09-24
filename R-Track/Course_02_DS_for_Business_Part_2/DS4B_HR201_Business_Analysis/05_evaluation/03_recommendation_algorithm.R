@@ -155,7 +155,7 @@ correlation_results_tbl %>%
 
 # verifying the level for `JobInvolvment` feature
 train_readable_tbl %>% 
-    pull(JobInvolvement) %>% 
+    pull(PerformanceRating) %>%                
     levels()
 
 
@@ -170,8 +170,15 @@ train_readable_tbl %>%
         personal_development_startegy = case_when(
             
             # (Worst Case) Create Personal Development Plan: JobInvolment, JobSatisfaction, PerformanceRating
+            PerformanceRating == 1 |                                              # low
+                JobSatisfaction == 1 |                                            # low
+                JobInvolvement <= 2       ~ "Create Personal Development Plan",   # low & medium
+            
             
             # (Better Case) Promote Training and Formation: YearsAtCompany, TotalWorkingYears
+            YearsAtCompany < 3 |
+                TotalWorkingYears < 6     ~ "Promote  Training Formation", 
+            
             
             # (Best Case 1) Seek Mentorship Role: YearsInCurrentRole, YearsAtCompany, PerformanceRating, JobSatisfaction
             
@@ -180,8 +187,27 @@ train_readable_tbl %>%
             # Catch All
             TRUE ~ "Retain and Maintain"
         )
-    )
+    ) %>% 
+    pull(personal_development_startegy) %>% 
+    table()
     
+    
+# hot to 'see' the levels for a feature
+train_readable_tbl %>% 
+pull(PerformanceRating) %>% 
+levels()
+
+
+# how to 'see' the bins
+tidy(recipe_obj, number = 3) %>% 
+    filter(str_detect(terms, "YearsAtCompany"))
+
+# first bin starts at -Inf --> 2
+
+tidy(recipe_obj, number = 3) %>% 
+    filter(str_detect(terms, "TotalWorkingYears"))
+
+# first bin starts at -Inf --> 6
 
 
 
