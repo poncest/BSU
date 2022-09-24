@@ -166,6 +166,7 @@ train_readable_tbl %>%
     # convert factors to numeric
     mutate(across(where(is.factor), as.numeric)) %>% 
     
+    # Personal Development Recommendations
     mutate(
         personal_development_startegy = case_when(
             
@@ -174,29 +175,33 @@ train_readable_tbl %>%
                 JobSatisfaction == 1 |                                            # low
                 JobInvolvement <= 2       ~ "Create Personal Development Plan",   # low & medium
             
-            
             # (Better Case) Promote Training and Formation: YearsAtCompany, TotalWorkingYears
             YearsAtCompany < 3 |
-                TotalWorkingYears < 6     ~ "Promote  Training Formation", 
-            
+                TotalWorkingYears < 6     ~ "Promote  Training Formation",
             
             # (Best Case 1) Seek Mentorship Role: YearsInCurrentRole, YearsAtCompany, PerformanceRating, JobSatisfaction
+            (YearsInCurrentRole > 3 | YearsAtCompany >= 5) &
+                PerformanceRating >= 3 &
+                JobSatisfaction == 4      ~ "Seek Mentorship Role",
             
             # (Best Case 2) Seek Leadership Role: JobInvolvement, JobSatisfaction, PerformanceRating
+            JobInvolvement >= 3 &
+                PerformanceRating >= 3 &
+                JobSatisfaction >= 3      ~ "Seek Leadership Role",
             
             # Catch All
-            TRUE ~ "Retain and Maintain"
+            TRUE                          ~ "Retain and Maintain"
         )
-    ) %>% 
-    pull(personal_development_startegy) %>% 
-    table()
+    ) 
+
+    # pull(personal_development_startegy) %>% 
+    # table()  
     
     
 # hot to 'see' the levels for a feature
 train_readable_tbl %>% 
-pull(PerformanceRating) %>% 
-levels()
-
+    pull(PerformanceRating) %>% 
+    levels()
 
 # how to 'see' the bins
 tidy(recipe_obj, number = 3) %>% 
