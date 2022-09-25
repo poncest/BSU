@@ -119,27 +119,27 @@ correlation_results_tbl %>%
 # 4.1 Strategy Group: Personal Development (Mentorship, Education) ----
 
 # YearsAtCompany	
-# YAC -High - Likely to stay /  YAC - Low - Likely to leave	
-# Tie promotion if low to advance faster / Mentor if YAC low
+#   YAC -High - Likely to stay /  YAC - Low - Likely to leave	
+#   Tie promotion if low to advance faster / Mentor if YAC low
 
 # TotalWorkingYears	
-# TWY -High - Likely to stay /  TWYC - Low - Likely to leave	
-# Tie Low TWY to training & formation/mentorship
+#   TWY -High - Likely to stay /  TWYC - Low - Likely to leave	
+#   Tie Low TWY to training & formation/mentorship
 
 # YearsInCurrentRole	
-# More time in current role related to lower attrition	
-# Incentivize specialize or promote / Mentorship Role
+#   More time in current role related to lower attrition	
+#   Incentivize specialize or promote / Mentorship Role
 
 # JobInvolvement	
-# High JI - Likely to stay / Low JI - Likely to leave	
-# Create personal development plan if low / High - seek leadership role	
+#   High JI - Likely to stay / Low JI - Likely to leave	
+#   Create personal development plan if low / High - seek leadership role	
 
 # JobSatisfaction	
-# JS -High - Likely to stay /  JS - Low - Likely to leave	
-# Low - create personal development plan / High - mentorship roles
+#   JS -High - Likely to stay /  JS - Low - Likely to leave	
+#   Low - create personal development plan / High - mentorship roles
 
 # PerformanceRating
-# Low - personal development plan / High - mentorship roles
+#   Low - personal development plan / High - mentorship roles
 
 
 # Good, Better, Best Approach
@@ -207,19 +207,84 @@ train_readable_tbl %>%
 tidy(recipe_obj, number = 3) %>% 
     filter(str_detect(terms, "YearsAtCompany"))
 
-# first bin starts at -Inf --> 2
-
 tidy(recipe_obj, number = 3) %>% 
     filter(str_detect(terms, "TotalWorkingYears"))
-
-# first bin starts at -Inf --> 6
-
-
-
 
 
 
 # 4.2 Professional Development (Promotion Readiness) ----
+
+# JobLevel
+#   Employees with Job Level 1 are leaving / Job Level 2 staying
+#   Promote faster for high performers
+
+# YearsAtCompany
+#   YAC - High - Likely to stay / YAC - LOW - Likely to leave
+#   Tie promotion if low to advance faster / Mentor if YAC low
+
+# YearsInCurrentRole
+#   More time in current role related to lower attrition
+#   Incentivize specialize or promote 
+
+# Additional Features 
+#   JobInvolvement - Important for promotion readiness, incentivizes involvment for leaders and early promotion
+#   JobSatisfaction - Important for specialization, incentivizes satisfaction for mentors
+#   PerformanceRating - Important for any promotion
+
+
+# Good Better Best Approach
+
+# Ready For Rotation: YearsInCurrentRole, JobSatisfaction (LOW)
+
+# Ready For Promotion Level 2: JobLevel, YearsInCurrentRole, JobInvolvement, PerformanceRating
+
+# Ready For Promotion Level 3: JobLevel, YearsInCurrentRole, JobInvolvement, PerformanceRating
+
+# Ready For Promotion Level 4: JobLevel, YearsInCurrentRole, JobInvolvement, PerformanceRating
+
+# Ready For Promotion Level 5: JobLevel, YearsInCurrentRole, JobInvolvement, PerformanceRating
+
+# Incentivize Specialization: YearsInCurrentRole, JobSatisfaction, PerformanceRating
+
+
+# Implement Strategy Into Code
+train_readable_tbl %>%
+    select(JobLevel, YearsInCurrentRole, 
+           JobInvolvement, JobSatisfaction, PerformanceRating) %>%
+   
+    # convert factors to numeric
+    mutate(across(where(is.factor), as.numeric)) %>% 
+    
+    mutate(
+        professional_development_strategy = case_when(
+            
+            # Ready For Rotation: YearsInCurrentRole, JobSatisfaction (LOW)
+            
+            
+            # Ready For Promotion Level 2: JobLevel, YearsInCurrentRole, JobInvolvement, PerformanceRating
+            
+            
+            # Ready For Promotion Level 3: JobLevel, YearsInCurrentRole, JobInvolvement, PerformanceRating
+            
+            
+            # Ready For Promotion Level 4: JobLevel, YearsInCurrentRole, JobInvolvement, PerformanceRating
+            
+            
+            # Ready For Promotion Level 5: JobLevel, YearsInCurrentRole, JobInvolvement, PerformanceRating
+            
+            
+            # Incentivize Specialization: YearsInCurrentRole, JobSatisfaction, PerformanceRating
+            
+            
+            # Catch All
+            TRUE                        ~ "Retain and Maintain"
+        )
+    ) %>%
+    pull(professional_development_strategy) %>%
+    table()
+
+tidy(recipe_obj, number = 3) %>%
+    filter(str_detect(terms, "YearsInCurrentRole"))
 
 
 # 4.3 Work Life Balance ----
