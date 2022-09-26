@@ -259,35 +259,51 @@ train_readable_tbl %>%
         professional_development_strategy = case_when(
             
             # Ready For Rotation: YearsInCurrentRole, JobSatisfaction (LOW)
-            
+            YearsInCurrentRole >= 2 &                                              
+                JobSatisfaction <= 2       ~ "Ready for Rotation",   
             
             # Ready For Promotion Level 2: JobLevel, YearsInCurrentRole, JobInvolvement, PerformanceRating
-            
+            JobLevel == 1 &
+                YearsInCurrentRole >= 2 &
+                JobInvolvement >= 3 &
+                PerformanceRating >= 3      ~ "Ready for Promotion", 
             
             # Ready For Promotion Level 3: JobLevel, YearsInCurrentRole, JobInvolvement, PerformanceRating
-            
+            JobLevel == 2 &
+                YearsInCurrentRole >= 2 &
+                JobInvolvement >= 4 &
+                PerformanceRating >= 3      ~ "Ready for Promotion",
             
             # Ready For Promotion Level 4: JobLevel, YearsInCurrentRole, JobInvolvement, PerformanceRating
-            
+            JobLevel == 3 &
+                YearsInCurrentRole >= 3 &
+                JobInvolvement >= 4 &
+                PerformanceRating >= 3      ~ "Ready for Promotion",
             
             # Ready For Promotion Level 5: JobLevel, YearsInCurrentRole, JobInvolvement, PerformanceRating
-            
+            JobLevel == 4 &
+                YearsInCurrentRole >= 4 &
+                JobInvolvement >= 4 &
+                PerformanceRating >= 3      ~ "Ready for Promotion",
             
             # Incentivize Specialization: YearsInCurrentRole, JobSatisfaction, PerformanceRating
-            
+            YearsInCurrentRole >= 4 &
+                JobSatisfaction >= 4 &
+                PerformanceRating >= 3      ~ "Incentivize Specialization",
             
             # Catch All
-            TRUE                        ~ "Retain and Maintain"
+            TRUE                            ~ "Retain and Maintain"
         )
-    ) %>%
-    pull(professional_development_strategy) %>%
-    table()
+    )
+    # ) %>%
+    # pull(professional_development_strategy) %>%
+    # table() 
 
 tidy(recipe_obj, number = 3) %>%
     filter(str_detect(terms, "YearsInCurrentRole"))
 
 
-# 4.3 Work Life Balance ----
+# 4.3 Work Environment Strategy ----
 
 
 
