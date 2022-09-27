@@ -305,13 +305,43 @@ tidy(recipe_obj, number = 3) %>%
 
 # 4.3 Work Environment Strategy ----
 
+# EnvironmentSatisfaction
+#   Employees with low environment satisfaction are more likely to leave	
+#   Improve the workplace environment
+
+# WorkLifeBalance
+#   Bad worklife balance - more likely to leave	
+#   Improve the workplace balance
+
+# BusinessTravel
+#   More BT- more like to leave / Less BT - more likely to stay	
+#   Reduce business travel where possible
+
+# DistanceFromHome
+#   DFH - High -more likely to stay 	
+#   Monitor worklife balance
 
 
+# Good Better Best Approach
 
+#
 
+#
 
+#
 
+#
 
+# Implement Strategy Into Code
+train_readable_tbl %>%
+    select(JobLevel, YearsInCurrentRole, 
+           JobInvolvement, JobSatisfaction, PerformanceRating) %>%
+    
+    # convert factors to numeric
+    mutate(across(where(is.factor), as.numeric)) %>% 
+    
+    mutate(
+        professional_development_strategy = case_when(
 
 
 
