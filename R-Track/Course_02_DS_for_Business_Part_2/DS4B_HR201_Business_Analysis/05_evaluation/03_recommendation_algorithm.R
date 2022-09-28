@@ -305,9 +305,13 @@ tidy(recipe_obj, number = 3) %>%
 
 # 4.3 Work Environment Strategy ----
 
+# OverTime
+#   Employees with high OT are leaving
+#   Reduce Overtime - work life balanceS
+
 # EnvironmentSatisfaction
 #   Employees with low environment satisfaction are more likely to leave	
-#   Improve the workplace environment
+#   Improve the workplace environment - review job assignment after period of time in current role
 
 # WorkLifeBalance
 #   Bad worklife balance - more likely to leave	
@@ -319,29 +323,50 @@ tidy(recipe_obj, number = 3) %>%
 
 # DistanceFromHome
 #   DFH - High -more likely to stay 	
-#   Monitor worklife balance
+#   Monitor worklife balance - Monito Business Travel
+
+
+# Additional Features
+#   YearsInCurrent Role - Important for reviewing a job assignment is to give sufficient time in a role (min 2 years)
+#   JobInvolvement - Not Included, but important in keeping work environment satisfaction (Target Medium & Low)
 
 
 # Good Better Best Approach
 
-#
+# Improve Work-Life Balance: OverTime, WorkLifeBalance
+# Monitor Business Travel: BusinessTravel, DistanceFromHome, WorkLifeBalance
+# Review Job Assignment: EnvironmentSatisfaction, YearsInCurrentRole
+# Promote Job Engagement: JobInvolvement
 
-#
-
-#
-
-#
 
 # Implement Strategy Into Code
 train_readable_tbl %>%
-    select(JobLevel, YearsInCurrentRole, 
-           JobInvolvement, JobSatisfaction, PerformanceRating) %>%
+    select(YearsInCurrentRole, OverTime, EnvironmentSatisfaction, WorkLifeBalance,
+           BusinessTravel, JobInvolvement, YearsInCurrentRole) %>%
     
     # convert factors to numeric
     mutate(across(where(is.factor), as.numeric)) %>% 
     
     mutate(
-        professional_development_strategy = case_when(
+        work_enviroment_strategy = case_when(
+            
+            # Improve Work-Life Balance: OverTime, WorkLifeBalance
+            OverTime == 2 |
+                WorkLifeBalance == 1       ~ "Improve Work-Life Balance",
+            
+            # Monitor Business Travel: BusinessTravel, DistanceFromHome, WorkLifeBalance
+           
+            
+            # Review Job Assignment: EnvironmentSatisfaction, YearsInCurrentRole
+            
+            
+            # Promote Job Engagement: JobInvolvement
+            
+            
+            # Catch All
+            TRUE                            ~ "Retain and Maintain"
+        )
+    ) 
 
 
 
