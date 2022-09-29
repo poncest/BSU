@@ -341,7 +341,7 @@ tidy(recipe_obj, number = 3) %>%
 
 # Implement Strategy Into Code
 train_readable_tbl %>%
-    select(YearsInCurrentRole, OverTime, EnvironmentSatisfaction, WorkLifeBalance,
+    select(YearsInCurrentRole, OverTime, EnvironmentSatisfaction, WorkLifeBalance, DistanceFromHome,
            BusinessTravel, JobInvolvement, YearsInCurrentRole) %>%
     
     # convert factors to numeric
@@ -352,21 +352,32 @@ train_readable_tbl %>%
             
             # Improve Work-Life Balance: OverTime, WorkLifeBalance
             OverTime == 2 |
-                WorkLifeBalance == 1       ~ "Improve Work-Life Balance",
+                WorkLifeBalance == 1         ~ "Improve Work-Life Balance",
             
             # Monitor Business Travel: BusinessTravel, DistanceFromHome, WorkLifeBalance
-           
+           (BusinessTravel == 3 |
+               DistanceFromHome >= 10) &
+               WorkLifeBalance == 2          ~ "Monitor Business Travel",
             
             # Review Job Assignment: EnvironmentSatisfaction, YearsInCurrentRole
-            
+           EnvironmentSatisfaction == 1 &
+               YearsInCurrentRole >= 2       ~ "Review Job Assignment",
             
             # Promote Job Engagement: JobInvolvement
-            
+           JobInvolvement <= 2               ~ "Promote Job Engagement",
             
             # Catch All
-            TRUE                            ~ "Retain and Maintain"
+            TRUE                             ~ "Retain and Maintain"
         )
-    ) 
+    ) %>% 
+    count(work_enviroment_strategy)
+
+train_readable_tbl %>% 
+    pull(WorkLifeBalance) %>% 
+    levels()
+
+tidy(recipe_obj, 3) %>% 
+    filter(str_detect(terms, "Distance"))
 
 
 
