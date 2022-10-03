@@ -25,7 +25,7 @@ r_pkgs <- c(
     "xgboost"
     )
 
-# install.packages(r_pkgs)
+# install.packages(r_pkgs) 
 
-install.packages(r_pkgs[!(r_pkgs %in% installed.packages())])
+install.packages(r_pkgs[!(r_pkgs %in% installed.packages())]) 
 
