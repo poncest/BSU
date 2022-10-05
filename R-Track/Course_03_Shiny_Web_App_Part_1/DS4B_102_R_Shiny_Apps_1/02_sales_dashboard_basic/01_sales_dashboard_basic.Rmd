@@ -1,5 +1,5 @@
 ---
-title: "App Name"
+title: "Sales Dashboard"
 output: 
   flexdashboard::flex_dashboard:
     orientation: rows
@@ -8,7 +8,55 @@ output:
 
 ```{r setup, include=FALSE}
 library(flexdashboard)
+
+# Core
+library(tidyverse)
+library(tidyquant)
+
+# Interactive Visualization
+library(plotly)
+
+# Database
+library(odbc)
+library(RSQLite)
+
 ```
+
+
+```{r}
+conn <- dbConnect(RSQLite::SQLite(), "../00_data/bikes_database.db")
+# dbListTables(conn = conn) get db tables
+bikes_tbl      <- tbl(conn, "bikes")
+bikeshops_tbl  <- tbl(conn, "bikeshops")
+orderlines_tbl <- tbl(conn, "orderlines")
+
+processed_data_tbl <- orderlines_tbl %>% 
+    
+    # join bikeshops and bikes tbls
+    left_join(bikeshops_tbl, by = c("customer.id" = "bikeshop.id")) %>% 
+    left_join(bikes_tbl, by = c("product.id" = "bike.id")) %>% 
+    
+    mutate(extended_price = quantity * price) %>% 
+    collect()
+    
+
+# The following operations needed to be performed outside the db
+processed_data_tbl <- processed_data_tbl %>%     
+    # fixing date
+    mutate(order.date = ymd(order.date)) %>% 
+    # separate location
+    separate(location, into = c("city", "state"), sep = ", " ) %>% 
+    
+    select(order.date, order.id, order.line, state, quantity, price, extended_price)
+
+# Close the db connection
+dbDisconnect(conn)
+``` 
+
+ 
+
+
+
 
 Page 1
 =======================================================================
