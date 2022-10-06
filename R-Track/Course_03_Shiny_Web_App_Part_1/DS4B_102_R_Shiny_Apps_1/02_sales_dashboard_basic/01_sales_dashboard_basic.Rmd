@@ -2,8 +2,8 @@
 title: "Sales Dashboard"
 output: 
   flexdashboard::flex_dashboard:
-    orientation: rows
-    vertical_layout: scroll
+    orientation: columns
+    vertical_layout: fill
 ---
 
 ```{r setup, include=FALSE}
@@ -53,50 +53,50 @@ processed_data_tbl <- processed_data_tbl %>%
 dbDisconnect(conn)
 ``` 
 
- 
-
-
-
-
-Page 1
-=======================================================================
-
-Column {data-width=650 .tabset}
------------------------------------------------------------------------
-
-### Chart A-1
-
-```{r}
-
-```
-
-### Chart A-2 
-
-```{r}
-
-```
-
-### Chart A-3
-
-```{r}
-
-```
-
 
 Column {data-width=350 .tabset .tabset-fade}
 -----------------------------------------------------------------------
 
-### Chart B
+### By State
 
 ```{r}
 
+geo_plot_tbl <- processed_data_tbl %>% 
+    # aggregate data by state
+    group_by(state) %>% 
+    summarise(total_revenue = sum(extended_price)) %>% 
+    ungroup() %>% 
+
+    # create label for tooltip
+    mutate(label_text = str_glue("State: {state}
+                                 Revenue: {scales::dollar(total_revenue)}"))
 ```
 
-### Chart C
+
 
 ```{r}
+geo_plot_tbl %>% 
+    plot_geo(locationmode = "USA-states") %>%
+    add_trace(z         = ~ total_revenue, 
+              locations = ~ state, 
+              color     = ~ total_revenue,
+              text      = ~ label_text,
+              colors    = ~ "Blues") %>% 
+    
+    # specify some map projection/options
+    layout(
+        geo = list(
+            scope = "usa",
+            projection = list(type = "albers usa"),
+            showlakes  = TRUE,
+            lakecolor  = toRGB("white")
+        )
+    )
+    
 
 ```
+
+
 
 ### Chart D
 
