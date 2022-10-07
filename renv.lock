@@ -25,6 +25,22 @@
       "Hash": "b2866e62bab9378c3cc9476a1954226b",
       "Requirements": []
     },
+    "DT": {
+      "Package": "DT",
+      "Version": "0.25",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "d35337fd4278be35c50d7eeeec439f68",
+      "Requirements": [
+        "crosstalk",
+        "htmltools",
+        "htmlwidgets",
+        "jquerylib",
+        "jsonlite",
+        "magrittr",
+        "promises"
+      ]
+    },
     "GGally": {
       "Package": "GGally",
       "Version": "2.1.2",
