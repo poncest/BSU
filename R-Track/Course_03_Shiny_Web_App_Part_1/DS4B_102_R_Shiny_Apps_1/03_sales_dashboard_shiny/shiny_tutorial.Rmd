@@ -44,6 +44,16 @@ checkboxGroupInput(inputId  = "checkbox_group",
                                 "Sales"     = "sales"), 
                    selected = c("marketing", "research", "sales")
                   )
+
+
+dateRangeInput(inputId = "date_range", 
+               label   = h4("Date Range"), 
+               start   = "2018-01-01", 
+               end     = today(),
+               min     = min(sales_data_tbl$date),
+               max     = max(sales_data_tbl$date), 
+               startview = "year"
+            )
 ```
 
 
@@ -61,11 +71,23 @@ Column {data-width=500}
 
 ```{r}
 
+# input is a special object (list) that keeps track of all UI components
+# renderPrint(input$checkbox_group)
+
+output$checkbox_values <- renderPrint(input$checkbox_group)
+
+textOutput(outputId = "checkbox_values")
+
 ```
 
 ### Section - Date Range
 
 ```{r}
+
+# renderPrint(input$date_range)
+output$date_range_values <- renderPrint(input$date_range)
+
+textOutput(outputId = "date_range_values") 
 
 ```
 
