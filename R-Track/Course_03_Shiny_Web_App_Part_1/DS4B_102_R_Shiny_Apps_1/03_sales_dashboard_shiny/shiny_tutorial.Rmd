@@ -54,6 +54,17 @@ dateRangeInput(inputId = "date_range",
                max     = max(sales_data_tbl$date), 
                startview = "year"
             )
+
+sliderInput(inputId    = "slider_input", 
+            label   = h4("Slider Range"), 
+            min     = min(sales_data_tbl$sales) %>% round(),
+            max     = max(sales_data_tbl$sales) %>% round(),
+            value   = c(40, 60), 
+            step    = 5, 
+            round   = TRUE,
+            pre     = "$")
+
+
 ```
 
 
@@ -90,11 +101,15 @@ output$date_range_values <- renderPrint(input$date_range)
 textOutput(outputId = "date_range_values") 
 
 ```
-
+ 
 ### Section - Slider Output
 
 ```{r}
 
+# renderPrint(input$slider_input)
+output$slider_values <- renderPrint(input$slider_input)
+
+textOutput(outputId = "slider_values") 
 ```
 
 
@@ -104,6 +119,10 @@ Column {data-width=750}
 ```{r}
 # Reactive Filter
 
+sales_data_filtered <- reactive({
+    sales_data_tbl %>% 
+        filter(class %in% input$checkbox_group)
+})
 ```
 
 
@@ -111,6 +130,17 @@ Column {data-width=750}
 
 ```{r}
 
+# renderTable(sales_data_filtered())
+# sales_data_filtered
+# options - https://rstudio.github.io/DT/shiny.html
+
+DT::renderDataTable(expr = {
+    sales_data_filtered() %>% 
+        mutate(sales = scales::dollar(sales))
+        
+    }, 
+    # scroll bar next to the DT
+    options = list(scrollY = "250px"))
 
 ```
 
