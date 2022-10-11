@@ -120,12 +120,22 @@ Column {data-width=750}
 # Reactive Filter
 
 sales_data_filtered <- reactive({
-    sales_data_tbl %>% 
-        filter(class %in% input$checkbox_group)
-})
+    sales_data_tbl %>%
+        
+        filter(class %in% input$checkbox_group) %>% 
+        
+        filter(date %>% between(
+            left  = ymd(input$date_range[1]),
+            right = ymd(input$date_range[2]))) %>% 
+        
+        filter(sales %>% between(
+            left  = input$slider_input[1],
+            right = input$slider_input[2])
+        )
+}) 
 ```
 
-
+ 
 ### Section - Reactive Output
 
 ```{r}
