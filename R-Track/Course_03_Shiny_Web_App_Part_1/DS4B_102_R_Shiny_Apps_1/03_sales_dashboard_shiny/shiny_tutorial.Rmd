@@ -71,6 +71,10 @@ sliderInput(inputId    = "slider_input",
 ```{r}
 # Reset Button
 
+actionButton(inputId = "reset", 
+             label   = "Reset",
+             icon    = icon("sync"))
+
 ```
 
 
@@ -144,7 +148,7 @@ sales_data_filtered <- reactive({
 # sales_data_filtered
 # options - https://rstudio.github.io/DT/shiny.html
 
-DT::renderDataTable(expr = {
+output$dt_output_1 <- DT::renderDataTable(expr = {
     sales_data_filtered() %>% 
         mutate(sales = scales::dollar(sales))
         
@@ -152,12 +156,27 @@ DT::renderDataTable(expr = {
     # scroll bar next to the DT
     options = list(scrollY = "250px"))
 
+DTOutput(outputId = "dt_output_1")
+
 ```
 
 
 ### Section - Reactive Summary
 
 ```{r}
+
+output$dt_output_2 <- DT::renderDataTable(expr = {
+    sales_data_filtered() %>% 
+        group_by(class) %>% 
+        summarise(total_revenue = sum(sales)) %>% 
+        ungroup() %>% 
+        mutate(total_revenue = scales::dollar(total_revenue))
+        
+    }, 
+    # scroll bar next to the DT
+    options = list(scrollY = "250px"))
+
+DTOutput(outputId = "dt_output_2")
 
 
 ```
