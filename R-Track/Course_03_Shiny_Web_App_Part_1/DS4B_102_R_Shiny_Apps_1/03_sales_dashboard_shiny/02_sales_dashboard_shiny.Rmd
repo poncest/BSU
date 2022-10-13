@@ -4,10 +4,13 @@ output:
   flexdashboard::flex_dashboard:
     orientation: columns
     vertical_layout: fill
+runtime: shiny
 ---
 
 ```{r setup, include=FALSE}
 library(flexdashboard)
+library(shiny)
+library(shinyWidgets)
 
 # Core
 library(tidyverse)
@@ -44,6 +47,14 @@ processed_data_tbl <- processed_data_tbl %>%
 
 dbDisconnect(con)
 ```
+
+Column {.sidebar}
+---------------------------------------------------------------
+
+```{r} 
+
+```
+
 
 
 Column {data-width=1000}
