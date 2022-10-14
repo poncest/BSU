@@ -25,11 +25,12 @@ library(RSQLite)
 ```
 
 ```{r}
+# con <- dbConnect(RSQLite::SQLite(), "00_data/bikes_database.db")
 con <- dbConnect(RSQLite::SQLite(), "../00_data/bikes_database.db")
 
 # dbListTables(con)
-bikes_tbl <- tbl(con, "bikes")
-bikeshops_tbl <- tbl(con, "bikeshops")
+bikes_tbl      <- tbl(con, "bikes")
+bikeshops_tbl  <- tbl(con, "bikeshops")
 orderlines_tbl <- tbl(con, "orderlines")
 
 processed_data_tbl <- orderlines_tbl %>%
@@ -41,11 +42,17 @@ processed_data_tbl <- orderlines_tbl %>%
 processed_data_tbl <- processed_data_tbl %>%    
     mutate(order.date = ymd(order.date)) %>%
     separate(location, into = c("city", "state"), sep = ", ") %>%
-    select(order.date, order.id, order.line, state, quantity, price, extended_price)
+    
+    separate(description, 
+             into = c("category_1", "category_2", "frame_material"),
+             sep = " - ") %>%
+    
+    select(order.date, order.id, order.line, state, quantity, price, extended_price,
+           category_1:frame_material)
     
 # processed_data_tbl
 
-dbDisconnect(con)
+dbDisconnect(con) 
 ```
 
 Column {.sidebar}
