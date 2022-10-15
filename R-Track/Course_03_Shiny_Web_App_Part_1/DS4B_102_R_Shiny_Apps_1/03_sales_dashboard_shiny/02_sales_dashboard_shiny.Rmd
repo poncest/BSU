@@ -60,6 +60,18 @@ Column {.sidebar}
 
 ```{r} 
 
+shinyWidgets::checkboxGroupButtons(
+    inputId   = "checkbox_category_1",
+    label     = h4("Bike Type"),
+    choices   = unique(processed_data_tbl$category_1),
+    selected  = unique(processed_data_tbl$category_1),
+    checkIcon = list(
+        yes = icon("ok", lib = "glyphicon"),
+        no  = icon("remove", lib = "glyphicon")
+    )
+)
+
+renderText(input$checkbox_category_1)
 ```
 
 
@@ -70,17 +82,34 @@ Column {data-width=1000}
 ### By State
 
 ```{r}
-geo_plot_tbl <- processed_data_tbl %>%
-    group_by(state) %>%
-    summarise(total_revenue = sum(extended_price)) %>%
-    ungroup() %>%
-    mutate(label_text = str_glue("State: {state}
-                                 Revenue: {scales::dollar(total_revenue)}"))
+
+geo_plot_tbl <- reactive({
+    
+    processed_data_tbl %>%
+        
+        filter(category_1 %in% input$checkbox_category_1) %>% 
+    
+        group_by(state) %>%
+        summarise(total_revenue = sum(extended_price)) %>%
+        ungroup() %>%
+        mutate(label_text = str_glue("State: {state}
+                                     Revenue: {scales::dollar(total_revenue)}"))
+})
+
+# geo_plot_tbl <- processed_data_tbl %>%
+#     group_by(state) %>%
+#     summarise(total_revenue = sum(extended_price)) %>%
+#     ungroup() %>%
+#     mutate(label_text = str_glue("State: {state}
+#                                  Revenue: {scales::dollar(total_revenue)}"))
 ```
 
 
 ```{r}
-geo_plot_tbl %>%
+
+output$plotly_1 <- renderPlotly(expr = {
+    
+    geo_plot_tbl() %>%
     plot_geo(locationmode = "USA-states") %>%
     add_trace(z         = ~total_revenue, 
               locations = ~state, 
@@ -95,5 +124,9 @@ geo_plot_tbl %>%
             lakecolor  = toRGB("white")
         )
     )
+    
+})
+ 
+plotlyOutput(outputId = "plotly_1")
 ```
 
