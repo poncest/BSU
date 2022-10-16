@@ -68,10 +68,23 @@ shinyWidgets::checkboxGroupButtons(
     checkIcon = list(
         yes = icon("ok", lib = "glyphicon"),
         no  = icon("remove", lib = "glyphicon")
-    )
-)
+    ))
 
-renderText(input$checkbox_category_1)
+shinyWidgets::pickerInput(
+    inputId   = "picker_category_2",
+    label     = h4("Bike Family"),
+    choices   = unique(processed_data_tbl$category_2),
+    selected  = unique(processed_data_tbl$category_2),
+    multiple  = TRUE,
+    options   = list(
+        `actions-box`           = TRUE,
+        size                    = 10,
+        `selected-text-format`  = "count > 3"
+    ) 
+)  
+
+# renderText(input$checkbox_category_1)
+# renderPrint(input$picker_category_2)
 ```
 
 
@@ -88,6 +101,7 @@ geo_plot_tbl <- reactive({
     processed_data_tbl %>%
         
         filter(category_1 %in% input$checkbox_category_1) %>% 
+        filter(category_2 %in% input$picker_category_2) %>% 
     
         group_by(state) %>%
         summarise(total_revenue = sum(extended_price)) %>%
