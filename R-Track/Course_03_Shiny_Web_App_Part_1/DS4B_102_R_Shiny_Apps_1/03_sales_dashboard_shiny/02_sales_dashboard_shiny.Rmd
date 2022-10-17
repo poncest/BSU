@@ -60,6 +60,21 @@ Column {.sidebar}
 
 ```{r} 
 
+
+## Date Range picker 
+dateRangeInput(
+    inputId   = "input_date_range",
+    label     = h4("Date Range"),
+    start     = "2011-01-07", 
+    end       = "2015-12-25",
+    min       = min(processed_data_tbl$order.date), 
+    max       = max(processed_data_tbl$order.date), 
+    format    = "yyyy-mm-dd",
+    startview = "year"
+)
+    
+
+## Bike type check box buttons (category_1)
 shinyWidgets::checkboxGroupButtons(
     inputId   = "checkbox_category_1",
     label     = h4("Bike Type"),
@@ -70,6 +85,7 @@ shinyWidgets::checkboxGroupButtons(
         no  = icon("remove", lib = "glyphicon")
     ))
 
+## Bike family picker (category_2)
 shinyWidgets::pickerInput(
     inputId   = "picker_category_2",
     label     = h4("Bike Family"),
@@ -82,6 +98,32 @@ shinyWidgets::pickerInput(
         `selected-text-format`  = "count > 3"
     ) 
 )  
+
+
+br()   # add space
+hr()   # add horizontal line
+br()
+
+## Reset
+actionButton(
+    inputId   = "reset",
+    label     = h4("Reset"),
+    icon      = icon("sync"),
+    ) 
+
+observeEvent(eventExpr = input$reset, handlerExpr = {
+    
+    ## Update checkbox_category_1
+    updateCheckboxGroupButtons(session   = session, 
+                               inputId   = "checkbox_category_1", 
+                               selected  = unique(processed_data_tbl$category_1))
+    
+    ## Update picker_category_2   
+    updatePickerInput(session   = session, 
+                      inputId   = "picker_category_2", 
+                      selected  = unique(processed_data_tbl$category_2))
+    
+})
 
 # renderText(input$checkbox_category_1)
 # renderPrint(input$picker_category_2)
