@@ -189,7 +189,7 @@ output$plotly_1 <- renderPlotly(expr = {
             showlakes  = TRUE,
             lakecolor  = toRGB("white")
         )
-    )
+    ) 
     
 })
  
@@ -203,8 +203,12 @@ Column {data-width=400}
 ### Over Time
 
 ```{r}
+# Time Series data
+
+time_unit <- "month"
+
 time_plot_tbl <- processed_data_tbl %>% 
-    mutate(date = floor_date(order.date, unit = "month")) %>% 
+    mutate(date = floor_date(order.date, unit = time_unit)) %>% 
     
     group_by(date) %>% 
     summarise(total_sales = sum(extended_price)) %>% 
@@ -213,7 +217,23 @@ time_plot_tbl <- processed_data_tbl %>%
     mutate(label_text = str_glue("Date: {date}
                                  Revenue: {scales::dollar(total_sales)}"))
 
-time_plot_tbl
+# plot
+g <- time_plot_tbl %>% 
+    ggplot(aes(x = date, y = total_sales)) +
+    
+    geom_line(color = "#2C3E50")+
+    geom_point(aes(text = label_text), color = "#2C3E50", size = 0.1)+
+    geom_smooth(method = "loess", span = 0.2)+
+    
+    scale_y_continuous(labels = scales::dollar_format())+
+    expand_limits(y = 0)+
+    
+    labs(x = "", y = "")+
+    
+    theme_tq()
+    
+ggplotly(g, tooltip = 'text')    
+
 ```
 
 
