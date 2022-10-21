@@ -205,34 +205,50 @@ Column {data-width=400}
 ```{r}
 # Time Series data
 
-time_unit <- "month"
+time_plot_tbl <- reactive({ 
 
-time_plot_tbl <- processed_data_tbl %>% 
-    mutate(date = floor_date(order.date, unit = time_unit)) %>% 
+    time_unit <- "month"
     
-    group_by(date) %>% 
-    summarise(total_sales = sum(extended_price)) %>% 
-    ungroup() %>% 
+    processed_data_tbl %>% 
+        
+        filter(order.date %>% between(
+            left  = input$input_date_range[1],
+            right = input$input_date_range[2])) %>% 
+        
+        mutate(date = floor_date(order.date, unit = time_unit)) %>% 
+        
+        group_by(date) %>% 
+        summarise(total_sales = sum(extended_price)) %>% 
+        ungroup() %>% 
+        
+        mutate(label_text = str_glue("Date: {date}
+                                     Revenue: {scales::dollar(total_sales)}"))
+    })
     
-    mutate(label_text = str_glue("Date: {date}
-                                 Revenue: {scales::dollar(total_sales)}"))
+# renderDataTable({
+#     time_plot_tbl() 
+#     })
+
 
 # plot
-g <- time_plot_tbl %>% 
-    ggplot(aes(x = date, y = total_sales)) +
+renderPlotly({
     
-    geom_line(color = "#2C3E50")+
-    geom_point(aes(text = label_text), color = "#2C3E50", size = 0.1)+
-    geom_smooth(method = "loess", span = 0.2)+
+    g <- time_plot_tbl() %>%
+        ggplot(aes(x = date, y = total_sales)) +
     
-    scale_y_continuous(labels = scales::dollar_format())+
-    expand_limits(y = 0)+
+        geom_line(color = "#2C3E50")+
+        geom_point(aes(text = label_text), color = "#2C3E50", size = 0.1)+
+        geom_smooth(method = "loess", span = 0.2)+
     
-    labs(x = "", y = "")+
+        scale_y_continuous(labels = scales::dollar_format())+
+        expand_limits(y = 0)+
     
-    theme_tq()
+        labs(x = "", y = "")+
     
-ggplotly(g, tooltip = 'text')    
+        theme_tq()
+    
+    ggplotly(g, tooltip = 'text')
+})
 
 ```
 

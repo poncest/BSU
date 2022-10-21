@@ -2089,6 +2089,22 @@
         "xtable"
       ]
     },
+    "shinyWidgets": {
+      "Package": "shinyWidgets",
+      "Version": "0.7.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "93797f9ae8185c55a2f775f331591a55",
+      "Requirements": [
+        "anytime",
+        "bslib",
+        "htmltools",
+        "jsonlite",
+        "rlang",
+        "sass",
+        "shiny"
+      ]
+    },
     "skimr": {
       "Package": "skimr",
       "Version": "2.1.4",
