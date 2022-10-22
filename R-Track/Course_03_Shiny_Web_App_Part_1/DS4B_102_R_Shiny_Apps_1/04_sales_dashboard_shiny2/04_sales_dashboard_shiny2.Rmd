@@ -150,10 +150,12 @@ geo_plot_tbl <- reactive({
         
         filter(order.date %>% between(
             left  = input$input_date_range[1],
-            right = input$input_date_range[2]
-        )) %>% 
+            right = input$input_date_range[2])) %>% 
+        
         filter(category_1 %in% input$checkbox_category_1) %>% 
+        
         filter(category_2 %in% input$picker_category_2) %>% 
+        
     
         group_by(state) %>%
         summarise(total_revenue = sum(extended_price)) %>%
@@ -203,11 +205,27 @@ Column {data-width=400}
 ### Over Time
 
 ```{r}
+shinyWidgets::radioGroupButtons(
+    inputId   = "time_unit",
+    label     = "Time Unit",
+    choices   = c("D" = "day", "W" = "week", "M" = "month", "Q" = "quarter", "Y" = "year"),
+    selected  = "month", 
+    status    = "primary", 
+    justified = TRUE, 
+    checkIcon = list(
+        yes = icon("check", lib = "glyphicon"),
+        no  = NULL
+        ) 
+)
+```
+
+
+```{r}
 # Time Series data
 
 time_plot_tbl <- reactive({ 
 
-    time_unit <- "month"
+    time_unit <- input$time_unit
     
     processed_data_tbl %>% 
         
@@ -215,6 +233,10 @@ time_plot_tbl <- reactive({
             left  = input$input_date_range[1],
             right = input$input_date_range[2])) %>% 
         
+        filter(category_1 %in% input$checkbox_category_1) %>% 
+        
+        filter(category_2 %in% input$picker_category_2) %>% 
+    
         mutate(date = floor_date(order.date, unit = time_unit)) %>% 
         
         group_by(date) %>% 
@@ -224,14 +246,14 @@ time_plot_tbl <- reactive({
         mutate(label_text = str_glue("Date: {date}
                                      Revenue: {scales::dollar(total_sales)}"))
     })
-    
+     
 # renderDataTable({
 #     time_plot_tbl() 
 #     })
 
 
 # plot
-renderPlotly({
+output$plotly_2 <- renderPlotly({
     
     g <- time_plot_tbl() %>%
         ggplot(aes(x = date, y = total_sales)) +
@@ -247,8 +269,11 @@ renderPlotly({
     
         theme_tq()
     
-    ggplotly(g, tooltip = 'text')
+    ggplotly(g, tooltip = 'text') %>% 
+        layout(margin = list(b = 200))
 })
+
+plotlyOutput(outputId = "plotly_2") 
 
 ```
 
