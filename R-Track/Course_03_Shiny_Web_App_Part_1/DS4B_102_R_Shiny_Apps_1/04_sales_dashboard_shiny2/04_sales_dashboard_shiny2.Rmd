@@ -11,6 +11,7 @@ runtime: shiny
 library(flexdashboard)
 library(shiny)
 library(shinyWidgets)
+library(shinyjs)
 
 # Core
 library(tidyverse)
@@ -55,12 +56,15 @@ processed_data_tbl <- processed_data_tbl %>%
 dbDisconnect(con) 
 ```
 
-<!-- User Input Area -->
+<!-- User Input Area -->  
 
 Column {.sidebar}
 ---------------------------------------------------------------
 
 ```{r} 
+
+# Enable shinyjs
+useShinyjs(rmd = TRUE)
 
 ## Date Range picker 
 dateRangeInput(
@@ -136,6 +140,18 @@ observeEvent(eventExpr = input$reset, handlerExpr = {
                          inputId   = "input_date_range", 
                          start     = min(processed_data_tbl$order.date), 
                          end       = max(processed_data_tbl$order.date))
+    
+    ## Update time_unit  
+    updateRadioGroupButtons(
+        session   = session, 
+        inputId   = "time_unit", 
+        selected  = "month")
+    
+    ## Reset button- click apply
+    shinyjs::delay(ms = 300, expr = {
+        shinyjs::click(id = "apply")
+    })
+    
      
 })
 
@@ -234,6 +250,8 @@ Column {data-width=400}
 ### Over Time
 
 ```{r}
+
+## Time unit picker (time series)
 shinyWidgets::radioGroupButtons(
     inputId   = "time_unit",
     label     = "Time Unit",
