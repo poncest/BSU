@@ -1,0 +1,369 @@
+---
+title: "Sales Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: fill
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(shiny)
+library(shinyWidgets)
+library(shinyjs)
+
+# Core
+library(tidyverse)
+library(tidyquant)
+
+# Interactive Visualizations
+library(plotly)
+
+# Database
+library(odbc)
+library(RSQLite)
+```
+
+```{r}
+# con <- dbConnect(RSQLite::SQLite(), "00_data/bikes_database.db")
+con <- dbConnect(RSQLite::SQLite(), "../00_data/bikes_database.db")
+
+# dbListTables(con)
+bikes_tbl      <- tbl(con, "bikes")
+bikeshops_tbl  <- tbl(con, "bikeshops")
+orderlines_tbl <- tbl(con, "orderlines")
+
+processed_data_tbl <- orderlines_tbl %>%
+    left_join(bikeshops_tbl, by = c("customer.id" = "bikeshop.id")) %>%
+    left_join(bikes_tbl, by = c("product.id" = "bike.id")) %>%
+    mutate(extended_price = quantity * price) %>%
+    collect()
+
+processed_data_tbl <- processed_data_tbl %>%    
+    mutate(order.date = ymd(order.date)) %>%
+    separate(location, into = c("city", "state"), sep = ", ") %>%
+    
+    separate(description, 
+             into = c("category_1", "category_2", "frame_material"),
+             sep = " - ") %>%
+    
+    select(order.date, order.id, order.line, state, quantity, price, extended_price,
+           category_1:frame_material)
+    
+# processed_data_tbl
+
+dbDisconnect(con) 
+```
+
+<!-- User Input Area -->  
+
+Column {.sidebar}
+---------------------------------------------------------------
+
+```{r} 
+
+# Enable shinyjs
+useShinyjs(rmd = TRUE)
+
+## Date Range picker 
+dateRangeInput(
+    inputId   = "input_date_range",
+    label     = h4("Date Range"),
+    start     = "2011-01-07", 
+    end       = "2015-12-25",
+    min       = min(processed_data_tbl$order.date), 
+    max       = max(processed_data_tbl$order.date), 
+    format    = "yyyy-mm-dd",
+    startview = "month"
+)
+    
+
+## Bike type check box buttons (category_1)
+shinyWidgets::checkboxGroupButtons(
+    inputId   = "checkbox_category_1",
+    label     = h4("Bike Type"),
+    choices   = unique(processed_data_tbl$category_1),
+    selected  = unique(processed_data_tbl$category_1),
+    checkIcon = list(
+        yes = icon("ok", lib = "glyphicon"),
+        no  = icon("remove", lib = "glyphicon")
+    ))
+
+## Bike family picker (category_2)
+shinyWidgets::pickerInput(
+    inputId   = "picker_category_2",
+    label     = h4("Bike Family"),
+    choices   = unique(processed_data_tbl$category_2),
+    selected  = unique(processed_data_tbl$category_2),
+    multiple  = TRUE,
+    options   = list(
+        `actions-box`           = TRUE,
+        size                    = 10,
+        `selected-text-format`  = "count > 3"
+    ) 
+)  
+
+br()   # add space
+hr()   # add horizontal line
+br()
+
+## Apply
+actionButton(
+    inputId   = "apply",
+    label     = h4(" Apply"),
+    icon      = icon("play"),
+    ) 
+
+
+## Reset
+actionButton(
+    inputId   = "reset",
+    label     = h4(" Reset"),
+    icon      = icon("sync"),
+    ) 
+
+observeEvent(eventExpr = input$reset, handlerExpr = {
+    
+    ## Update checkbox_category_1
+    updateCheckboxGroupButtons(session   = session, 
+                               inputId   = "checkbox_category_1", 
+                               selected  = unique(processed_data_tbl$category_1))
+    
+    ## Update picker_category_2   
+    updatePickerInput(session   = session, 
+                      inputId   = "picker_category_2", 
+                      selected  = unique(processed_data_tbl$category_2))
+    
+    ## Update input_date_range  
+    updateDateRangeInput(session   = session, 
+                         inputId   = "input_date_range", 
+                         start     = min(processed_data_tbl$order.date), 
+                         end       = max(processed_data_tbl$order.date))
+    
+    ## Update time_unit  
+    updateRadioGroupButtons(
+        session   = session, 
+        inputId   = "time_unit", 
+        selected  = "month")
+    
+    ## Reset button- click apply
+    shinyjs::delay(ms = 300, expr = {
+        shinyjs::click(id = "apply")
+    })
+    
+     
+})
+
+# renderText(input$checkbox_category_1)
+# renderPrint(input$picker_category_2)
+# renderPrint(input$input_date_range)
+``` 
+
+
+
+```{r}
+# Apply
+
+process_data_filtered_tbl <- eventReactive(
+    eventExpr = input$apply, 
+    
+    valueExpr = {
+    
+    processed_data_tbl %>%
+        
+        filter(order.date %>% between(
+            left  = input$input_date_range[1],
+            right = input$input_date_range[2])) %>% 
+        
+        filter(category_1 %in% input$checkbox_category_1) %>% 
+        
+        filter(category_2 %in% input$picker_category_2) 
+    }, 
+    
+    # run the code when the app loads
+    ignoreNULL = FALSE
+    )
+
+```
+
+<!-- KPI Area -->
+
+Row {data-height=150}
+---------------------------------------------------------------
+
+```{r}
+processed_data_tbl %>% 
+    
+    summarise(
+        health_metric = unique(order.id) %>% length(),    ## n_distinct(order.id)
+        wealth_metric = sum(extended_price)
+    ) %>% 
+    
+    mutate(
+        health_metric = health_metric %>% scales::number(big.mark = ","),
+        wealth_metric = wealth_metric %>% scales::dollar(scale = 1e-6, accuracy = 0.1, suffix = "M")
+    )
+```
+
+
+
+
+### Health
+
+```{r}
+valueBox(value   = "75%", 
+         caption = "This is the caption", 
+         icon    = "fa-heartbeat", 
+         color   = "success")
+```
+
+
+### Wealthy
+
+
+### Wise
+
+
+
+
+<!-- Map Area -->
+
+Row {data-height=850}
+---------------------------------------------------------------
+
+### By State
+
+```{r}
+
+# map data
+geo_plot_tbl <- reactive({
+    
+    process_data_filtered_tbl() %>% 
+    
+        group_by(state) %>%
+        summarise(total_revenue = sum(extended_price)) %>%
+        ungroup() %>%
+        mutate(label_text = str_glue("State: {state}
+                                     Revenue: {scales::dollar(total_revenue)}"))
+})
+
+# map plot
+output$plotly_1 <- renderPlotly(expr = {
+    
+    geo_plot_tbl() %>%
+    plot_geo(locationmode = "USA-states") %>%
+    add_trace(z         = ~total_revenue, 
+              locations = ~state, 
+              color     = ~total_revenue,
+              text      = ~label_text,
+              colors    = "Blues") %>%
+    layout(
+        geo = list(
+            scope = "usa",
+            projection = list(type = "albers usa"),
+            showlakes  = TRUE,
+            lakecolor  = toRGB("white")
+        )
+    ) 
+    
+})
+ 
+plotlyOutput(outputId = "plotly_1")
+
+
+# geo_plot_tbl <- processed_data_tbl %>%
+#     group_by(state) %>%
+#     summarise(total_revenue = sum(extended_price)) %>%
+#     ungroup() %>%
+#     mutate(label_text = str_glue("State: {state}
+#                                  Revenue: {scales::dollar(total_revenue)}"))
+```
+
+
+<!-- Time Series Area -->
+
+
+### Over Time
+
+```{r}
+
+## Time unit picker (time series)
+shinyWidgets::radioGroupButtons(
+    inputId   = "time_unit",
+    label     = "Time Unit",
+    choices   = c("D" = "day", "W" = "week", "M" = "month", "Q" = "quarter", "Y" = "year"),
+    selected  = "month", 
+    status    = "primary", 
+    justified = TRUE, 
+    checkIcon = list(
+        yes = icon("check", lib = "glyphicon"),
+        no  = NULL
+        ) 
+)
+```
+
+
+```{r}
+# Time Series data
+
+time_plot_tbl <- reactive({ 
+
+    time_unit <- input$time_unit
+    
+    process_data_filtered_tbl() %>%
+    
+        mutate(date = floor_date(order.date, unit = time_unit)) %>% 
+        
+        group_by(date) %>% 
+        summarise(total_sales = sum(extended_price)) %>% 
+        ungroup() %>% 
+        
+        mutate(label_text = str_glue("Date: {date}
+                                     Revenue: {scales::dollar(total_sales)}"))
+    })
+     
+# renderDataTable({
+#     time_plot_tbl() 
+#     })
+
+
+# Time Series plot
+output$plotly_2 <- renderPlotly({
+    
+    g <- time_plot_tbl() %>%
+        ggplot(aes(x = date, y = total_sales)) +
+    
+        geom_line(color = "#2C3E50")+
+        geom_point(aes(text = label_text), color = "#2C3E50", size = 0.1)+
+        geom_smooth(method = "loess", span = 0.2)+
+    
+        scale_y_continuous(labels = scales::dollar_format())+
+        expand_limits(y = 0)+
+    
+        labs(x = "", y = "")+
+    
+        theme_tq()
+    
+    ggplotly(g, tooltip = 'text') %>% 
+        layout(margin = list(b = 200))
+})
+
+plotlyOutput(outputId = "plotly_2") 
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
