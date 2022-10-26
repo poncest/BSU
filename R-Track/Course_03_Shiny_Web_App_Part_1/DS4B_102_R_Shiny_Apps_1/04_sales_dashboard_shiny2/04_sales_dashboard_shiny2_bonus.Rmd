@@ -165,7 +165,7 @@ observeEvent(eventExpr = input$reset, handlerExpr = {
 ```{r}
 # Apply
 
-process_data_filtered_tbl <- eventReactive(
+processed_data_filtered_tbl <- eventReactive(
     eventExpr = input$apply, 
     
     valueExpr = {
@@ -193,36 +193,45 @@ Row {data-height=150}
 ---------------------------------------------------------------
 
 ```{r}
-processed_data_tbl %>% 
+
+summary_values_tbl <- reactive({
+    
+    processed_data_filtered_tbl() %>% 
     
     summarise(
-        health_metric = unique(order.id) %>% length(),    ## n_distinct(order.id)
-        wealth_metric = sum(extended_price)
+        health_metric = n_distinct(order.id),    
+        wealth_metric = sum(extended_price),
+        wise_metric   = sum(str_detect(string = category_1, pattern = "Mountain")) / (sum(str_detect(string = category_1, pattern = "Road")) + 0.0001) %>% round(1)  
+            # 
     ) %>% 
     
     mutate(
         health_metric = health_metric %>% scales::number(big.mark = ","),
         wealth_metric = wealth_metric %>% scales::dollar(scale = 1e-6, accuracy = 0.1, suffix = "M")
     )
+    
+})
+
+renderPrint(summary_values_tbl)
 ```
 
 
 
 
-### Health
+<!-- ### Health -->
 
-```{r}
-valueBox(value   = "75%", 
-         caption = "This is the caption", 
-         icon    = "fa-heartbeat", 
-         color   = "success")
-```
-
-
-### Wealthy
+<!-- ```{r} -->
+<!-- valueBox(value   = "75%",  -->
+<!--          caption = "This is the caption",  -->
+<!--          icon    = "fa-heartbeat",  -->
+<!--          color   = "success") -->
+<!-- ``` -->
 
 
-### Wise
+<!-- ### Wealthy -->
+
+
+<!-- ### Wise -->
 
 
 
@@ -239,7 +248,7 @@ Row {data-height=850}
 # map data
 geo_plot_tbl <- reactive({
     
-    process_data_filtered_tbl() %>% 
+    processed_data_filtered_tbl() %>% 
     
         group_by(state) %>%
         summarise(total_revenue = sum(extended_price)) %>%
@@ -311,7 +320,7 @@ time_plot_tbl <- reactive({
 
     time_unit <- input$time_unit
     
-    process_data_filtered_tbl() %>%
+    processed_data_filtered_tbl() %>%
     
         mutate(date = floor_date(order.date, unit = time_unit)) %>% 
         
@@ -323,7 +332,7 @@ time_plot_tbl <- reactive({
                                      Revenue: {scales::dollar(total_sales)}"))
     })
      
-# renderDataTable({
+# renderDataTable({ 
 #     time_plot_tbl() 
 #     })
 
