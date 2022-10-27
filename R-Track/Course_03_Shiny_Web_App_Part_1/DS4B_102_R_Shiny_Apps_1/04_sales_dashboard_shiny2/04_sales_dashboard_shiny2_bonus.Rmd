@@ -198,11 +198,11 @@ summary_values_tbl <- reactive({
     
     processed_data_filtered_tbl() %>% 
     
-    summarise(
+    summarize(
         health_metric = n_distinct(order.id),    
         wealth_metric = sum(extended_price),
-        wise_metric   = sum(str_detect(string = category_1, pattern = "Mountain")) / (sum(str_detect(string = category_1, pattern = "Road")) + 0.0001) %>% round(1)  
-            # 
+        wise_metric   = (sum(str_detect(category_1, "Mountain")) / (sum(str_detect(category_1, "Road")) + 0.0001)) %>% 
+        round(1)  
     ) %>% 
     
     mutate(
@@ -212,27 +212,50 @@ summary_values_tbl <- reactive({
     
 })
 
-renderPrint(summary_values_tbl)
+# renderPrint(summary_values_tbl)
 ```
 
 
 
+### Health
 
-<!-- ### Health -->
+```{r}
 
-<!-- ```{r} -->
-<!-- valueBox(value   = "75%",  -->
-<!--          caption = "This is the caption",  -->
-<!--          icon    = "fa-heartbeat",  -->
-<!--          color   = "success") -->
-<!-- ``` -->
+renderValueBox({
+    
+    valueBox(value   = summary_values_tbl()$health_metric,
+         caption     = "Orders",
+         icon        = "fa-heartbeat",
+         color       = "success")
+})
+```
 
 
-<!-- ### Wealthy -->
+### Wealthy
 
+```{r}
 
-<!-- ### Wise -->
+renderValueBox({
+    
+    valueBox(value   = summary_values_tbl()$wealth_metric,
+         caption     = "Sales",
+         icon        = "fa-money-check-alt",
+         color       = "primary")
+})
+```
 
+### Wise
+
+```{r}
+
+renderValueBox({
+    
+    valueBox(value   = summary_values_tbl()$wise_metric,
+         caption     = "Ratio Mountain to Road",
+         icon        = "fa-brain",
+         color       = "info")
+})
+```
 
 
 
