@@ -27,7 +27,9 @@ library(RSQLite)
 
 ```{r}
 # con <- dbConnect(RSQLite::SQLite(), "00_data/bikes_database.db")
-con <- dbConnect(RSQLite::SQLite(), "../00_data/bikes_database.db")
+# con <- dbConnect(RSQLite::SQLite(), "../00_data/bikes_database.db")
+
+con <- dbConnect(RSQLite::SQLite(), "bikes_database.db")
 
 # dbListTables(con)
 bikes_tbl      <- tbl(con, "bikes")
