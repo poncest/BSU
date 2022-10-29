@@ -21,14 +21,17 @@ library(RSQLite)
 
 
 # Read Data
-con <- dbConnect(RSQLite::SQLite(), "../00_data/bikes_database.db", timeout = 10)
+con <- dbConnect(RSQLite::SQLite(), "../Data_Science_for_Business/R-Track/Course_03_Shiny_Web_App_Part_1/DS4B_102_R_Shiny_Apps_1/00_data/bikes_database.db")
+
+# dbListTables(con)
 bikes_tbl <- tbl(con, "bikes") %>% collect()
 dbDisconnect(con)
 
 
+
 # 2.0 PREPROCESS DATA ----
 
-bikes_tbl %>%
+train_tbl <- bikes_tbl %>%
     
     # 2.1 Separate Description Column ----
     separate(description, 
@@ -96,11 +99,39 @@ bikes_tbl %>%
 
 # 3.1 Create Model ----
 
+train_tbl %>% 
+    select(-c(bike.id, model, description, model_tier)) %>% 
+    select(price, everything())
+
+
+set.seed(1234)
+
+# parsipanip object
+model_xgboost <- boost_tree(mode       = "regression", 
+           mtry       = 30,
+           learn_rate = 0.25,
+           tree_depth = 7) %>% 
+    
+    set_engine(engine = "xgboost") %>% 
+    
+    fit(price ~ ., data = train_tbl)
+
+
+
 # 3.2 Test Model ----
 
+#' Test model should be on a hold sample.  
+#' We're just verifying that the predictions works on the training set.
+#' For more details (model performance), see Course 1 - DS for Business Part 1
+
+model_xgboost %>% 
+    predict(new_data = train_tbl %>% select(-price))  
+
+
 # 3.3 Save Model ----
+write_rds(x = model_xgboost, path = "R-Track/Course_03_Shiny_Web_App_Part_1/DS4B_102_R_Shiny_Apps_1/00_models/model_xgboost.rds")
 
-
+read_rds("R-Track/Course_03_Shiny_Web_App_Part_1/DS4B_102_R_Shiny_Apps_1/00_models/model_xgboost.rds")
 
 
 # 4.0 MODULARIZE PREPROCESSING CODE ----
