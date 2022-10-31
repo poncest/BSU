@@ -138,8 +138,34 @@ read_rds("R-Track/Course_03_Shiny_Web_App_Part_1/DS4B_102_R_Shiny_Apps_1/00_mode
 
 # 4.1 separate_bike_description() ----
 
-# 4.2 separate_bike_model() ----
+data <- bikes_tbl
 
+separate_bike_description <- function(data, keep_description_column = TRUE,  append = TRUE) {
+    
+    # append = False
+    if (! append) {
+        data <- data %>% select(description)
+    }
+        
+    output_tbl <- data %>% separate(description, 
+             sep    = " - ", 
+             into   = c("category_1", "category_2", "frame_material"), 
+             remove = FALSE) 
+    
+    # keep_description_column = False
+    if (! keep_description_column) output_tbl <- output_tbl %>% select(-description)
+    
+    return(output_tbl)
+}
+
+# Testing separate_bike_description()
+bikes_tbl %>% separate_bike_description()
+bikes_tbl %>% separate_bike_description(append = FALSE)
+bikes_tbl %>% separate_bike_description(keep_description_column = FALSE)   #????
+
+
+# 4.2 separate_bike_model() ----
+ 
 # 4.3 Test Functions ----
 
 # 4.4 Save Functions ----
