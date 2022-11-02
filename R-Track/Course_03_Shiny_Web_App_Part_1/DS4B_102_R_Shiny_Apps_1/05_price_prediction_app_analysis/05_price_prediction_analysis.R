@@ -98,7 +98,7 @@ train_tbl <- bikes_tbl %>%
 
 # 3.1 Create Model ----
 
-train_tbl %>% 
+train_tbl <-train_tbl %>% 
     select(-c(bike.id, model, description, model_tier)) %>% 
     select(price, everything())
 
@@ -128,7 +128,7 @@ model_xgboost %>%
 
 
 # 3.3 Save Model ----
-write_rds(x = model_xgboost, path = "R-Track/Course_03_Shiny_Web_App_Part_1/DS4B_102_R_Shiny_Apps_1/00_models/model_xgboost.rds")
+write_rds(x = model_xgboost, file = "R-Track/Course_03_Shiny_Web_App_Part_1/DS4B_102_R_Shiny_Apps_1/00_models/model_xgboost.rds")
 
 read_rds("R-Track/Course_03_Shiny_Web_App_Part_1/DS4B_102_R_Shiny_Apps_1/00_models/model_xgboost.rds")
 
@@ -256,13 +256,27 @@ dump(c("separate_bike_model", "separate_bike_description"),
 # 5.0 USER INPUT & PREDICTION ----
 
 # 5.1 Inputs ----
-bike_model <- "Jekyll Aluminum 1 Black"
-category_1 <- "Mountain"
-category_2 <- "Over Mountain"
+bike_model     <- "Jekyll Aluminum 1 Black"
+category_1     <- "Mountain"
+category_2     <- "Over Mountain"
 frame_material <- "Aluminum"
+
 
 # 5.2 Make Prediction ----
 
+train_tbl
+ 
+new_bike_tbl <- tibble(
+    model          = bike_model,
+    category_1     = category_1,
+    category_2     = category_2,
+    frame_material = frame_material
+    ) %>% 
+    separate_bike_model()
+
+
+new_bike_tbl %>% 
+    predict(model_xgboost, new_data = .)
 
 # 6.0 MODULARIZE NEW BIKE PREDICTION ----
 
