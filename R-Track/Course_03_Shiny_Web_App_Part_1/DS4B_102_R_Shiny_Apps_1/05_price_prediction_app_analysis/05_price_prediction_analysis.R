@@ -282,25 +282,61 @@ new_bike_tbl %>%
 
 # 6.1 generate_new_bike() Function ----  
 
-
+generate_new_bike <- function(bike_model, category_1, category_2,
+                              frame_material, .ml_model) {
+    
+    new_bike_tbl <- tibble(
+        model          = bike_model,
+        category_1     = category_1,
+        category_2     = category_2,
+        frame_material = frame_material
+    ) %>% 
+        separate_bike_model()
+    
+    # Price is what we're predicting
+    predict(.ml_model, new_data = new_bike_tbl) %>% 
+        bind_cols(new_bike_tbl) %>% 
+        rename(price = .pred)
+        
+        
+}
 
 # 6.2 Test ----
-
 new_bike_tbl <- generate_new_bike(
-    bike_model = "Jekyll Aluminum Black 1",
-    category_1 = "Mountain",
-    category_2 = "Over Mountain",
+    bike_model     = "Jekyll Aluminum 1 Black",
+    category_1     = "Mountain",
+    category_2     = "Over Mountain",
     frame_material = "Aluminum",
-    .ml_model = model_xgboost
-) 
-
+    .ml_model      = model_xgboost 
+)
 new_bike_tbl
+
+bikes_tbl %>% 
+    separate_bike_description() %>% 
+    separate_bike_model() %>% 
+    bind_rows(new_bike_tbl) %>% 
+    tail() # the last column is the prediction from `generate_new_bike()`
 
 
 
 # 7.0 OUTPUT TABLE ----
 
+format_table <- function(new_bike_tbl){
+    
+    new_bike_tbl %>% 
+        mutate(price = scales::dollar(price, accuracy = 1)) %>% 
+        
+        pivot_longer(cols             = -model, 
+                     names_to         = "New Model Attribute", 
+                     names_transform  = list("New Model Attribute" = as.factor),
+                     values_transform = list(value = as.character))%>%
+        
+        pivot_wider(names_from = model, values_from = value)
+} 
 
+# Testing
+new_bike_tbl %>% 
+    format_table()
 
 # 8.0 OUTPUT PLOT PRODUCTS ----
 
