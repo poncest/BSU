@@ -338,16 +338,55 @@ format_table <- function(new_bike_tbl){
 new_bike_tbl %>% 
     format_table()
 
+
 # 8.0 OUTPUT PLOT PRODUCTS ----
 
 # 8.1 bind_bike_predictions() function ----
 
+bind_bike_predictions <- function(bikes_tbl, new_bike_tbl) {
+    
+    bikes_tbl %>% 
+        separate_bike_description() %>% 
+        mutate(estimate = "Actual") %>% 
+        bind_rows(
+            new_bike_tbl %>% mutate(estimate = "Prediction")
+        ) %>% 
+        select(estimate, model, category_1,category_2, frame_material, price)
+    
+}
+
+# testing bind_bike_predictions()
+bind_bike_predictions(bikes_tbl, new_bike_tbl) %>% tail()
+
 
 # 8.2 plot_bike_prediction() function ----
+
+g <- bind_bike_predictions(bikes_tbl, new_bike_tbl) %>% 
+    
+    # category_2 as factor
+    mutate(category_2 = fct_reorder(category_2, price)) %>% 
+   
+    # label text column
+    mutate(label_text = str_glue("Unit Price: {scales::dollar(price, accuracy = 1)}
+                                 Model: {model}
+                                 Bike Type: {category_1}
+                                 Bike Family: {category_2}
+                                 Frame Material {frame_material}")) %>% 
+    
+    ggplot(aes(x = category_2, y = price, color = estimate)) +
+    
+    geom_jitter(aes(text = label_text), width = 0.1, alpha = 0.5) +
+    
+    coord_flip()
+
+ggplotly(g, tooltip = "text")  
+
 
 
 # 8.3 Save functions ----
 
 dump(c("generate_new_bike", "format_table", "bind_bike_prediction", "plot_bike_prediction"), 
-     file = "00_scripts/02_make_predictions.R")
+     file = "R-Track/Course_03_Shiny_Web_App_Part_1/DS4B_102_R_Shiny_Apps_1/00_scripts/02_make_predictions.R")
+
+
     
