@@ -128,9 +128,9 @@ model_xgboost %>%
 
 
 # 3.3 Save Model ----
-write_rds(x = model_xgboost, file = "R-Track/Course_03_Shiny_Web_App_Part_1/DS4B_102_R_Shiny_Apps_1/00_models/model_xgboost.rds")
+# write_rds(x = model_xgboost, file = "R-Track/Course_03_Shiny_Web_App_Part_1/DS4B_102_R_Shiny_Apps_1/00_models/model_xgboost.rds")
 
-read_rds("R-Track/Course_03_Shiny_Web_App_Part_1/DS4B_102_R_Shiny_Apps_1/00_models/model_xgboost.rds")
+# read_rds("R-Track/Course_03_Shiny_Web_App_Part_1/DS4B_102_R_Shiny_Apps_1/00_models/model_xgboost.rds")
 
 
 # 4.0 MODULARIZE PREPROCESSING CODE ----
@@ -249,8 +249,8 @@ bikes_tbl %>% separate_bike_model(keep_model_column = FALSE)
 
 # 4.4 Save Functions ----
 
-dump(c("separate_bike_model", "separate_bike_description"), 
-     file = "R-Track/Course_03_Shiny_Web_App_Part_1/DS4B_102_R_Shiny_Apps_1/00_scripts/02_process_data.R")
+# dump(c("separate_bike_model", "separate_bike_description"), 
+#      file = "R-Track/Course_03_Shiny_Web_App_Part_1/DS4B_102_R_Shiny_Apps_1/00_scripts/02_process_data.R")
 
 
 # 5.0 USER INPUT & PREDICTION ----
@@ -361,25 +361,56 @@ bind_bike_predictions(bikes_tbl, new_bike_tbl) %>% tail()
 
 # 8.2 plot_bike_prediction() function ----
 
-g <- bind_bike_predictions(bikes_tbl, new_bike_tbl) %>% 
+plot_bike_prediction <- function(data, interactive = TRUE ) {
     
-    # category_2 as factor
-    mutate(category_2 = fct_reorder(category_2, price)) %>% 
-   
-    # label text column
-    mutate(label_text = str_glue("Unit Price: {scales::dollar(price, accuracy = 1)}
+    g <- data %>% 
+        # category_2 as factor
+        mutate(category_2 = fct_reorder(category_2, price)) %>% 
+        
+        # label text column
+        mutate(label_text = str_glue("Unit Price: {scales::dollar(price, accuracy = 1)}
                                  Model: {model}
                                  Bike Type: {category_1}
                                  Bike Family: {category_2}
                                  Frame Material {frame_material}")) %>% 
+        
+        ggplot(aes(x = category_2, y = price, color = estimate)) +
+        
+        # geometries
+        geom_violin() +
+        geom_jitter(aes(text = label_text), width = 0.1, alpha = 0.5) +
+        
+        # scales
+        scale_y_log10(labels = scales::dollar_format(accuracy = 1)) +
+        scale_color_tq()+
+        coord_flip() + 
+        
+        # facets
+        facet_wrap(~ frame_material) +
+        
+        # labs
+        labs(title = "", x = "", y = "Log Scale") +
+        
+        # theme
+        theme_tq()+
+        theme(strip.text.x = element_text(margin = margin(5,5,5,5)))
     
-    ggplot(aes(x = category_2, y = price, color = estimate)) +
-    
-    geom_jitter(aes(text = label_text), width = 0.1, alpha = 0.5) +
-    
-    coord_flip()
+    # interactive
+    if (interactive) {
+        return(ggplotly(g, tooltip = "text"))
+    } else {
+        return(g)   
+    }
+}
 
-ggplotly(g, tooltip = "text")  
+# testing
+bind_bike_predictions(bikes_tbl, new_bike_tbl) %>% 
+    plot_bike_prediction(interactive = TRUE)
+
+bind_bike_predictions(bikes_tbl, new_bike_tbl) %>% 
+    plot_bike_prediction(interactive = FALSE)
+
+ 
 
 
 
