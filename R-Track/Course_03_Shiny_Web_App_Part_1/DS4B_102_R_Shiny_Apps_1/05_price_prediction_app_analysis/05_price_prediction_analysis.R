@@ -411,13 +411,10 @@ bind_bike_predictions(bikes_tbl, new_bike_tbl) %>%
     plot_bike_prediction(interactive = FALSE)
 
  
-
-
-
 # 8.3 Save functions ----
 
-dump(c("generate_new_bike", "format_table", "bind_bike_prediction", "plot_bike_prediction"), 
-     file = "R-Track/Course_03_Shiny_Web_App_Part_1/DS4B_102_R_Shiny_Apps_1/00_scripts/02_make_predictions.R")
+# dump(c("generate_new_bike", "format_table", "bind_bike_predictions", "plot_bike_prediction"), 
+#      file = "R-Track/Course_03_Shiny_Web_App_Part_1/DS4B_102_R_Shiny_Apps_1/00_scripts/03_make_predictions.R")
 
 
     
