@@ -1,0 +1,75 @@
+---
+title: "Price Prediction App"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+# 1.0 Libraries ----
+
+
+# App
+library(flexdashboard)
+
+# Core
+library(tidyverse)
+library(tidyquant)
+ 
+# Visualization
+library(plotly)
+
+# Modeling
+library(parsnip)
+
+# Database
+library(odbc)
+library(RSQLite)
+
+
+# 2.0 Data ----
+ 
+# 3.0 Scripts ----
+
+# 4.0 Model ----
+
+
+
+```
+
+
+<!-- Inputs Area-->
+
+Column {.sidebar}
+-----------------------------------------------------------------------
+
+Space for Inputs
+
+
+
+<!-- Plot Area -->
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Price Prediction vs. Product Portfolio
+
+```{r}
+
+```
+
+
+<!-- Table Area -->
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Price Prediction Used These Features
+
+```{r}
+
+```
+
+
+
