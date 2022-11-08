@@ -29,13 +29,23 @@ library(RSQLite)
 
 
 # 2.0 Data ----
- 
+# Read Data
+con <- dbConnect(RSQLite::SQLite(), "bikes_database.db")
+
+# con <- dbConnect(RSQLite::SQLite(), "../Data_Science_for_Business/R-Track/Course_03_Shiny_Web_App_Part_1/DS4B_102_R_Shiny_Apps_1/06_price_prediction_app_basic/bikes_database.db")
+
+# dbListTables(con)
+
+bikes_tbl <- tbl(con, "bikes") %>% collect()
+dbDisconnect(con)
+
 # 3.0 Scripts ----
+source("../00_scripts/02_process_data.R")
+source("../00_scripts/03_make_predictions.R")
+
 
 # 4.0 Model ----
-
-
-
+model_xgboost <- read_rds("../00_models/model_xgboost.rds")
 ```
 
 
