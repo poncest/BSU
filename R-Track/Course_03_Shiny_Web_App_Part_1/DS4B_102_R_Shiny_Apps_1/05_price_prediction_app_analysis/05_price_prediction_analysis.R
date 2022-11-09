@@ -106,12 +106,15 @@ train_tbl <-train_tbl %>%
 set.seed(1234)
 
 # parsipanip object
-model_xgboost <- boost_tree(mode       = "regression", 
+model_xgboost <- boost_tree(
+           mode       = "regression", 
            mtry       = 30,
            learn_rate = 0.25,
            tree_depth = 7) %>% 
     
-    set_engine(engine = "xgboost") %>% 
+    set_engine(
+        engine = "xgboost", 
+        objective ="reg:squarederror") %>% 
     
     fit(price ~ ., data = train_tbl)
 
@@ -249,7 +252,7 @@ bikes_tbl %>% separate_bike_model(keep_model_column = FALSE)
 
 # 4.4 Save Functions ----
 
-# dump(c("separate_bike_model", "separate_bike_description"), 
+# dump(c("separate_bike_model", "separate_bike_description"),
 #      file = "R-Track/Course_03_Shiny_Web_App_Part_1/DS4B_102_R_Shiny_Apps_1/00_scripts/02_process_data.R")
 
 
@@ -413,7 +416,7 @@ bind_bike_predictions(bikes_tbl, new_bike_tbl) %>%
  
 # 8.3 Save functions ----
 
-# dump(c("generate_new_bike", "format_table", "bind_bike_predictions", "plot_bike_prediction"), 
+# dump(c("generate_new_bike", "format_table", "bind_bike_predictions", "plot_bike_prediction"),
 #      file = "R-Track/Course_03_Shiny_Web_App_Part_1/DS4B_102_R_Shiny_Apps_1/00_scripts/03_make_predictions.R")
 
 
