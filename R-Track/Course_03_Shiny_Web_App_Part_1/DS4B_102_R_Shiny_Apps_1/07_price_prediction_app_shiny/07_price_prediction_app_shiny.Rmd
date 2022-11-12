@@ -14,6 +14,7 @@ runtime: shiny
 # App
 library(flexdashboard)
 library(shiny)
+library(shinyjs)
 
 # Core
 library(tidyverse)
@@ -54,16 +55,36 @@ Column {.sidebar}
 -----------------------------------------------------------------------
 
 ```{r}
+## Enable shinyjs
+useShinyjs(rmd = TRUE)
+
+## Bike Model text input
 textInput(inputId = "text_bike_model", label = h4("Bike Model"), value = "Jekyll Al 1 Black Inc.")
 
 br()
 hr()
 br()
 
+## Apply button
 actionButton(inputId = "apply", label = "Apply", icon = icon(name = "play", lib = "font-awesome"))
+
+## Reset button
+actionButton(inputId = "reset", label = "Reset", icon = icon(name = "sync", lib = "font-awesome"))
+
+## Reset
+observeEvent(eventExpr = input$reset, handlerExpr = {
+
+    ## Update text_bike_model
+    updateTextInput(session = session, inputId = "text_bike_model", value = "Jekyll Al 1 Black Inc.")
+     
+    ## Reset button- click apply
+    shinyjs::delay(ms = 300, expr = {
+        shinyjs::click(id = "apply")
+    })
+})
 ```
 
-
+ 
 
 <!-- Plot Area -->
 
