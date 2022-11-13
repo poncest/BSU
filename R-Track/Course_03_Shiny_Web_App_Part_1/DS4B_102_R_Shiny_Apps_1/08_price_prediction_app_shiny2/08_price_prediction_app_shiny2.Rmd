@@ -1,0 +1,158 @@
+---
+title: "Price Prediction App"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+
+# 1.0 Libraries ----
+
+# App
+library(flexdashboard)
+library(shiny)
+library(shinyjs)
+library(shinyWidgets)
+
+# Core
+library(tidyverse)
+library(tidyquant)
+
+# Visualizations
+library(plotly)
+
+# Modeling
+library(parsnip)
+
+# Database
+library(odbc)
+library(RSQLite)
+
+
+
+# 2.0 Data ----
+con <- dbConnect(RSQLite::SQLite(), "../00_data/bikes_database.db")
+# con <- dbConnect(RSQLite::SQLite(), "00_data/bikes_database.db")
+# dbListTables(con)
+bikes_tbl <- tbl(con, "bikes") %>% collect()
+dbDisconnect(con)
+
+# Scripts
+source("../00_scripts/02_process_data.R")
+source("../00_scripts/03_make_predictions.R")
+
+# Model
+model_xgboost <- read_rds("../00_models/model_xgboost.rds")
+```
+
+
+<!-- Inputs Area-->
+
+Column {.sidebar}
+-----------------------------------------------------------------------
+
+```{r}
+## Enable shinyjs
+useShinyjs(rmd = TRUE)
+
+## Bike Model Input ----
+textInput(inputId = "text_bike_model", label = h4("Bike Model"), value = "Jekyll Al 1 Black Inc.")
+
+# Bike Family (Category 2) ----
+
+category_hierachy_tbl <- bikes_tbl %>% 
+    separate_bike_description(keep_description_column = TRUE, append = FALSE) %>% 
+    distinct(category_1, category_2)
+
+## picker input
+pickerInput(inputId  = "picker_category_2", 
+            label    = h4("Bike Family"), 
+            choices  = category_hierachy_tbl$category_2, 
+            selected = "Over Mountain")
+
+#bikes_tbl %>% filter(model %>% str_detect("Jekyll")) %>% separate_bike_description()
+ 
+
+# Bike Type (Category 1) ----
+
+# Frame Material----
+
+br()
+hr()
+br()
+
+## Apply button
+actionButton(inputId = "apply", label = "Apply", icon = icon(name = "play", lib = "font-awesome"))
+
+## Reset button
+actionButton(inputId = "reset", label = "Reset", icon = icon(name = "sync", lib = "font-awesome"))
+
+## Reset
+observeEvent(eventExpr = input$reset, handlerExpr = {
+
+    ## Update text_bike_model
+    updateTextInput(session = session, inputId = "text_bike_model", value = "Jekyll Al 1 Black Inc.")
+     
+    ## Reset button- click apply
+    shinyjs::delay(ms = 300, expr = {
+        shinyjs::click(id = "apply")
+    })
+})
+
+```
+
+
+<!-- Plot Area -->
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+```{r}
+new_bike_tbl <- eventReactive(eventExpr = input$apply, valueExpr = {
+  
+  generate_new_bike(
+    bike_model = input$text_bike_model, 
+    category_1 = "Mountain", 
+    category_2 = "Over Mountain", 
+    frame_material = "Aluminum", 
+    .ml_model = model_xgboost)
+  
+}, ignoreNULL = FALSE)
+
+
+```
+
+
+### Price Prediction vs Product Portfolio
+
+```{r}
+# renderPrint(new_bike_tbl())
+
+output$plotly_1 <- renderPlotly({
+  bind_bike_predictions(bikes_tbl, new_bike_tbl()) %>%
+    plot_bike_prediction()
+})
+
+plotlyOutput("plotly_1")
+
+```
+
+<!-- Table Area -->
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Price Prediction Used These Features
+
+```{r}
+renderTable({
+  new_bike_tbl() %>% format_table()
+})
+
+
+```
+
+
