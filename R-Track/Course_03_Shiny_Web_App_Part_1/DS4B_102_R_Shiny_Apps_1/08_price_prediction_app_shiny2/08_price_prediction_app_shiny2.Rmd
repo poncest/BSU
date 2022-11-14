@@ -82,7 +82,7 @@ pickerInput(inputId  = "picker_category_2",
 
 br()
 hr()
-br()
+br() 
 
 ## Apply button
 actionButton(inputId = "apply", label = "Apply", icon = icon(name = "play", lib = "font-awesome"))
@@ -95,7 +95,10 @@ observeEvent(eventExpr = input$reset, handlerExpr = {
 
     ## Update text_bike_model
     updateTextInput(session = session, inputId = "text_bike_model", value = "Jekyll Al 1 Black Inc.")
-     
+    
+    ##
+    updatePickerInput(session = session, inputId = "picker_category_2", selected = "Over Mountain")
+    
     ## Reset button- click apply
     shinyjs::delay(ms = 300, expr = {
         shinyjs::click(id = "apply")
@@ -114,11 +117,11 @@ Column {data-width=650}
 new_bike_tbl <- eventReactive(eventExpr = input$apply, valueExpr = {
   
   generate_new_bike(
-    bike_model = input$text_bike_model, 
-    category_1 = "Mountain", 
-    category_2 = "Over Mountain", 
+    bike_model     = input$text_bike_model, 
+    category_1     = "Mountain", 
+    category_2     = input$picker_category_2, 
     frame_material = "Aluminum", 
-    .ml_model = model_xgboost)
+    .ml_model      = model_xgboost)
   
 }, ignoreNULL = FALSE)
 
