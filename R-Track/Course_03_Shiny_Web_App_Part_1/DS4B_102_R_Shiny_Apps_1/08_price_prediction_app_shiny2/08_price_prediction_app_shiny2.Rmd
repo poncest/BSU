@@ -78,6 +78,18 @@ pickerInput(inputId  = "picker_category_2",
 
 # Bike Type (Category 1) ----
 
+h4("Bike Type")
+
+output$bike_type <- reactive({
+    category_hierachy_tbl %>% 
+        filter(category_2 == input$picker_category_2) %>% 
+        pull(category_1)
+})
+
+textOutput(outputId = "bike_type") %>% em() %>% strong()
+
+
+
 # Frame Material----
 
 br()
