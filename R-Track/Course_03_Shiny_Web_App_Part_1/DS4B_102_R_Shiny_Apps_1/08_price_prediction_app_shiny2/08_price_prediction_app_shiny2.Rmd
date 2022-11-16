@@ -80,17 +80,29 @@ pickerInput(inputId  = "picker_category_2",
 
 h4("Bike Type")
 
-output$bike_type <- reactive({
+bike_type <- reactive({
     category_hierachy_tbl %>% 
         filter(category_2 == input$picker_category_2) %>% 
         pull(category_1)
 })
+
+output$bike_type <- renderText(bike_type() )
 
 textOutput(outputId = "bike_type") %>% em() %>% strong()
 
 
 
 # Frame Material----
+
+br()
+
+## picker input
+pickerInput(inputId  = "picker_frame_material", 
+            label    = h4("Frame Material"), 
+            choices  = unique(category_heirarchy_tbl$frame_material), 
+            selected = "Aluminum")
+
+ 
 
 br()
 hr()
@@ -130,7 +142,7 @@ new_bike_tbl <- eventReactive(eventExpr = input$apply, valueExpr = {
   
   generate_new_bike(
     bike_model     = input$text_bike_model, 
-    category_1     = "Mountain", 
+    category_1     = bike_type(), 
     category_2     = input$picker_category_2, 
     frame_material = "Aluminum", 
     .ml_model      = model_xgboost)
