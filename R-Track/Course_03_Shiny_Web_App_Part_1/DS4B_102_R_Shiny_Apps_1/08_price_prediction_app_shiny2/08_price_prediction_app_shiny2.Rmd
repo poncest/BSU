@@ -120,8 +120,11 @@ observeEvent(eventExpr = input$reset, handlerExpr = {
     ## Update text_bike_model
     updateTextInput(session = session, inputId = "text_bike_model", value = "Jekyll Al 1 Black Inc.")
     
-    ##
+    ## Update category_2
     updatePickerInput(session = session, inputId = "picker_category_2", selected = "Over Mountain")
+    
+    ## Update frame_material
+    updatePickerInput(session = session, inputId = "picker_frame_material", selected = "Aluminum")
     
     ## Reset button- click apply
     shinyjs::delay(ms = 300, expr = {
@@ -144,7 +147,7 @@ new_bike_tbl <- eventReactive(eventExpr = input$apply, valueExpr = {
     bike_model     = input$text_bike_model, 
     category_1     = bike_type(), 
     category_2     = input$picker_category_2, 
-    frame_material = "Aluminum", 
+    frame_material = input$picker_frame_material, 
     .ml_model      = model_xgboost)
   
 }, ignoreNULL = FALSE)
