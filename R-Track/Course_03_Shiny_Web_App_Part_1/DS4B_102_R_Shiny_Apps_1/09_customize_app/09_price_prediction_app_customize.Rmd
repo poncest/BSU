@@ -4,7 +4,9 @@ output:
   flexdashboard::flex_dashboard:
     orientation: columns
     vertical_layout: fill
-runtime: shiny
+    css: css/style-default.css
+runtime: shiny 
+ 
 ---
 
 ```{r setup, include=FALSE}
@@ -48,10 +50,14 @@ source("../00_scripts/03_make_predictions.R")
 model_xgboost <- read_rds("../00_models/model_xgboost.rds")
 ```
 
+
+<!-- Inputs Area-->
+
 Column {.sidebar}
 -----------------------------------------------------------------------
 
 ```{r}
+## Enable shinyjs
 useShinyjs(rmd = TRUE)
 
 # Bike Model Input ----
@@ -63,11 +69,13 @@ category_hierachy_tbl <- bikes_tbl %>%
   separate_bike_description(keep_description_column = TRUE, append = FALSE) %>%
   distinct(category_1, category_2)
 
+## picker input
 pickerInput(inputId  = "picker_category_2", 
             label    = h4("Bike Family"), 
             choices  = category_hierachy_tbl$category_2, 
             selected = "Over Mountain")
-  
+#bikes_tbl %>% filter(model %>% str_detect("Jekyll")) %>% separate_bike_description()
+
 
 # Bike Type (Category 1) ----
 h4("Bike Type")
@@ -81,8 +89,11 @@ output$bike_type <- renderText(bike_type())
 
 textOutput(outputId = "bike_type") %>% em() %>% strong()
 
+
 # Frame Material ----
 br()
+
+## picker input
 pickerInput(inputId  = "picker_frame_material", 
             label    = "Frame Material", 
             choices  = c("Aluminum", "Carbon"), 
@@ -93,26 +104,34 @@ br()
 hr()
 br()
 
+## Apply button
 actionButton(inputId = "apply", label = "Apply", icon = icon(name = "play", lib = "font-awesome"))
 
+## Reset button
 actionButton("reset", label = "Reset", icon = icon("sync"))
 
+## Reset
 observeEvent(eventExpr = input$reset, handlerExpr = {
-  
-  updateTextInput(session = session, inputId = "text_bike_model", value = "Jekyll Al 1 Black Inc.")
-  
-  updatePickerInput(session = session, inputId = "picker_category_2", selected = "Over Mountain")
-  
-  updatePickerInput(session = session, inputId = "picker_frame_material", selected = "Aluminum")
-  
-  delay(ms = 300, expr = {
-    click(id = "apply")
-  })
-  
+
+    ## Update text_bike_model
+    updateTextInput(session = session, inputId = "text_bike_model", value = "Jekyll Al 1 Black Inc.")
+    
+    ## Update category_2
+    updatePickerInput(session = session, inputId = "picker_category_2", selected = "Over Mountain")
+    
+    ## Update frame_material
+    updatePickerInput(session = session, inputId = "picker_frame_material", selected = "Aluminum")
+    
+    ## Reset button- click apply
+    shinyjs::delay(ms = 300, expr = {
+        shinyjs::click(id = "apply")
+    })
 })
 
 ```
 
+
+<!-- Plot Area -->
 
 Column {data-width=650}
 -----------------------------------------------------------------------
