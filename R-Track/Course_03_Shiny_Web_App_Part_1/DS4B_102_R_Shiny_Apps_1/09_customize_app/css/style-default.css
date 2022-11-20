@@ -6,3 +6,9 @@
     background-color: #2c3d50;
     border-color: #fff;
 }
+
+
+/* Input area background color */
+.section.sidebar { 
+    background-color: #dddddd;
+}
