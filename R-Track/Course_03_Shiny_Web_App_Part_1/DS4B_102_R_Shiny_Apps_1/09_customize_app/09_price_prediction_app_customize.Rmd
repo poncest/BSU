@@ -5,6 +5,7 @@ output:
     orientation: columns
     vertical_layout: fill
     css: css/style-default.css
+    logo: img/business-science-logo.png 
 runtime: shiny 
  
 ---
