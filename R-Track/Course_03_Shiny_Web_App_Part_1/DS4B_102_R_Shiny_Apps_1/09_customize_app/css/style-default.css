@@ -1,6 +1,22 @@
 
-/* Google fonts */
+
+
+/* Google fonts Import*/
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,600&family=Roboto:wght@300&display=swap');
+
+
+/* Navigation bar font*/ 
+.navbar-brand {
+    font-family: "Montserrat", sans-serif;
+}
+
+
+/* Headers font*/
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: "Montserrat", sans-serif;
+    color: #2c3d50;
+}
+
 
 
 /* Resize BSU logo */

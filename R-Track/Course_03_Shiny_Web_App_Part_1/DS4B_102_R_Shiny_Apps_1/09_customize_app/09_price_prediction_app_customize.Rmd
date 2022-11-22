@@ -91,12 +91,12 @@ output$bike_type <- renderText(bike_type())
 textOutput(outputId = "bike_type") %>% em() %>% strong()
 
 
-# Frame Material ----
+# Frame Material ---- 
 br()
 
 ## picker input
 pickerInput(inputId  = "picker_frame_material", 
-            label    = "Frame Material", 
+            label    = h4("Frame Material"), 
             choices  = c("Aluminum", "Carbon"), 
             selected = "Aluminum")
 
