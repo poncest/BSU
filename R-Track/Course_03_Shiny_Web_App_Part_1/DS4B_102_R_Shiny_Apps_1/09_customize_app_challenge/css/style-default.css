@@ -1,0 +1,117 @@
+
+
+/* Klavila Fonts Import
+https://dafonttop.com/klavika.font*/
+
+@font-face{
+    font-family:"klavika-medium";
+    src:url("klavika-medium.woff") format('woff');
+}
+
+@font-face{
+    font-family:"klavika-regular-italic";
+    src:url("klavika-regular-italic.woff") format('woff');
+}
+
+
+/* Navigation bar font*/ 
+.navbar-brand {
+    color: #77bb00 !important;
+}
+
+
+/* Headers font*/
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: 'klavika-regular-italic',sans-serif;
+    color: #77bb00;
+}
+
+
+/* Body font*/
+body {
+    font-family: 'klavika-medium', sans-serif;
+    text-transform: uppercase;
+    color: #000000;
+    font-size:16px;
+}
+
+
+/* Resize logo */
+.navbar-logo {
+    height:35px;
+}
+
+
+/* Bike type color */
+#bike_type {
+    color:#ffffff;
+}
+
+
+/* top navigation bar color */
+.navbar-inverse {
+    background-color: #ffffff;
+    border-color: #000000;
+}
+
+
+/* Input area background color */
+.section.sidebar { 
+    background-color: #000000;
+}
+
+
+/* Bottons color */
+.btn-default {
+    color: #ffffff;
+    background-color: #000000;
+    border-color: #77bb00
+}
+
+.btn-default:focus,.btn-default.focus {    
+    color: #ffffff;
+    background-color:#77bb00;
+    border-color: #77bb00
+}
+
+.btn-default:hover {
+    color: #ffffff;
+    background-color: #77bb00;
+    border-color: #77bb00 
+}
+
+.btn-default:active,.btn-default.active,.open>.dropdown-toggle.btn-default {
+    color: #ffffff;
+    background-color: #77bb00;
+    border-color: #77bb00
+}
+
+.btn-default:active:hover,.btn-default.active:hover,.open>.dropdown-toggle.btn-default:hover,.btn-default:active:focus,.btn-default.active:focus,.open>.dropdown-toggle.btn-default:focus,.btn-default:active.focus,.btn-default.active.focus,.open>.dropdown-toggle.btn-default.focus {
+    color: #ffffff;
+    background-color: #77bb00;
+    border-color: #77bb00
+}
+
+.btn-default:active,.btn-default.active,.open>.dropdown-toggle.btn-default {
+    background-image: none
+}
+
+.btn-default.disabled:hover,.btn-default[disabled]:hover,fieldset[disabled] .btn-default:hover,.btn-default.disabled:focus,.btn-default[disabled]:focus,fieldset[disabled] .btn-default:focus,.btn-default.disabled.focus,.btn-default[disabled].focus,fieldset[disabled] .btn-default.focus {
+    background-color: #222222;
+    border-color: #222222
+}
+
+.btn-default .badge {
+    color: #222222;
+    background-color: #ffffff
+} 
+
+
+/* Dropdown menu color */
+.dropdown-menu>.active>a, .dropdown-menu>.active>a:hover, .dropdown-menu>.active>a:focus {
+    color: #ffffff;
+    text-decoration: none;
+    outline: 0;
+    background-color: #77bb00; 
+}
+
