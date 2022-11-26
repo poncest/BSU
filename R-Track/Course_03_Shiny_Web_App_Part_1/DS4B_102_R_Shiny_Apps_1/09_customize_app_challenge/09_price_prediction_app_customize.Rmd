@@ -46,6 +46,7 @@ dbDisconnect(con)
 # Scripts
 source("../00_scripts/02_process_data.R")
 source("../00_scripts/03_make_predictions.R")
+source("../09_customize_app_challenge/plot_bike_prediction_cannondale.R")
 
 # Model
 model_xgboost <- read_rds("../00_models/model_xgboost.rds")
@@ -143,7 +144,7 @@ new_bike_tbl <- eventReactive(eventExpr = input$apply, valueExpr = {
 
 output$plotly_1 <- renderPlotly({
   bind_bike_predictions(bikes_tbl, new_bike_tbl()) %>%
-    plot_bike_prediction()
+    plot_bike_prediction_cannondale() 
 })
 
 plotlyOutput("plotly_1")

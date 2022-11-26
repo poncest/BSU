@@ -13,9 +13,15 @@ https://dafonttop.com/klavika.font*/
     src:url("klavika-regular-italic.woff") format('woff');
 }
 
+@font-face{
+    font-family:"klavika-bold";
+    src:url("klavika-bold.woff") format('woff');
+}
+
 
 /* Navigation bar font*/ 
 .navbar-brand {
+    font-family:"klavika-bold",sans-serif;
     color: #77bb00 !important;
 }
 
