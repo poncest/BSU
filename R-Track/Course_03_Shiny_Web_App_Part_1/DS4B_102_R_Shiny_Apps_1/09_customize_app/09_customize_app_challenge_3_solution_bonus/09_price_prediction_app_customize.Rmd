@@ -4,7 +4,7 @@ output:
   flexdashboard::flex_dashboard:
     orientation: columns
     vertical_layout: fill
-    css: css/style-default.css
+    css: css/styles-default.css
     logo: img/logo-cannondale.png
 runtime: shiny
 ---
@@ -20,7 +20,7 @@ library(shinyjs)
 library(shinyWidgets)
 
 # Core
-library(tidyverse) 
+library(tidyverse)
 library(tidyquant)
 
 # Visualizations
@@ -29,14 +29,14 @@ library(plotly)
 # Modeling
 library(parsnip)
 
-# Database  
+# Database
 library(odbc)
-library(RSQLite) 
+library(RSQLite)
 
 
 
 # 2.0 Data ----
-con <- dbConnect(RSQLite::SQLite(), "../00_data/bikes_database.db")
+con <- dbConnect(RSQLite::SQLite(), "../../00_data/bikes_database.db")
 
 
 # dbListTables(con)
@@ -44,12 +44,12 @@ bikes_tbl <- tbl(con, "bikes") %>% collect()
 dbDisconnect(con)
 
 # Scripts
-source("../00_scripts/02_process_data.R")
-source("../00_scripts/03_make_predictions.R")
-source("../09_customize_app_challenge/plot_bike_prediction_cannondale.R")
+source("../../00_scripts/02_process_data.R")
+source("../../00_scripts/03_make_predictions.R")
+source("../../09_customize_app_challenge/plot_bike_prediction_cannondale.R")
 
 # Model
-model_xgboost <- read_rds("../00_models/model_xgboost.rds")
+model_xgboost <- read_rds("../../00_models/model_xgboost.rds")
 ```
 
 Column {.sidebar}
@@ -143,8 +143,8 @@ new_bike_tbl <- eventReactive(eventExpr = input$apply, valueExpr = {
 # renderPrint(new_bike_tbl())
 
 output$plotly_1 <- renderPlotly({
-  bind_bike_predictions(bikes_tbl, new_bike_tbl()) %>%
-    plot_bike_prediction_cannondale() 
+  bind_bike_prediction(bikes_tbl, new_bike_tbl()) %>%
+    plot_bike_prediction_cannondale()
 })
 
 plotlyOutput("plotly_1")
