@@ -22,6 +22,7 @@ library(shinyWidgets)
 # Core
 library(tidyverse)
 library(tidyquant)
+library(fs)
 
 # Visualizations
 library(plotly)
@@ -37,7 +38,7 @@ library(RSQLite)
 
 # 2.0 Data ----
 con <- dbConnect(RSQLite::SQLite(), "../../00_data/bikes_database.db")
-
+# con <- dbConnect(RSQLite::SQLite(), "00_data/bikes_database.db")
 
 # dbListTables(con)
 bikes_tbl <- tbl(con, "bikes") %>% collect()
@@ -46,16 +47,25 @@ dbDisconnect(con)
 # Scripts
 source("../../00_scripts/02_process_data.R")
 source("../../00_scripts/03_make_predictions.R")
-source("../../09_customize_app_challenge/plot_bike_prediction_cannondale.R")
+source("plot_bike_prediction_cannondale.R")
+
+# source("00_scripts/02_process_data.R")
+# source("00_scripts/03_make_predictions.R")
+# source("plot_bike_prediction_cannondale.R")
 
 # Model
 model_xgboost <- read_rds("../../00_models/model_xgboost.rds")
+# model_xgboost <- read_rds("00_models/model_xgboost.rds")
 ```
+
+
+<!-- Inputs Area-->
 
 Column {.sidebar}
 -----------------------------------------------------------------------
 
 ```{r}
+## Enable shinyjs
 useShinyjs(rmd = TRUE)
 
 # Bike Model Input ----
@@ -67,6 +77,7 @@ category_hierachy_tbl <- bikes_tbl %>%
   separate_bike_description(keep_description_column = TRUE, append = FALSE) %>%
   distinct(category_1, category_2)
 
+## picker input
 pickerInput(inputId  = "picker_category_2", 
             label    = h4("Bike Family"), 
             choices  = category_hierachy_tbl$category_2, 
@@ -87,6 +98,8 @@ textOutput(outputId = "bike_type") %>% em() %>% strong()
 
 # Frame Material ----
 br()
+
+## picker input
 pickerInput(inputId  = "picker_frame_material", 
             label    = h4("Frame Material"), 
             choices  = c("Aluminum", "Carbon"), 
@@ -97,20 +110,27 @@ br()
 hr()
 br()
 
+## Apply button
 actionButton(inputId = "apply", label = "Apply", icon = icon(name = "play", lib = "font-awesome"))
 
+## Reset button
 actionButton("reset", label = "Reset", icon = icon("sync"))
 
+## Reset
 observeEvent(eventExpr = input$reset, handlerExpr = {
   
+  ## Update text_bike_model
   updateTextInput(session = session, inputId = "text_bike_model", value = "Jekyll Al 1 Black Inc.")
   
+  ## Update category_2
   updatePickerInput(session = session, inputId = "picker_category_2", selected = "Over Mountain")
-  
+ 
+  ## Update frame_material 
   updatePickerInput(session = session, inputId = "picker_frame_material", selected = "Aluminum")
   
-  delay(ms = 300, expr = {
-    click(id = "apply")
+  ## Reset button- click apply
+  shinyjs::delay(ms = 300, expr = {
+    shinyjs::click(id = "apply")
   })
   
 })
@@ -118,6 +138,7 @@ observeEvent(eventExpr = input$reset, handlerExpr = {
 ```
 
 
+<!-- Plot Area -->
 Column {data-width=650}
 -----------------------------------------------------------------------
 
@@ -143,7 +164,7 @@ new_bike_tbl <- eventReactive(eventExpr = input$apply, valueExpr = {
 # renderPrint(new_bike_tbl())
 
 output$plotly_1 <- renderPlotly({
-  bind_bike_prediction(bikes_tbl, new_bike_tbl()) %>%
+  bind_bike_predictions(bikes_tbl, new_bike_tbl()) %>%
     plot_bike_prediction_cannondale()
 })
 
@@ -165,3 +186,10 @@ renderTable({
 ```
 
 
+<!-- Bike Image Area --> 
+
+### Images
+```{r}
+
+
+```
