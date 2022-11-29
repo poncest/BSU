@@ -186,10 +186,21 @@ renderTable({
 ```
 
 
-<!-- Bike Image Area --> 
+<!-- Bike Image Area -->  
 
 ### Images
 ```{r}
+renderPrint({
+    
+    generate_new_bike("F-Si", "Mountain", "Cross Country Race", "Aluminum", .ml_model = model_xgboost)
+    
+    # Fix bike image names (to match base model name)
+    detect <- new_bike_tbl %>% 
+        pull(model_base) %>% 
+        str_to_lower() %>% 
+        str_replace_all("-", "_") %>% 
+        str_replace_all(" ", "_")
+})
 
 
 ```
