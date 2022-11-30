@@ -192,15 +192,23 @@ renderTable({
 ```{r}
 renderPrint({
     
-    generate_new_bike("F-Si", "Mountain", "Cross Country Race", "Aluminum", .ml_model = model_xgboost)
-    
     # Fix bike image names (to match base model name)
-    detect <- new_bike_tbl %>% 
+    detect <- new_bike_tbl() %>% 
         pull(model_base) %>% 
         str_to_lower() %>% 
         str_replace_all("-", "_") %>% 
         str_replace_all(" ", "_")
-})
 
+    
+    directory_files <- fs::dir_ls(path = "bike_img")
+    
+    detection_results <-  directory_files %>% 
+        str_detect(pattern = str_glue("bike_img/{detect}"))
+  
+    path <- directory_files[detection_results] 
+    
+    path
+      
+})
 
 ```
