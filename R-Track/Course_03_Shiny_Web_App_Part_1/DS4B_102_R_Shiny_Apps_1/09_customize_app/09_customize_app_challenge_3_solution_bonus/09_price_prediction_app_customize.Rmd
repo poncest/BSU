@@ -146,11 +146,11 @@ Column {data-width=650}
 new_bike_tbl <- eventReactive(eventExpr = input$apply, valueExpr = {
   
   generate_new_bike(
-    bike_model = input$text_bike_model, 
-    category_1 = bike_type(), 
-    category_2 = input$picker_category_2, 
+    bike_model     = input$text_bike_model, 
+    category_1     = bike_type(), 
+    category_2     = input$picker_category_2, 
     frame_material = input$picker_frame_material, 
-    .ml_model = model_xgboost)
+    .ml_model      = model_xgboost)
   
 }, ignoreNULL = FALSE)
 
@@ -190,16 +190,19 @@ renderTable({
 
 ### Images
 ```{r}
-renderPrint({
+renderImage({ 
     
     # Fix bike image names (to match base model name)
-    detect <- new_bike_tbl() %>% 
+    detect <- new_bike_tbl() %>%
         pull(model_base) %>% 
-        str_to_lower() %>% 
-        str_replace_all("-", "_") %>% 
+        str_to_lower() %>%
+        str_replace_all("-", "_") %>%
         str_replace_all(" ", "_")
+        
+    detect <- ifelse(detect %in% c("caad12", "caad8"), 
+               yes = detect, 
+               no  = detect %>% str_remove_all(pattern = "[[:digit:]]"))
 
-    
     directory_files <- fs::dir_ls(path = "bike_img")
     
     detection_results <-  directory_files %>% 
@@ -207,8 +210,11 @@ renderPrint({
   
     path <- directory_files[detection_results] 
     
-    path
+    list(src         = path,
+         contentType = "image/png", 
+         width       = "100%", 
+         alt         = detect)
       
-})
+}, deleteFile = FALSE)
 
 ```
