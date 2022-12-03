@@ -26,7 +26,8 @@ library(tidyquant)
 library(plotly)
 
 # Modeling
-library(parsnip)
+# library(parsnip)
+# library(timetk)
 
 # Database
 library(odbc)
@@ -36,7 +37,7 @@ library(RSQLite)
 
 ```{r}
 
-# 2.0 Data ----
+# 2.0 Processed Data ----
 con <- dbConnect(RSQLite::SQLite(), "../00_data/bikes_database.db")
 # con <- dbConnect(RSQLite::SQLite(), "00_data/bikes_database.db")
 
