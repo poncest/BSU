@@ -20,7 +20,8 @@ library(RSQLite)
 
 
 # 2.0 PROCESSED DATA ----
-con <- dbConnect(RSQLite::SQLite(), "00_data/bikes_database.db")
+con <- dbConnect(RSQLite::SQLite(), "../00_data/bikes_database.db")
+#con <- dbConnect(RSQLite::SQLite(), "00_data/bikes_database.db")
 
 bikes_tbl <- tbl(con, "bikes")
 bikeshops_tbl <- tbl(con, "bikeshops")
@@ -117,7 +118,32 @@ ggplotly(g, tooltip = "text")
 
 # 3.4 FUNCTION ----
 
-# TODO - MAKE FUNCTION 
+# plot_time_series()
+
+plot_time_series <- function(data){
+    
+    g <- data %>%
+        
+        ggplot(aes(date, total_sales)) +
+        
+        geom_line(color = "#2c3e50") +
+        geom_point(aes(text = label_text), color = "#2c3e50", size = 0.1) +
+        geom_smooth(method = "loess", span = 0.2) +
+        
+        theme_tq() +
+        expand_limits(y = 0) +
+        scale_y_continuous(labels = scales::dollar_format()) +
+        labs(x = "", y = "")
+    
+    
+    ggplotly(g, tooltip = "text") 
+}
+
+
+# testing plot_time_series()
+processed_data_tbl %>% 
+    aggregate_time_series(time_unit = "month") %>% 
+    plot_time_series()
 
 
 # 4.0 FORECAST -----
