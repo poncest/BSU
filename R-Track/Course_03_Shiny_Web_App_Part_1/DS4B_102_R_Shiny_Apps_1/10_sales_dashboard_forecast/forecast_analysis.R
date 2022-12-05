@@ -20,8 +20,9 @@ library(RSQLite)
 
 
 # 2.0 PROCESSED DATA ----
-con <- dbConnect(RSQLite::SQLite(), "../00_data/bikes_database.db")
-#con <- dbConnect(RSQLite::SQLite(), "00_data/bikes_database.db")
+con <- dbConnect(RSQLite::SQLite(), "R-Track/Course_03_Shiny_Web_App_Part_1/DS4B_102_R_Shiny_Apps_1/00_data/bikes_database.db")
+
+# con <- dbConnect(RSQLite::SQLite(), "00_data/bikes_database.db")
 
 bikes_tbl <- tbl(con, "bikes")
 bikeshops_tbl <- tbl(con, "bikeshops")
@@ -150,7 +151,18 @@ processed_data_tbl %>%
 
 # 4.1 SETUP TRAINING DATA AND FUTURE DATA ----
 
-# TODO - timetk
+# {timetk}
+data <- processed_data_tbl %>% 
+    aggregate_time_series(time_unit = "month")
+
+# basic function of {timetk}
+data %>% tk_index() %>% tk_get_timeseries_signature() 
+data %>% tk_index() %>% tk_get_timeseries_summary()
+
+tk_get_timeseries_unit_frequency()
+data %>% tk_get_timeseries_variables()
+
+data %>% tk_augment_timeseries_signature()
 
 # 4.2 MACHINE LEARNING ----
 
