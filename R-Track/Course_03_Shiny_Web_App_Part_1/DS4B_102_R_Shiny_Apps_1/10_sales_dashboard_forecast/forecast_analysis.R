@@ -164,6 +164,25 @@ data %>% tk_get_timeseries_variables()
 
 data %>% tk_augment_timeseries_signature()
 
+
+# train data
+train_tbl <- data %>%  
+    tk_augment_timeseries_signature()
+
+
+future_data_tbl <- data %>% 
+    tk_index() %>% 
+    tk_make_future_timeseries(length_out = 12, # time_unit is set to month 
+                              inspect_months = TRUE,
+                              inspect_weekdays = TRUE) %>% 
+    tk_get_timeseries_signature()
+
+
+ #' when time_unit = 'day'
+#' ?tk_make_future_timeseries
+#' set inspect_weekdays = TRUE (analyzes for days each week that should be removed, weekends)
+#' set inspect_months = TRUE (analyzes for days each month that should be removed, holidays)
+
 # 4.2 MACHINE LEARNING ----
 
 # TODO - XGBoost
