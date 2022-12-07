@@ -178,16 +178,32 @@ future_data_tbl <- data %>%
     tk_get_timeseries_signature()
 
 
- #' when time_unit = 'day'
+#' when time_unit = 'day'
 #' ?tk_make_future_timeseries
 #' set inspect_weekdays = TRUE (analyzes for days each week that should be removed, weekends)
 #' set inspect_months = TRUE (analyzes for days each month that should be removed, holidays)
 
 # 4.2 MACHINE LEARNING ----
 
-# TODO - XGBoost
+# XGBoost
 
-# 4.3 MAKE PREDICTION & FORMAT OUTPUT ----
+seed <- 123
+set.seed(seed)
+
+model_xgbost <- boost_tree(mode = "regression", 
+           mtry           = 20,
+           trees          = 500,
+           min_n          = 3,
+           tree_depth     = 8,
+           learn_rate     = 0.01,
+           loss_reduction = 0.01) %>% 
+    
+    set_engine(engine = "xgboost") %>% 
+    
+    fit.model_spec(formula = total_sales ~ ., data = train_tbl %>% select(-c(date, label_text, diff))) 
+
+
+# 4.3 MAKE PREDICTION & FORMAT OUTPUT ---- 
 
 # TODO - predict
 
