@@ -152,6 +152,7 @@ processed_data_tbl %>%
 # 4.1 SETUP TRAINING DATA AND FUTURE DATA ----
 
 # {timetk}
+# Actual Table
 data <- processed_data_tbl %>% 
     aggregate_time_series(time_unit = "month")
 
@@ -205,8 +206,30 @@ model_xgbost <- boost_tree(mode = "regression",
 
 # 4.3 MAKE PREDICTION & FORMAT OUTPUT ---- 
 
-# TODO - predict
+# predict
 
+future_data_tbl 
+
+# Prediction Table
+prediction_tbl <- predict(object = model_xgbost, new_data = future_data_tbl) %>% 
+    bind_cols(future_data_tbl) %>% 
+    select(.pred, index) %>% 
+    
+    rename(total_sales = .pred,
+           date        = index) %>% 
+    
+    mutate(label_text = str_glue("Date: {date}
+                                 Revenue: {scales::dollar(total_sales)}")) %>% 
+    
+    add_column(key = "Prediction")
+
+
+output_tbl <- data %>% 
+    add_column(key = "Actual") %>% 
+    bind_rows(prediction_tbl) 
+
+
+ 
 # 4.4 FUNCTION ----
 
 # TODO - generate_forecast()
