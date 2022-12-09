@@ -152,7 +152,7 @@ processed_data_tbl %>%
 # 4.1 SETUP TRAINING DATA AND FUTURE DATA ----
 
 # {timetk}
-# Actual Table
+# Actual Table (pipeline)
 data <- processed_data_tbl %>% 
     aggregate_time_series(time_unit = "month")
 
@@ -232,8 +232,65 @@ output_tbl <- data %>%
  
 # 4.4 FUNCTION ----
 
-# TODO - generate_forecast()
+# generate_forecast()
 
+generate_forecast <- function(data, length_out = 12, seed = NULL){
+    
+    # train data
+    train_tbl <- data %>%  
+        tk_augment_timeseries_signature()
+    
+    
+    future_data_tbl <- data %>% 
+        tk_index() %>% 
+        tk_make_future_timeseries(length_out = length_out, 
+                                  inspect_months = TRUE,
+                                  inspect_weekdays = TRUE) %>% 
+        tk_get_timeseries_signature()
+    
+    
+    seed <- seed
+    set.seed(seed)
+    
+    model_xgbost <- boost_tree(mode = "regression", 
+                               mtry           = 20,
+                               trees          = 500,
+                               min_n          = 3,
+                               tree_depth     = 8,
+                               learn_rate     = 0.01,
+                               loss_reduction = 0.01) %>% 
+        
+        set_engine(engine = "xgboost") %>% 
+        
+        fit.model_spec(formula = total_sales ~ ., data = train_tbl %>% select(-c(date, label_text, diff))) 
+    
+    
+    # Prediction Table
+    prediction_tbl <- predict(object = model_xgbost, new_data = future_data_tbl) %>% 
+        bind_cols(future_data_tbl) %>% 
+        select(.pred, index) %>% 
+        
+        rename(total_sales = .pred,
+               date        = index) %>% 
+        
+        mutate(label_text = str_glue("Date: {date}
+                                 Revenue: {scales::dollar(total_sales)}")) %>% 
+        
+        add_column(key = "Prediction")
+    
+    
+    output_tbl <- data %>% 
+        add_column(key = "Actual") %>% 
+        bind_rows(prediction_tbl) 
+    
+    return(output_tbl) 
+}
+
+
+# testing generate_forecast()
+processed_data_tbl %>% 
+    aggregate_time_series(time_unit = "month") %>% 
+    generate_forecast(length_out = 12, seed = 123) %>% tail(10)
 
 
 # 5.0 PLOT FORECAST ----
