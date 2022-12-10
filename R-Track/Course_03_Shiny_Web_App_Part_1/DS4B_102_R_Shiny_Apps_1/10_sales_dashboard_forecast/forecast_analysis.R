@@ -290,21 +290,72 @@ generate_forecast <- function(data, length_out = 12, seed = NULL){
 # testing generate_forecast()
 processed_data_tbl %>% 
     aggregate_time_series(time_unit = "month") %>% 
-    generate_forecast(length_out = 12, seed = 123) %>% tail(10)
+    generate_forecast(length_out = 12, seed = 123) 
 
 
 # 5.0 PLOT FORECAST ----
 
 # 5.1 PLOT ----
 
-# TODO - plot
+# plot
+
+data <- processed_data_tbl %>% 
+    aggregate_time_series(time_unit = "month") %>% 
+    generate_forecast(length_out = 12, seed = 123) 
+
+
+g <- data %>% 
+    ggplot(aes(date, total_sales, color = key)) +
+    
+    geom_line() +
+    geom_point(aes(text = label_text), size = 0.1) +
+    geom_smooth(method = "loess", span = 0.2) +
+    
+    
+    scale_color_tq()+
+    scale_y_continuous(label = scales::dollar_format()) +
+    
+    labs(x = "", y = "") +
+    
+    theme_tq()
+    
+ggplotly(g, tooltip = "text")  
+
 
 # 5.2 FUNCTION ----
 
-# TODO - plot_forecast()
+# plot_forecast()
+
+plot_forecast <- function(data){
+    
+g <- data %>% 
+    ggplot(aes(date, total_sales, color = key)) +
+    
+    geom_line() +
+    geom_point(aes(text = label_text), size = 0.1) +
+    geom_smooth(method = "loess", span = 0.2) +
+    
+    
+    scale_color_tq()+
+    scale_y_continuous(label = scales::dollar_format()) +
+    
+    labs(x = "", y = "") +
+    
+    theme_tq()
+
+ggplotly(g, tooltip = "text")  
+
+}
+
+# testing plot_forecast()
+processed_data_tbl %>% 
+    aggregate_time_series(time_unit = "month") %>% 
+    generate_forecast(length_out = 12, seed = 123) %>% 
+    plot_forecast()
+
 
 
 # 6.0 SAVE FUNCTIONS ----
 
 dump(c("aggregate_time_series", "plot_time_series", "generate_forecast", "plot_forecast"), 
-     file = "00_scripts/03_demand_forecast.R")
+     file = "R-Track/Course_03_Shiny_Web_App_Part_1/DS4B_102_R_Shiny_Apps_1/00_scripts/04_demand_forecast.R")
