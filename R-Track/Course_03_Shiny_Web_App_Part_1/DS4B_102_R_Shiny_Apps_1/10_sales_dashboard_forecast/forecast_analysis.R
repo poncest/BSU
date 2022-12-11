@@ -154,7 +154,7 @@ processed_data_tbl %>%
 # {timetk}
 # Actual Table (pipeline)
 data <- processed_data_tbl %>% 
-    aggregate_time_series(time_unit = "month")
+    aggregate_time_series(time_unit = "year")
 
 # basic function of {timetk}
 data %>% tk_index() %>% tk_get_timeseries_signature() 
@@ -233,6 +233,11 @@ output_tbl <- data %>%
 # 4.4 FUNCTION ----
 
 # generate_forecast()
+
+# TODO  - DELETE!
+length_out <-  2 
+seed       <- 123
+
 
 generate_forecast <- function(data, length_out = 12, seed = NULL){
     
@@ -351,6 +356,15 @@ ggplotly(g, tooltip = "text")
 processed_data_tbl %>% 
     aggregate_time_series(time_unit = "month") %>% 
     generate_forecast(length_out = 12, seed = 123) %>% 
+    plot_forecast()
+
+#' Is seems there is a problem when we aggregate the data by years, not granular enough. 
+
+#' In timeseries, is very rare that one algorithm fits all sizes
+
+processed_data_tbl %>% 
+    aggregate_time_series(time_unit = "year") %>% 
+    generate_forecast(length_out = 2, seed = 123) %>% 
     plot_forecast()
 
 
