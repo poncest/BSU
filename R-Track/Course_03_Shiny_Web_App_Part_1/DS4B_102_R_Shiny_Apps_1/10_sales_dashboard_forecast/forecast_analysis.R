@@ -254,24 +254,42 @@ generate_forecast <- function(data, length_out = 12, seed = NULL){
         tk_get_timeseries_signature()
     
     
-    seed <- seed
-    set.seed(seed)
+    # time scale
+    time_scale <- data %>% 
+        tk_index() %>% 
+        tk_get_timeseries_summary() %>% 
+        pull(scale)
     
-    model_xgbost <- boost_tree(mode = "regression", 
-                               mtry           = 20,
-                               trees          = 500,
-                               min_n          = 3,
-                               tree_depth     = 8,
-                               learn_rate     = 0.01,
-                               loss_reduction = 0.01) %>% 
+    if (time_scale == "year") {
         
-        set_engine(engine = "xgboost") %>% 
+        # if time_scale IS in years, then run linear reg model
+        model <- linear_reg(mode = "regression") %>% 
+            set_engine(engine = "lm") %>% 
+            fit.model_spec(formula = total_sales ~ ., 
+                           data = train_tbl %>% select(total_sales, index.num))
         
-        fit.model_spec(formula = total_sales ~ ., data = train_tbl %>% select(-c(date, label_text, diff))) 
-    
+    } else {
+        
+        # if time_scale is NOT in years, then run xgboost model
+        seed <- seed
+        set.seed(seed)
+        
+        model <- boost_tree(mode = "regression", 
+                                   mtry           = 20,
+                                   trees          = 500,
+                                   min_n          = 3,
+                                   tree_depth     = 8,
+                                   learn_rate     = 0.01,
+                                   loss_reduction = 0.01) %>% 
+            
+            set_engine(engine = "xgboost") %>% 
+            
+            fit.model_spec(formula = total_sales ~ ., data = train_tbl %>% select(-c(date, label_text, diff))) 
+        
+    }
     
     # Prediction Table
-    prediction_tbl <- predict(object = model_xgbost, new_data = future_data_tbl) %>% 
+    prediction_tbl <- predict(object = model, new_data = future_data_tbl) %>% 
         bind_cols(future_data_tbl) %>% 
         select(.pred, index) %>% 
         
@@ -366,7 +384,7 @@ processed_data_tbl %>%
     aggregate_time_series(time_unit = "year") %>% 
     generate_forecast(length_out = 2, seed = 123) %>% 
     plot_forecast()
-
+  
 
 
 # 6.0 SAVE FUNCTIONS ----
