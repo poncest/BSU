@@ -346,27 +346,44 @@ ggplotly(g, tooltip = "text")
 
 
 # 5.2 FUNCTION ----
-
+ 
 # plot_forecast()
 
 plot_forecast <- function(data){
     
-g <- data %>% 
-    ggplot(aes(date, total_sales, color = key)) +
+    data  <- processed_data_tbl %>% 
+        aggregate_time_series(time_unit = "month") %>% 
+        generate_forecast(length_out = 12, seed = 123) 
+        
+    # Yearly - LM Smoother
+    data %>% 
+        tk_index() %>% 
+        tk_get_timeseries_summary() %>% 
+        pull(scale)
+        
+    # Only 1 Prediction - points
+    data %>% 
+        filter(key == "Prediction") %>% 
+        nrow()
     
-    geom_line() +
-    geom_point(aes(text = label_text), size = 0.1) +
-    geom_smooth(method = "loess", span = 0.2) +
     
+    g <- data %>% 
+        ggplot(aes(date, total_sales, color = key)) +
+        
+        geom_line() +
+        geom_point(aes(text = label_text), size = 0.1) +
+        geom_smooth(method = "loess", span = 0.2) +
+        
+        
+        scale_color_tq()+
+        scale_y_continuous(label = scales::dollar_format()) +
+        expand_limits(y = 0) +
+        
+        labs(x = "", y = "") +
+        
+        theme_tq()
     
-    scale_color_tq()+
-    scale_y_continuous(label = scales::dollar_format()) +
-    
-    labs(x = "", y = "") +
-    
-    theme_tq()
-
-ggplotly(g, tooltip = "text")  
+    ggplotly(g, tooltip = "text")  
 
 }
 
