@@ -50,25 +50,42 @@ function(data, length_out = 12, seed = NULL){
                                   inspect_weekdays = TRUE) %>% 
         tk_get_timeseries_signature()
     
+    # time scale
+    time_scale <- data %>% 
+        tk_index() %>% 
+        tk_get_timeseries_summary() %>% 
+        pull(scale)
     
-    seed <- seed
-    set.seed(seed)
-    
-    model_xgbost <- boost_tree(mode = "regression", 
-                               mtry           = 20,
-                               trees          = 500,
-                               min_n          = 3,
-                               tree_depth     = 8,
-                               learn_rate     = 0.01,
-                               loss_reduction = 0.01) %>% 
+    if (time_scale == "year") {
         
-        set_engine(engine = "xgboost") %>% 
+        # if time_scale IS in years, then run linear reg model
+        model <- linear_reg(mode = "regression") %>% 
+            set_engine(engine = "lm") %>% 
+            fit.model_spec(formula = total_sales ~ ., 
+                           data = train_tbl %>% select(total_sales, index.num))
         
-        fit.model_spec(formula = total_sales ~ ., data = train_tbl %>% select(-c(date, label_text, diff))) 
-    
+    } else {
+        
+        # if time_scale is NOT in years, then run xgboost model
+        seed <- seed
+        set.seed(seed)
+        
+        model <- boost_tree(mode = "regression", 
+                                   mtry           = 20,
+                                   trees          = 500,
+                                   min_n          = 3,
+                                   tree_depth     = 8,
+                                   learn_rate     = 0.01,
+                                   loss_reduction = 0.01) %>% 
+            
+            set_engine(engine = "xgboost") %>% 
+            
+            fit.model_spec(formula = total_sales ~ ., data = train_tbl %>% select(-c(date, label_text, diff))) 
+        
+    }
     
     # Prediction Table
-    prediction_tbl <- predict(object = model_xgbost, new_data = future_data_tbl) %>% 
+    prediction_tbl <- predict(object = model, new_data = future_data_tbl) %>% 
         bind_cols(future_data_tbl) %>% 
         select(.pred, index) %>% 
         
@@ -88,23 +105,47 @@ function(data, length_out = 12, seed = NULL){
     return(output_tbl) 
 }
 plot_forecast <-
-function(data){
+function(data) {
     
-g <- data %>% 
-    ggplot(aes(date, total_sales, color = key)) +
+    # Yearly - LM Smoother
+    time_scale <- data %>%
+        tk_index() %>%
+        tk_get_timeseries_summary() %>%
+        pull(scale)
     
-    geom_line() +
-    geom_point(aes(text = label_text), size = 0.1) +
-    geom_smooth(method = "loess", span = 0.2) +
+    # Only 1 Prediction - points
+    n_predictions <- data %>%
+        filter(key == "Prediction") %>%
+        nrow()
     
     
-    scale_color_tq()+
-    scale_y_continuous(label = scales::dollar_format()) +
+    g <- data %>%
+        ggplot(aes(date, total_sales, color = key)) +
+        
+        geom_line() +
+        # geom_point(aes(text = label_text), size = 0.01) +
+        # geom_smooth(method = "loess", span = 0.2) +
+        
+        theme_tq() +
+        scale_color_tq() +
+        scale_y_continuous(labels = scales::dollar_format()) +
+        expand_limits(y = 0) +
+        labs(x = "", y = "")
     
-    labs(x = "", y = "") +
+    # Yearly - LM Smoother
+    if (time_scale == "year") {
+        g <- g +
+            geom_smooth(method = "lm")
+    } else {
+        g <- g + geom_smooth(method = "loess", span = 0.2)
+    }
     
-    theme_tq()
-
-ggplotly(g, tooltip = "text")  
-
+    # Only 1 Prediction
+    if (n_predictions == 1) {
+        g <- g + geom_point(aes(text = label_text), size = 1)
+    } else {
+        g <- g + geom_point(aes(text = label_text), size = 0.01)
+    }
+    
+    ggplotly(g, tooltip = "text")
 }

@@ -143,7 +143,7 @@ plot_time_series <- function(data){
 
 # testing plot_time_series()
 processed_data_tbl %>% 
-    aggregate_time_series(time_unit = "month") %>% 
+    aggregate_time_series(time_unit = "day") %>% 
     plot_time_series()
 
 
@@ -184,6 +184,7 @@ future_data_tbl <- data %>%
 #' set inspect_weekdays = TRUE (analyzes for days each week that should be removed, weekends)
 #' set inspect_months = TRUE (analyzes for days each month that should be removed, holidays)
 
+
 # 4.2 MACHINE LEARNING ----
 
 # XGBoost
@@ -207,7 +208,6 @@ model_xgbost <- boost_tree(mode = "regression",
 # 4.3 MAKE PREDICTION & FORMAT OUTPUT ---- 
 
 # predict
-
 future_data_tbl 
 
 # Prediction Table
@@ -234,10 +234,8 @@ output_tbl <- data %>%
 
 # generate_forecast()
 
-# TODO  - DELETE!
-length_out <-  2 
-seed       <- 123
-
+length_out <- 2 
+seed     <- 123
 
 generate_forecast <- function(data, length_out = 12, seed = NULL){
     
@@ -252,7 +250,6 @@ generate_forecast <- function(data, length_out = 12, seed = NULL){
                                   inspect_months = TRUE,
                                   inspect_weekdays = TRUE) %>% 
         tk_get_timeseries_signature()
-    
     
     # time scale
     time_scale <- data %>% 
@@ -313,7 +310,11 @@ generate_forecast <- function(data, length_out = 12, seed = NULL){
 # testing generate_forecast()
 processed_data_tbl %>% 
     aggregate_time_series(time_unit = "month") %>% 
-    generate_forecast(length_out = 12, seed = 123) 
+    generate_forecast(length_out = 12, seed = 123)  %>% tail()
+
+processed_data_tbl %>% 
+    aggregate_time_series(time_unit = "year") %>% 
+    generate_forecast(length_out = 2, seed = 123) %>% tail()
 
 
 # 5.0 PLOT FORECAST ----
@@ -321,7 +322,6 @@ processed_data_tbl %>%
 # 5.1 PLOT ----
 
 # plot
-
 data <- processed_data_tbl %>% 
     aggregate_time_series(time_unit = "month") %>% 
     generate_forecast(length_out = 12, seed = 123) 
@@ -331,61 +331,71 @@ g <- data %>%
     ggplot(aes(date, total_sales, color = key)) +
     
     geom_line() +
-    geom_point(aes(text = label_text), size = 0.1) +
+    geom_point(aes(text = label_text), size = 0.01) +
     geom_smooth(method = "loess", span = 0.2) +
     
-    
-    scale_color_tq()+
+    scale_color_tq() +
     scale_y_continuous(label = scales::dollar_format()) +
     
     labs(x = "", y = "") +
-    
     theme_tq()
     
 ggplotly(g, tooltip = "text")  
 
 
 # 5.2 FUNCTION ----
- 
-# plot_forecast()
 
-plot_forecast <- function(data){
+# TODO - plot_forecast()
+
+data <- processed_data_tbl %>%
+    aggregate_time_series(time_unit = "year") %>%
+    generate_forecast(n_future = 1, seed = 123)
+
+plot_forecast <- function(data) {
     
-    data  <- processed_data_tbl %>% 
-        aggregate_time_series(time_unit = "month") %>% 
-        generate_forecast(length_out = 12, seed = 123) 
-        
     # Yearly - LM Smoother
-    data %>% 
-        tk_index() %>% 
-        tk_get_timeseries_summary() %>% 
+    time_scale <- data %>%
+        tk_index() %>%
+        tk_get_timeseries_summary() %>%
         pull(scale)
-        
+    
     # Only 1 Prediction - points
-    data %>% 
-        filter(key == "Prediction") %>% 
+    n_predictions <- data %>%
+        filter(key == "Prediction") %>%
         nrow()
     
     
-    g <- data %>% 
+    g <- data %>%
         ggplot(aes(date, total_sales, color = key)) +
         
         geom_line() +
-        geom_point(aes(text = label_text), size = 0.1) +
-        geom_smooth(method = "loess", span = 0.2) +
+        # geom_point(aes(text = label_text), size = 0.01) +
+        # geom_smooth(method = "loess", span = 0.2) +
         
-        
-        scale_color_tq()+
-        scale_y_continuous(label = scales::dollar_format()) +
+        theme_tq() +
+        scale_color_tq() +
+        scale_y_continuous(labels = scales::dollar_format()) +
         expand_limits(y = 0) +
-        
-        labs(x = "", y = "") +
-        
-        theme_tq()
+        labs(x = "", y = "")
     
-    ggplotly(g, tooltip = "text")  
-
+    # Yearly - LM Smoother
+    if (time_scale == "year") {
+        g <- g +
+            geom_smooth(method = "lm")
+    } else {
+        g <- g + geom_smooth(method = "loess", span = 0.2)
+    }
+    
+    # Only 1 Prediction
+    if (n_predictions == 1) {
+        g <- g + geom_point(aes(text = label_text), size = 1)
+    } else {
+        g <- g + geom_point(aes(text = label_text), size = 0.01)
+    }
+    
+    ggplotly(g, tooltip = "text")
 }
+
 
 # testing plot_forecast()
 processed_data_tbl %>% 
@@ -399,12 +409,20 @@ processed_data_tbl %>%
 
 processed_data_tbl %>% 
     aggregate_time_series(time_unit = "year") %>% 
-    generate_forecast(length_out = 2, seed = 123) %>% 
+    generate_forecast(length_out = 1, seed = 123) %>% 
     plot_forecast()
   
+processed_data_tbl %>%
+    aggregate_time_series(time_unit = "day") %>%
+    generate_forecast(length_out = 365, seed = 123) %>%
+    plot_forecast()
+
 
 
 # 6.0 SAVE FUNCTIONS ----
 
 dump(c("aggregate_time_series", "plot_time_series", "generate_forecast", "plot_forecast"), 
      file = "R-Track/Course_03_Shiny_Web_App_Part_1/DS4B_102_R_Shiny_Apps_1/00_scripts/04_demand_forecast.R")
+ 
+
+
