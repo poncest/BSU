@@ -60,15 +60,15 @@ processed_data_tbl %>%
 
 source("R-Track/Course_03_Shiny_Web_App_Part_1/DS4B_102_R_Shiny_Apps_1/10_sales_dashboard_forecast/trend_analysis/model_forecast_xgb.R")
 
-#' exven after adjusting the hyperparameters of the xgboost model,
+#' even after adjusting the hyper parameters of the xgboost model,
 #' it is not picking up the the 'upper' trend
 processed_data_tbl %>%
-    aggregate_time_series("month") %>%
-    generate_forecast_xgb(length_out = 200, seed = 123, 
-                          mtry = 20, 
+    aggregate_time_series("day") %>%
+    generate_forecast_xgb(length_out = 1500, seed = 123, 
+                          mtry = 50, 
                           trees = 500, 
                           min_n = 5, 
-                          tree_depth = 10, 
+                          tree_depth = 6, 
                           learn_rate = 0.01, 
                           loss_reduction = 0.01) %>%
     plot_forecast()
@@ -80,7 +80,7 @@ source("R-Track/Course_03_Shiny_Web_App_Part_1/DS4B_102_R_Shiny_Apps_1/10_sales_
 
 
 processed_data_tbl %>%
-    aggregate_time_series("week") %>%
-    generate_forecast_glmnet(n_future = 200, seed = 123, 
+    aggregate_time_series("monthly") %>%
+    generate_forecast_glmnet(length_out = 24, seed = 123, ###
                              penalty = 1, mixture = 0.5) %>%
     plot_forecast()

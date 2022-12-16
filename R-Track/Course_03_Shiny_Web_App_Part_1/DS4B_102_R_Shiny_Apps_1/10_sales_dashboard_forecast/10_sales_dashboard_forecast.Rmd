@@ -26,12 +26,23 @@ library(tidyquant)
 library(plotly)
 
 # Modeling
-# library(parsnip)
-# library(timetk)
+library(parsnip)
+library(timetk)
 
 # Database
 library(odbc)
 library(RSQLite)
+```
+
+<!-- css for toggle switch-->
+
+```{css}
+.bootstrap-switch, .bootstrap-switch-handle-on,
+.bootstrap-switch, .bootstrap-switch-handle-off,
+.bootstrap-switch, .bootstrap-switch-label {
+    display: inline-block;
+    vertical-align: baseline;
+}
 ```
 
 
@@ -115,9 +126,31 @@ shinyWidgets::pickerInput(
   )
 )
 
+
+# Breaks and Horizontal line
 br()
 hr()
 br()
+
+
+# Forecast Mode
+h4("Forecast Mode")
+switchInput(inputId     = "forecast_mode", 
+            value       = FALSE, 
+            onStatus    = "success", 
+            onLabel     = "On", 
+            offLabel    = "Off",
+            handleWidth = 80, 
+            labelWidth  = 80, 
+            inline      = TRUE, 
+            width       = "150px")
+
+
+# Breaks and Horizontal line
+br()
+hr()
+br()
+
 
 ## Apply button
 actionButton(inputId = "apply", label = "Apply", icon = icon("play"))
