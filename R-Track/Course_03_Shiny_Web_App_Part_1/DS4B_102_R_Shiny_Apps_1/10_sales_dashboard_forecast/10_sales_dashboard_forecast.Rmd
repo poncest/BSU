@@ -145,12 +145,19 @@ switchInput(inputId     = "forecast_mode",
             inline      = TRUE, 
             width       = "150px")
 
+conditionalPanel(
+    condition = "input.forecast_mode == 1",
+    numericInput(inputId = "length_out",
+                 label = "Forecast Horizon",
+                 value = 12, 
+                 min   = 1))
+
 
 # Breaks and Horizontal line
 br()
-hr()
+hr() 
 br()
-
+ 
 
 ## Apply button
 actionButton(inputId = "apply", label = "Apply", icon = icon("play"))
@@ -169,8 +176,8 @@ observeEvent(eventExpr = input$reset, handlerExpr = {
   
   ## Update picker_category_2  
   updatePickerInput(
-    session = session, 
-    inputId = "picker_category_2", 
+    session  = session, 
+    inputId  = "picker_category_2", 
     selected = unique(processed_data_tbl$category_2))
   
   updateDateRangeInput(
@@ -181,9 +188,23 @@ observeEvent(eventExpr = input$reset, handlerExpr = {
   
   ## Update time_unit  
   updateRadioGroupButtons(
-    session = session, 
-    inputId = "time_unit", 
+    session  = session, 
+    inputId  = "time_unit", 
     selected = "month"
+  )
+  
+  ## Update forecast_mode (toggle switch)
+  updateSwitchInput(
+    session = session, 
+    inputId = "forecast_mode", 
+    value   = FALSE
+  )
+  
+  ## Update length_out (toggle switch)
+  updateNumericInput(
+    session = session, 
+    inputId = "length_out", 
+    value   = 12
   )
   
   ## Reset button- click apply
