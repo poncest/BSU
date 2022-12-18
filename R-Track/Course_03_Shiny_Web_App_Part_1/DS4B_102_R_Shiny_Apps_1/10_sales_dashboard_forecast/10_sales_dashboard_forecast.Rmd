@@ -32,6 +32,9 @@ library(timetk)
 # Database
 library(odbc)
 library(RSQLite)
+
+# Load Functions
+source("../00_scripts/04_demand_forecast.R")
 ```
 
 <!-- css for toggle switch-->
@@ -403,48 +406,44 @@ shinyWidgets::radioGroupButtons(
 # Time Series data
 
 time_plot_tbl <- reactive({
-  
-  time_unit <- input$time_unit
-  
+    
   processed_data_filtered_tbl() %>%
-    
-    mutate(date = floor_date(order.date, unit = time_unit)) %>%
-    
-    group_by(date) %>%
-    summarize(total_sales = sum(extended_price)) %>%
-    ungroup() %>%
-    
-    mutate(label_text = str_glue("Date: {date}
-                                 Revenue: {scales::dollar(total_sales)}"))
+    aggregate_time_series(time_unit = input$time_unit)    
   
+   
 })
   
-# renderPrint({
-#   time_plot_tbl()
+time_plot_predictions_tbl <- eventReactive(eventExpr = input$apply, {
+  
+  if (input$forecast_mode) {
+    time_plot_tbl() %>%
+      generate_forecast(length_out = input$length_out, seed = 123)
+    } 
+})
+
+renderPrint(time_plot_predictions_tbl() )
+
+# # Time Series plot
+# output$plotly_2 <- renderPlotly({
+#   
+#   g <- time_plot_tbl() %>%
+#     ggplot(aes(date, total_sales)) +
+#   
+#     geom_line(color = "#2c3e50") +
+#     geom_point(aes(text = label_text), color = "#2c3e50", size = 0.1) +
+#     geom_smooth(method = "loess", span = 0.2) +
+#   
+#     theme_tq() +
+#     expand_limits(y = 0) +
+#     scale_y_continuous(labels = scales::dollar_format()) +
+#     labs(x = "", y = "")
+#   
+#   ggplotly(g, tooltip = "text") %>%
+#     layout(margin = list(b = 200))
+#   
 # })
-
-
-# Time Series plot
-output$plotly_2 <- renderPlotly({
-  
-  g <- time_plot_tbl() %>%
-    ggplot(aes(date, total_sales)) +
-  
-    geom_line(color = "#2c3e50") +
-    geom_point(aes(text = label_text), color = "#2c3e50", size = 0.1) +
-    geom_smooth(method = "loess", span = 0.2) +
-  
-    theme_tq() +
-    expand_limits(y = 0) +
-    scale_y_continuous(labels = scales::dollar_format()) +
-    labs(x = "", y = "")
-  
-  ggplotly(g, tooltip = "text") %>%
-    layout(margin = list(b = 200))
-  
-})
-
-plotlyOutput(outputId = "plotly_2")
+# 
+# plotlyOutput(outputId = "plotly_2")
   
 ```
 
