@@ -399,6 +399,19 @@ shinyWidgets::radioGroupButtons(
     no  = NULL
     )
 )
+
+observedEvent(eventExpr = input$time_unit, {
+    
+    if(input$forecast) {
+        delay(300, click(id = "apply"))
+    }
+})
+
+observedEvent(eventExpr = input$forecast_mode, {
+    
+    delay(300, click(id = "apply"))
+    
+}, once = TRUE) 
 ```
 
 
