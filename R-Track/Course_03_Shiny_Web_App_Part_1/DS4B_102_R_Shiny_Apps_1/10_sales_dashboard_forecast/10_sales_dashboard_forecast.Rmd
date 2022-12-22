@@ -260,10 +260,7 @@ summary_values_tbl <- reactive({
       wealth_metric = sum(extended_price),
       wise_metric   = (sum(str_detect(category_1, "Mountain")) / (sum(str_detect(category_1, "Road")) + 0.0001)) %>% 
         round(1)
-    ) %>%
-    mutate(
-      health_metric = health_metric %>% scales::number(big.mark = ","),
-      wealth_metric = wealth_metric %>% scales::dollar(scale = 1e-6, accuracy = 0.1, suffix = "M")
+    ) 
     )
   
 })
@@ -276,13 +273,17 @@ summary_values_tbl <- reactive({
 ### Health
 
 ```{r}
-renderValueBox({
+renderValueBox({ 
   
   valueBox(
-    value   = summary_values_tbl()$health_metric, 
+    value   = summary_values_tbl()$health_metric %>% scales::comma(), 
     caption = "Orders", 
     icon    = "fa-heartbeat", 
-    color   = "success")
+    color   = case_when(
+        summary_values_tbl()$health_metric < 200 ~ "danger",
+        summary_values_tbl()$health_metric < 500 ~ "warning",
+        TRUE ~ "success"
+        ))
   
 })
 
