@@ -132,7 +132,7 @@ shinyWidgets::pickerInput(
 ## Bike shop name picker (bikeshop.name)
 shinyWidgets::pickerInput(
   inputId  = "picker_bikeshop_name", 
-  label    = h4("Bike Shop (Customers"), 
+  label    = h4("Bike Shop (Customers)"), 
   choices  = unique(processed_data_tbl$bikeshop.name), 
   selected = unique(processed_data_tbl$bikeshop.name), 
   multiple = TRUE,
