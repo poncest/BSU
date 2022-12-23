@@ -76,7 +76,7 @@ processed_data_tbl <- processed_data_tbl %>%
              sep = " - ") %>%
     
     select(order.date, order.id, order.line, state, quantity, price,
-           extended_price, category_1:frame_material)
+           extended_price, category_1:frame_material, bikeshop.name)
     
 # processed_data_tbl
 
@@ -126,9 +126,21 @@ shinyWidgets::pickerInput(
     `actions-box` = TRUE,
     size = 10,
     `selected-text-format` = "count > 3"
-  )
-)
+  ))
 
+
+## Bike shop name picker (bikeshop.name)
+shinyWidgets::pickerInput(
+  inputId  = "picker_bikeshop_name", 
+  label    = h4("Bike Shop (Customers"), 
+  choices  = unique(processed_data_tbl$bikeshop.name), 
+  selected = unique(processed_data_tbl$bikeshop.name), 
+  multiple = TRUE,
+  options  = list(
+    `actions-box` = TRUE,
+    size = 10,
+    `selected-text-format` = "count > 3"
+  ))
 
 # Breaks and Horizontal line
 br()
@@ -261,8 +273,6 @@ summary_values_tbl <- reactive({
       wise_metric   = (sum(str_detect(category_1, "Mountain")) / (sum(str_detect(category_1, "Road")) + 0.0001)) %>% 
         round(1)
     ) 
-    )
-  
 })
 
 # renderPrint(summary_values_tbl())
