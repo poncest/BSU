@@ -133,8 +133,8 @@ shinyWidgets::pickerInput(
 shinyWidgets::pickerInput(
   inputId  = "picker_bikeshop_name", 
   label    = h4("Bike Shop (Customers)"), 
-  choices  = unique(processed_data_tbl$bikeshop.name), 
-  selected = unique(processed_data_tbl$bikeshop.name), 
+  choices  = unique(processed_data_tbl$bikeshop.name) %>% sort(), 
+  selected = unique(processed_data_tbl$bikeshop.name) %>% sort(), 
   multiple = TRUE,
   options  = list(
     `actions-box` = TRUE,
@@ -181,7 +181,7 @@ actionButton(inputId = "apply", label = "Apply", icon = icon("play"))
 actionButton(inputId = "reset", label = "Reset", icon = icon("sync"))
 
 ## Reset
-observeEvent(eventExpr = input$reset, handlerExpr = {
+observeEvent(eventExpr = input$reset, handlerExpr = { 
   
   ## Update checkbox_category_1     
   updateCheckboxGroupButtons(
@@ -195,6 +195,13 @@ observeEvent(eventExpr = input$reset, handlerExpr = {
     inputId  = "picker_category_2", 
     selected = unique(processed_data_tbl$category_2))
   
+  ## Update picker_bikeshop_name  
+  updatePickerInput(
+    session  = session, 
+    inputId  = "picker_bikeshop_name", 
+    selected = unique(processed_data_tbl$category_2) %>% sort())
+  
+  ## Update date_range  
   updateDateRangeInput(
     session = session, 
     inputId = "date_range", 
@@ -250,7 +257,9 @@ processed_data_filtered_tbl <- eventReactive(
   
       filter(category_1 %in% input$checkbox_category_1) %>%
       
-      filter(category_2 %in% input$picker_category_2)
+      filter(category_2 %in% input$picker_category_2) %>% 
+          
+          filter(bikeshop.name %in% input$picker_bikeshop_name)
   },
   ignoreNULL = FALSE
 )
@@ -411,14 +420,14 @@ shinyWidgets::radioGroupButtons(
     )
 )
 
-observedEvent(eventExpr = input$time_unit, {
+observeEvent(eventExpr = input$time_unit, {
     
     if(input$forecast) {
         delay(300, click(id = "apply"))
     }
 })
 
-observedEvent(eventExpr = input$forecast_mode, {
+observeEvent(eventExpr = input$forecast_mode, {
     
     delay(300, click(id = "apply"))
     
