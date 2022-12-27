@@ -1,15 +1,15 @@
 ---
-title: "Sales Dashboard"
+title: "Sales Dashboard" 
 output: 
-  flexdashboard::flex_dashboard:
+    flexdashboard::flex_dashboard:
     orientation: rows
-    vertical_layout: fill
-    css: css/styles-default.css
-    logo: img/business-science-logo.png 
+vertical_layout: fill
+css: css/styles-default.css
+logo: img/business-science-logo.png 
 runtime: shiny
 ---
-
-
+    
+    
 ```{r setup, include=FALSE}
 
 # 1.0 Libraries ----
@@ -40,8 +40,8 @@ source("../00_scripts/04_demand_forecast.R")
 ```
 
 <!-- css for toggle switch-->
-
-```{css}
+    
+    ```{css}
 .bootstrap-switch, .bootstrap-switch-handle-on,
 .bootstrap-switch, .bootstrap-switch-handle-off,
 .bootstrap-switch, .bootstrap-switch-label {
@@ -79,7 +79,7 @@ processed_data_tbl <- processed_data_tbl %>%
     
     select(order.date, order.id, order.line, state, quantity, price,
            extended_price, category_1:frame_material, bikeshop.name)
-    
+
 # processed_data_tbl
 
 dbDisconnect(con)
@@ -87,10 +87,10 @@ dbDisconnect(con)
 
 
 <!-- Inputs Area-->
-
+    
 Column {.sidebar}
 ---------------------------------------------------------------
-
+    
 ```{r}
 
 ## Enable shinyjs
@@ -98,51 +98,51 @@ useShinyjs(rmd = TRUE)
 
 ## Date Range picker 
 dateRangeInput(
-  inputId = "date_range", 
-  label   = h4("Date Range"),
-  start   = min(processed_data_tbl$order.date), 
-  end     = max(processed_data_tbl$order.date), 
-  min     = min(processed_data_tbl$order.date), 
-  max     = max(processed_data_tbl$order.date), 
-  startview = "month")
+    inputId = "date_range", 
+    label   = h4("Date Range"),
+    start   = min(processed_data_tbl$order.date), 
+    end     = max(processed_data_tbl$order.date), 
+    min     = min(processed_data_tbl$order.date), 
+    max     = max(processed_data_tbl$order.date), 
+    startview = "month")
 
 ## Bike type check box buttons (category_1)
 shinyWidgets::checkboxGroupButtons(
-  inputId   = "checkbox_category_1", 
-  label     = h4("Bike Type"), 
-  choices   = unique(processed_data_tbl$category_1), 
-  selected  = unique(processed_data_tbl$category_1), 
-  checkIcon = list(
-    yes = icon("ok", lib = "glyphicon"),
-    no  = icon("remove", lib = "glyphicon")
-  ))
+    inputId   = "checkbox_category_1", 
+    label     = h4("Bike Type"), 
+    choices   = unique(processed_data_tbl$category_1), 
+    selected  = unique(processed_data_tbl$category_1), 
+    checkIcon = list(
+        yes = icon("ok", lib = "glyphicon"),
+        no  = icon("remove", lib = "glyphicon")
+    ))
 
 ## Bike family picker (category_2)
 shinyWidgets::pickerInput(
-  inputId  = "picker_category_2", 
-  label    = h4("Bike Family"), 
-  choices  = unique(processed_data_tbl$category_2), 
-  selected = unique(processed_data_tbl$category_2), 
-  multiple = TRUE,
-  options  = list(
-    `actions-box` = TRUE,
-    size = 10,
-    `selected-text-format` = "count > 3"
-  ))
+    inputId  = "picker_category_2", 
+    label    = h4("Bike Family"), 
+    choices  = unique(processed_data_tbl$category_2), 
+    selected = unique(processed_data_tbl$category_2), 
+    multiple = TRUE,
+    options  = list(
+        `actions-box` = TRUE,
+        size = 10,
+        `selected-text-format` = "count > 3"
+    ))
 
 
 ## Bike shop name picker (bikeshop.name)
 shinyWidgets::pickerInput(
-  inputId  = "picker_bikeshop_name", 
-  label    = h4("Bike Shop (Customers)"), 
-  choices  = unique(processed_data_tbl$bikeshop.name) %>% sort(), 
-  selected = unique(processed_data_tbl$bikeshop.name) %>% sort(), 
-  multiple = TRUE,
-  options  = list(
-    `actions-box` = TRUE,
-    size = 10,
-    `selected-text-format` = "count > 3"
-  ))
+    inputId  = "picker_bikeshop_name", 
+    label    = h4("Bike Shop (Customers)"), 
+    choices  = unique(processed_data_tbl$bikeshop.name) %>% sort(), 
+    selected = unique(processed_data_tbl$bikeshop.name) %>% sort(), 
+    multiple = TRUE,
+    options  = list(
+        `actions-box` = TRUE,
+        size = 10,
+        `selected-text-format` = "count > 3"
+    ))
 
 # Breaks and Horizontal line
 br()
@@ -174,7 +174,7 @@ conditionalPanel(
 br()
 hr() 
 br()
- 
+
 
 ## Apply button
 actionButton(inputId = "apply", label = "Apply", icon = icon("play"))
@@ -184,59 +184,59 @@ actionButton(inputId = "reset", label = "Reset", icon = icon("sync"))
 
 ## Reset
 observeEvent(eventExpr = input$reset, handlerExpr = { 
-  
-  ## Update checkbox_category_1     
-  updateCheckboxGroupButtons(
-    session  = session, 
-    inputId  = "checkbox_category_1", 
-    selected = unique(processed_data_tbl$category_1))
-  
-  ## Update picker_category_2  
-  updatePickerInput(
-    session  = session, 
-    inputId  = "picker_category_2", 
-    selected = unique(processed_data_tbl$category_2))
-  
-  ## Update picker_bikeshop_name  
-  updatePickerInput(
-    session  = session, 
-    inputId  = "picker_bikeshop_name", 
-    selected = unique(processed_data_tbl$category_2) %>% sort())
-  
-  ## Update date_range  
-  updateDateRangeInput(
-    session = session, 
-    inputId = "date_range", 
-    start   = min(processed_data_tbl$order.date), 
-    end     = max(processed_data_tbl$order.date))
-  
-  ## Update time_unit  
-  updateRadioGroupButtons(
-    session  = session, 
-    inputId  = "time_unit", 
-    selected = "month"
-  )
-  
-  ## Update forecast_mode (toggle switch)
-  updateSwitchInput(
-    session = session, 
-    inputId = "forecast_mode", 
-    value   = FALSE
-  )
-  
-  ## Update length_out (toggle switch)
-  updateNumericInput(
-    session = session, 
-    inputId = "length_out", 
-    value   = 12
-  )
-  
-  ## Reset button- click apply
-  shinyjs::delay(ms = 300, expr = {
-    shinyjs::click(id = "apply")
-  })
- 
-  
+    
+    ## Update checkbox_category_1     
+    updateCheckboxGroupButtons(
+        session  = session, 
+        inputId  = "checkbox_category_1", 
+        selected = unique(processed_data_tbl$category_1))
+    
+    ## Update picker_category_2  
+    updatePickerInput(
+        session  = session, 
+        inputId  = "picker_category_2", 
+        selected = unique(processed_data_tbl$category_2))
+    
+    ## Update picker_bikeshop_name  
+    updatePickerInput(
+        session  = session, 
+        inputId  = "picker_bikeshop_name", 
+        selected = unique(processed_data_tbl$bikeshop.name) %>% sort())
+    
+    ## Update date_range  
+    updateDateRangeInput(
+        session = session, 
+        inputId = "date_range", 
+        start   = min(processed_data_tbl$order.date), 
+        end     = max(processed_data_tbl$order.date))
+    
+    ## Update time_unit  
+    updateRadioGroupButtons(
+        session  = session, 
+        inputId  = "time_unit", 
+        selected = "month"
+    )
+    
+    ## Update forecast_mode (toggle switch)
+    updateSwitchInput(
+        session = session, 
+        inputId = "forecast_mode", 
+        value   = FALSE
+    )
+    
+    ## Update length_out (toggle switch)
+    updateNumericInput(
+        session = session, 
+        inputId = "length_out", 
+        value   = 12
+    )
+    
+    ## Reset button- click apply
+    shinyjs::delay(ms = 300, expr = {
+        shinyjs::click(id = "apply")
+    })
+    
+    
 })
 
 # renderPrint(input$date_range)
@@ -248,42 +248,42 @@ observeEvent(eventExpr = input$reset, handlerExpr = {
 # Apply
 
 processed_data_filtered_tbl <- eventReactive(
-  eventExpr = input$apply, 
-                                             
-  valueExpr = {
-  
-    processed_data_tbl %>%
-      
-      filter(order.date %>% between(left  = input$date_range[1], 
-                                    right = input$date_range[2])) %>%
-  
-      filter(category_1 %in% input$checkbox_category_1) %>%
-      
-      filter(category_2 %in% input$picker_category_2) %>% 
-          
-          filter(bikeshop.name %in% input$picker_bikeshop_name)
-  },
-  ignoreNULL = FALSE
+    eventExpr = input$apply, 
+    
+    valueExpr = {
+        
+        processed_data_tbl %>%
+            
+            filter(order.date %>% between(left  = input$date_range[1], 
+                                          right = input$date_range[2])) %>%
+            
+            filter(category_1 %in% input$checkbox_category_1) %>%
+            
+            filter(category_2 %in% input$picker_category_2) %>% 
+            
+            filter(bikeshop.name %in% input$picker_bikeshop_name)
+    },
+    ignoreNULL = FALSE
 )
 ```
 
 
 <!-- KPI Area -->
-
+    
 Row {data-height=150}
 ---------------------------------------------------------------
-
+    
 ```{r}
 summary_values_tbl <- reactive({
-  
-  processed_data_filtered_tbl() %>%
-  
-    summarize(
-      health_metric = unique(order.id) %>% length(),
-      wealth_metric = sum(extended_price),
-      wise_metric   = (sum(str_detect(category_1, "Mountain")) / (sum(str_detect(category_1, "Road")) + 0.0001)) %>% 
-        round(1)
-    ) 
+    
+    processed_data_filtered_tbl() %>%
+        
+        summarize(
+            health_metric = unique(order.id) %>% length(),
+            wealth_metric = sum(extended_price),
+            wise_metric   = (sum(str_detect(category_1, "Mountain")) / (sum(str_detect(category_1, "Road")) + 0.0001)) %>% 
+                round(1)
+        ) 
 })
 
 # renderPrint(summary_values_tbl())
@@ -295,17 +295,17 @@ summary_values_tbl <- reactive({
 
 ```{r}
 renderValueBox({ 
-  
-  valueBox(
-    value   = summary_values_tbl()$health_metric %>% scales::comma(), 
-    caption = "Orders", 
-    icon    = "fa-heartbeat", 
-    color   = case_when(
-        summary_values_tbl()$health_metric < 200 ~ "danger",
-        summary_values_tbl()$health_metric < 500 ~ "warning",
-        TRUE ~ "success"
+    
+    valueBox(
+        value   = summary_values_tbl()$health_metric %>% scales::comma(), 
+        caption = "Orders", 
+        icon    = "fa-heartbeat", 
+        color   = case_when(
+            summary_values_tbl()$health_metric < 200 ~ "danger",
+            summary_values_tbl()$health_metric < 500 ~ "warning",
+            TRUE ~ "success"
         ))
-  
+    
 })
 
 
@@ -316,13 +316,17 @@ renderValueBox({
 
 ```{r}
 renderValueBox({
-  
-  valueBox(
-    value   = summary_values_tbl()$wealth_metric, 
-    caption = "Sales", 
-    icon    = "fa-money-check-alt", 
-    color   = "primary")
-  
+    
+    valueBox(
+        value   = summary_values_tbl()$wealth_metric %>% 
+            scales::dollar(scale = 1e-6, suffix = "M", accuracy = 0.1), 
+        
+        caption = "Sales", 
+        icon    = "fa-money-check-alt", 
+        color   = case_when(summary_values_tbl()$wealth_metric < 5e6  ~ "danger",
+                            summary_values_tbl()$wealth_metric < 10e6 ~ "warning",
+                            TRUE ~ "success"))
+    
 })
 ```
 
@@ -331,37 +335,39 @@ renderValueBox({
 
 ```{r}
 renderValueBox({
-  
-  valueBox(
-    value   = summary_values_tbl()$wise_metric, 
-    caption = "Ratio, Mountain to Road", 
-    icon    = "fa-brain", 
-    color   = "info")
-  
+    
+    valueBox(
+        value   = summary_values_tbl()$wise_metric, 
+        caption = "Ratio, Mountain to Road", 
+        icon    = "fa-brain", 
+        color   = case_when(summary_values_tbl()$wise_metric < 0.5 ~ "warning",
+                            summary_values_tbl()$wise_metric < 2.0 ~ "success",
+                            TRUE ~ "warning"))
+    
 })
 ```
 
 
 <!-- Map Area -->
-
+    
 Row {data-height=850}
 ---------------------------------------------------------------
-
+    
 ### By State
-
+    
 ```{r}
 
 # map data
 geo_plot_tbl <- reactive({
-
-  processed_data_filtered_tbl() %>%
-
-    group_by(state) %>%
-    summarise(total_revenue = sum(extended_price)) %>%
-    ungroup() %>%
-    mutate(label_text = str_glue("State: {state}
+    
+    processed_data_filtered_tbl() %>%
+        
+        group_by(state) %>%
+        summarise(total_revenue = sum(extended_price)) %>%
+        ungroup() %>%
+        mutate(label_text = str_glue("State: {state}
                                  Revenue: {scales::dollar(total_revenue)}"))
-
+    
 })
 
 
@@ -378,23 +384,23 @@ geo_plot_tbl <- reactive({
 
 # map plot
 output$plotly_1 <- renderPlotly(expr = {
-  
-  geo_plot_tbl() %>%
-    plot_geo(locationmode = "USA-states") %>%
-    add_trace(z         = ~total_revenue, 
-              locations = ~state, 
-              color     = ~total_revenue,
-              text      = ~label_text,
-              colors    = "Blues") %>%
-    layout(
-        geo = list(
-            scope = "usa",
-            projection = list(type = "albers usa"),
-            showlakes  = TRUE,
-            lakecolor  = toRGB("white")
+    
+    geo_plot_tbl() %>%
+        plot_geo(locationmode = "USA-states") %>%
+        add_trace(z         = ~total_revenue, 
+                  locations = ~state, 
+                  color     = ~total_revenue,
+                  text      = ~label_text,
+                  colors    = "Blues") %>%
+        layout(
+            geo = list(
+                scope = "usa",
+                projection = list(type = "albers usa"),
+                showlakes  = TRUE,
+                lakecolor  = toRGB("white")
+            )
         )
-    )
-  
+    
 })
 
 plotlyOutput(outputId = "plotly_1")
@@ -403,28 +409,28 @@ plotlyOutput(outputId = "plotly_1")
 
 
 <!-- Time Series Area -->
-
+    
 ### Over Time
-
+    
 ```{r}
 
 ## Time unit picker (time series)
 shinyWidgets::radioGroupButtons(
-  inputId  = "time_unit", 
-  label    = "Time Unit", 
-  choices  = c("D" = "day", "W" = "week", "M" = "month", "Q" = "quarter", "Y" = "year"), 
-  selected = "month", 
-  status   = "primary", 
-  justified = TRUE, 
-  checkIcon = list(
-    yes = icon("ok", lib = "glyphicon"), 
-    no  = NULL
+    inputId  = "time_unit", 
+    label    = "Time Unit", 
+    choices  = c("D" = "day", "W" = "week", "M" = "month", "Q" = "quarter", "Y" = "year"), 
+    selected = "month", 
+    status   = "primary", 
+    justified = TRUE, 
+    checkIcon = list(
+        yes = icon("ok", lib = "glyphicon"), 
+        no  = NULL
     )
 )
 
 observeEvent(eventExpr = input$time_unit, {
     
-    if(input$forecast) {
+    if(input$forecast_mode) {
         delay(300, click(id = "apply"))
     }
 })
@@ -442,17 +448,15 @@ observeEvent(eventExpr = input$forecast_mode, {
 
 time_plot_tbl <- reactive({
     
-  processed_data_filtered_tbl() %>%
-    aggregate_time_series(time_unit = input$time_unit)    
-  
-   
+    processed_data_filtered_tbl() %>%
+        aggregate_time_series(time_unit = input$time_unit)    
 })
-  
+
 time_plot_predictions_tbl <- eventReactive(eventExpr = input$apply, {
-  
-  if (input$forecast_mode) {
-    time_plot_tbl() %>%
-      generate_forecast(length_out = input$length_out, seed = 123)
+    
+    if (input$forecast_mode) {
+        time_plot_tbl() %>%
+            generate_forecast(length_out = input$length_out, seed = 123)
     } 
 })
 
@@ -460,20 +464,20 @@ renderPrint(time_plot_predictions_tbl() )
 
 # Time Series plot
 output$plotly_2 <- renderPlotly({
-
-  if (input$forecast_mode){
-      p <- time_plot_predictions_tbl %>% 
-          plot_forecast()
-      
-  } else {
-     p <- time_plot_tbl() %>%
-          plot_time_series()
-  }
+    
+    if (input$forecast_mode){
+        p <- time_plot_predictions_tbl() %>% 
+            plot_forecast()
+        
+    } else {
+        p <- time_plot_tbl() %>%
+            plot_time_series()
+    }
     p %>% 
         layout(margin = list(b = 200))
 })
- 
+
 plotlyOutput(outputId = "plotly_2")
-  
+
 ```
 
