@@ -4,7 +4,7 @@ output:
     flexdashboard::flex_dashboard:
     orientation: rows
 vertical_layout: fill
-css: css/styles-default.css
+css: css/styles-dark.css
 logo: img/business-science-logo.png 
 runtime: shiny
 ---
@@ -236,8 +236,24 @@ observeEvent(eventExpr = input$reset, handlerExpr = {
         shinyjs::click(id = "apply")
     })
     
-    
 })
+
+## View Mode
+br()
+hr() 
+br()
+
+h5("View Mode")
+switchInput(inputId     = "view_mode", 
+            value       = TRUE, 
+            onStatus    = "success", 
+            offStatus   = "primary",
+            onLabel     = "Light", 
+            offLabel    = "Dark",
+            handleWidth = 80, 
+            labelWidth  = 80, 
+            inline      = TRUE, 
+            width       = "150px")
 
 # renderPrint(input$date_range)
 # renderPrint(input$picker_category_2)
@@ -294,20 +310,17 @@ summary_values_tbl <- reactive({
 ### Health
 
 ```{r}
-renderValueBox({ 
-    
-    valueBox(
-        value   = summary_values_tbl()$health_metric %>% scales::comma(), 
-        caption = "Orders", 
-        icon    = "fa-heartbeat", 
-        color   = case_when(
-            summary_values_tbl()$health_metric < 200 ~ "danger",
-            summary_values_tbl()$health_metric < 500 ~ "warning",
-            TRUE ~ "success"
-        ))
-    
+renderValueBox({
+  
+  valueBox(
+    value   = summary_values_tbl()$health_metric %>% scales::comma(), 
+    caption = "Orders", 
+    icon    = "fa-heartbeat", 
+    color   = case_when(summary_values_tbl()$health_metric < 200 ~ "danger",
+                        summary_values_tbl()$health_metric < 500 ~ "warning",
+                        TRUE ~ "success"))
+  
 })
-
 
 ```
 
@@ -316,17 +329,15 @@ renderValueBox({
 
 ```{r}
 renderValueBox({
-    
-    valueBox(
-        value   = summary_values_tbl()$wealth_metric %>% 
-            scales::dollar(scale = 1e-6, suffix = "M", accuracy = 0.1), 
-        
-        caption = "Sales", 
-        icon    = "fa-money-check-alt", 
-        color   = case_when(summary_values_tbl()$wealth_metric < 5e6  ~ "danger",
-                            summary_values_tbl()$wealth_metric < 10e6 ~ "warning",
-                            TRUE ~ "success"))
-    
+  
+  valueBox(
+    value   = summary_values_tbl()$wealth_metric %>% scales::dollar(scale = 1e-6, suffix = "M", accuracy = 0.1), 
+    caption = "Sales", 
+    icon    = "fa-money-check-alt", 
+    color   = case_when(summary_values_tbl()$wealth_metric < 5e6  ~ "danger",
+                        summary_values_tbl()$wealth_metric < 10e6 ~ "warning",
+                        TRUE ~ "success"))
+  
 })
 ```
 
@@ -335,15 +346,15 @@ renderValueBox({
 
 ```{r}
 renderValueBox({
-    
-    valueBox(
-        value   = summary_values_tbl()$wise_metric, 
-        caption = "Ratio, Mountain to Road", 
-        icon    = "fa-brain", 
-        color   = case_when(summary_values_tbl()$wise_metric < 0.5 ~ "warning",
-                            summary_values_tbl()$wise_metric < 2.0 ~ "success",
-                            TRUE ~ "warning"))
-    
+  
+  valueBox(
+    value   = summary_values_tbl()$wise_metric, 
+    caption = "Ratio, Mountain to Road", 
+    icon    = "fa-brain", 
+    color   = case_when(summary_values_tbl()$wise_metric < 0.5 ~ "warning",
+                        summary_values_tbl()$wise_metric < 2.0 ~ "success",
+                        TRUE ~ "warning"))
+  
 })
 ```
 
@@ -429,17 +440,18 @@ shinyWidgets::radioGroupButtons(
 )
 
 observeEvent(eventExpr = input$time_unit, {
-    
-    if(input$forecast_mode) {
-        delay(300, click(id = "apply"))
-    }
+  
+  if (input$forecast_mode) {
+    delay(300, click(id = "apply"))
+  }
+  
 })
 
 observeEvent(eventExpr = input$forecast_mode, {
-    
-    delay(300, click(id = "apply"))
-    
-}, once = TRUE) 
+  
+  delay(300, click(id = "apply"))
+  
+}, once = TRUE)
 ```
 
 
@@ -460,9 +472,9 @@ time_plot_predictions_tbl <- eventReactive(eventExpr = input$apply, {
     } 
 })
 
-renderPrint(time_plot_predictions_tbl() )
+# renderPrint(time_plot_predictions_tbl()) 
 
-# Time Series plot
+# Time Series plot 
 output$plotly_2 <- renderPlotly({
     
     if (input$forecast_mode){
