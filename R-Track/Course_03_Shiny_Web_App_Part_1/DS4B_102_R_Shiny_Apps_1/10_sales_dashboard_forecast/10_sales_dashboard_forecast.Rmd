@@ -155,6 +155,7 @@ h4("Forecast Mode")
 switchInput(inputId     = "forecast_mode", 
             value       = FALSE, 
             onStatus    = "success", 
+            offStatus   = "primary", 
             onLabel     = "On", 
             offLabel    = "Off",
             handleWidth = 80, 

@@ -10,13 +10,14 @@
 /* Headers font*/
 h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     font-family: "Montserrat", sans-serif;
-    color: #2c3e50;
+    color: #fff; 
 }
 
 /* Body font*/
 body {
     font-family: 'Roboto', sans-serif;
     color: #2c3e50;
+    background-color: #090909;
 }
 
 /* top navigation bar color */
@@ -33,7 +34,7 @@ body {
 
 /* Input area - sidebar */
 .section.sidebar {
-    background-color: #dddddd;
+    background-color: #090909;
 }
 
 @media screen and (min-width: 767px) {
