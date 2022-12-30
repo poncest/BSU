@@ -4,7 +4,7 @@ output:
     flexdashboard::flex_dashboard:
     orientation: rows
 vertical_layout: fill
-css: css/styles-dark.css
+css: css/styles-default.css
 logo: img/business-science-logo.png 
 runtime: shiny
 ---
@@ -41,13 +41,26 @@ source("../00_scripts/04_demand_forecast.R")
 
 <!-- css for toggle switch-->
     
-    ```{css}
+```{css}
 .bootstrap-switch, .bootstrap-switch-handle-on,
 .bootstrap-switch, .bootstrap-switch-handle-off,
 .bootstrap-switch, .bootstrap-switch-label {
     display: inline-block;
     vertical-align: baseline;
 }
+```
+
+
+```{r}
+## View Mode (light or dark)
+renderUI({
+    if(input$view_mode) {
+        includeCSS("css/styles-default.css")
+    } else {
+        includeCSS("css/styles-dark.css")
+    }
+})
+
 ```
 
 

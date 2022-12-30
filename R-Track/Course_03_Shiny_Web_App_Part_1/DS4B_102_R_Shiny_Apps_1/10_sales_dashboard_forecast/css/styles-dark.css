@@ -58,7 +58,7 @@ body {
 /* Switch*/
 .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-success, .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-success {
     color: #fff;
-    background: #18bc9c;
+    background: #18bc9c; 
 }
 
 .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-primary, .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary {
@@ -117,8 +117,8 @@ body {
 
 .btn-success { 
     color: #ffffff;
-    background-color: #18BC9C;
-    border-color: #18BC9C
+    background-color: #18bc9c;
+    border-color: #18bc9c
 }
 
 .btn-success:focus,.btn-success.focus {
