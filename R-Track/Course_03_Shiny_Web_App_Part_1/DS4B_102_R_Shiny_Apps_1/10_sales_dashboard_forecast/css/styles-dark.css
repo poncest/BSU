@@ -52,6 +52,9 @@ body {
     .chart-shim {
         overflow-y: scroll;
     }
+    .level:first-child {
+        background-color: #090909;
+    }
 }
 
 
