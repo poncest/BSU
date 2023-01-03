@@ -333,7 +333,6 @@ renderValueBox({
     color   = case_when(summary_values_tbl()$health_metric < 200 ~ "danger",
                         summary_values_tbl()$health_metric < 500 ~ "warning",
                         TRUE ~ "success"))
-  
 })
 
 ```
@@ -351,7 +350,6 @@ renderValueBox({
     color   = case_when(summary_values_tbl()$wealth_metric < 5e6  ~ "danger",
                         summary_values_tbl()$wealth_metric < 10e6 ~ "warning",
                         TRUE ~ "success"))
-  
 })
 ```
 
@@ -395,7 +393,6 @@ geo_plot_tbl <- reactive({
     
 })
 
-
 # geo_plot_tbl <- processed_data_tbl %>%
 #     group_by(state) %>%
 #     summarise(total_revenue = sum(extended_price)) %>%
@@ -425,7 +422,6 @@ output$plotly_1 <- renderPlotly(expr = {
                 lakecolor  = toRGB("white")
             )
         )
-    
 })
 
 plotlyOutput(outputId = "plotly_1")
@@ -504,6 +500,5 @@ output$plotly_2 <- renderPlotly({
 })
 
 plotlyOutput(outputId = "plotly_2")
-
 ```
 
