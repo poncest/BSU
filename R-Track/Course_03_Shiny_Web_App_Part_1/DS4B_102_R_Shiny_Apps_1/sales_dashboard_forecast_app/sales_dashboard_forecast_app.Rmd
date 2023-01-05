@@ -36,7 +36,7 @@ library(odbc)
 library(RSQLite)
 
 # Load Functions
-source("../00_scripts/04_demand_forecast.R")
+source("04_demand_forecast.R")
 ```
 
 <!-- css for toggle switch-->
@@ -67,7 +67,7 @@ renderUI({
 ```{r}
 
 # 2.0 Processed Data ----
-con <- dbConnect(RSQLite::SQLite(), "../00_data/bikes_database.db")
+con <- dbConnect(RSQLite::SQLite(), "bikes_database.db")
 # con <- dbConnect(RSQLite::SQLite(), "00_data/bikes_database.db")
 
 # dbListTables(con)
