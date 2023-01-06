@@ -29,6 +29,7 @@ library(plotly)
 
 # Modeling
 library(parsnip)
+library(xgboost)
 library(timetk)
 
 # Database
