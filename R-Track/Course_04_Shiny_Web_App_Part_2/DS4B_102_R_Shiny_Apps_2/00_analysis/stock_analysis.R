@@ -24,7 +24,27 @@ library(fs)
 
 
 # 1.0 GET STOCK LIST ----
+stock_list_tbl <- tq_index("SP500") %>% 
+    select(symbol, company) %>% 
+    arrange(symbol) %>% 
+    mutate(label = str_c(symbol, company, sep = ", ")) %>% 
+    select(label)
 
+# get_stock_list()
+get_stock_list <- function(stock_index = "SP500") {
+    tq_index(stock_index) %>% 
+        select(symbol, company) %>% 
+        arrange(symbol) %>% 
+        mutate(label = str_c(symbol, company, sep = ", ")) %>% 
+        select(label)
+}
+
+# testing get_stock_list()
+get_stock_list("SP500")
+
+# other index options
+tq_index_options() 
+get_stock_list("DOW")
 
 
 # 2.0 EXTRACT SYMBOL BASED ON USER INPUT ----
