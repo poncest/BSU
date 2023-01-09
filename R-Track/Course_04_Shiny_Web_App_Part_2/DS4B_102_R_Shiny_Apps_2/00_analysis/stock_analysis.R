@@ -40,7 +40,7 @@ get_stock_list <- function(stock_index = "SP500") {
 }
 
 # testing get_stock_list()
-get_stock_list("SP500")
+get_stock_list("SP500") 
 
 # other index options
 tq_index_options() 
@@ -49,7 +49,23 @@ get_stock_list("DOW")
 
 # 2.0 EXTRACT SYMBOL BASED ON USER INPUT ----
 
+user_input <- "AAPL, Apple Inc."
 
+user_input %>% 
+    str_split(pattern = ", ") %>% 
+    pluck(1, 1)
+
+# get_symbol_from_user_input()
+get_symbol_from_user_input <- function(user_input){
+    user_input %>% 
+        str_split(pattern = ", ") %>% 
+        pluck(1, 1)
+}
+
+# testing get_symbol_from_user_input()
+
+"ABC, AmerisourceBergen Corporation" %>% get_symbol_from_user_input()
+"ACGL, Arch Capital Group Ltd." %>% get_symbol_from_user_input()
 
 # 3.0 GET STOCK DATA ----
 
