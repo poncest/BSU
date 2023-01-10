@@ -69,6 +69,38 @@ get_symbol_from_user_input <- function(user_input){
 
 # 3.0 GET STOCK DATA ----
 
+from <- today() - days(180)
+to   <- today()
+
+"PFE" %>% 
+    tq_get(get = "stock.prices", from = from, to = to) %>% 
+    select(date, adjusted) %>% 
+    
+    # if we have a moving avg value of 5 (k =5), there should be four NA's               
+    mutate(moving_avg_short = rollmean(adjusted, k = 5, na.pad = TRUE, align = 'right')) %>% 
+    mutate(moving_avg_long = rollmean(adjusted, k = 50, na.pad = TRUE, align = 'right')) 
+
+
+get_stock_data <- function(stock_symbol, 
+                           from = today() - days(180), 
+                           to = today(), 
+                           moving_avg_short = 20, 
+                           moving_avg_long = 50) {
+    
+    stock_symbol %>% 
+        tq_get(get = "stock.prices", from = from, to = to) %>% 
+        select(date, adjusted) %>% 
+        
+        # if we have a moving avg value of 5 (k =5), there should be four NA's               
+        mutate(moving_avg_short = rollmean(adjusted, k = moving_avg_short, na.pad = TRUE, align = 'right')) %>% 
+        mutate(moving_avg_long = rollmean(adjusted, k = moving_avg_long, na.pad = TRUE, align = 'right')) 
+    
+} 
+
+
+# testing get_stock_data()
+get_stock_data(stock_symbol = "PFE", from = "2018-01-01", to = "2020-06-30", 
+               moving_avg_short = 5, moving_avg_long = 8)
 
 
 # 4.0 PLOT STOCK DATA ----
