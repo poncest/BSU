@@ -99,12 +99,30 @@ get_stock_data <- function(stock_symbol,
 
 
 # testing get_stock_data()
-get_stock_data(stock_symbol = "PFE", from = "2018-01-01", to = "2020-06-30", 
+stock_data_tbl <- get_stock_data(stock_symbol = "PFE", from = "2018-01-01", to = "2020-06-30", 
                moving_avg_short = 5, moving_avg_long = 8)
 
 
 # 4.0 PLOT STOCK DATA ----
 
+g <- stock_data_tbl %>% 
+    gather(key = "legend", value = "value", adjusted:moving_avg_long) %>% 
+   
+    ggplot(aes(date, value, color = legend)) +
+    geom_line(aes(linetype = legend)) +
+    
+    # scales
+    scale_y_continuous(labels = scales::dollar_format(largest_with_cents = 10)) +
+    scale_color_tq()+
+    
+    # labs
+    labs(x = "", y = "Adjusted Share Price")+ 
+    
+    # theme
+    theme_tq() 
+
+ggplotly(g)
+    
 
 
 # 5.0 GENERATE COMMENTARY ----
