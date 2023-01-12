@@ -106,7 +106,7 @@ stock_data_tbl <- get_stock_data(stock_symbol = "PFE", from = "2018-01-01", to =
 # 4.0 PLOT STOCK DATA ----
 
 g <- stock_data_tbl %>% 
-    gather(key = "legend", value = "value", adjusted:moving_avg_long) %>% 
+    gather(key = "legend", value = "value", adjusted:moving_avg_long, factor_key = TRUE) %>% 
    
     ggplot(aes(date, value, color = legend)) +
     geom_line(aes(linetype = legend)) +
@@ -123,6 +123,37 @@ g <- stock_data_tbl %>%
 
 ggplotly(g)
     
+
+# plot_stock_data()
+plot_stock_data <- function(data) {
+    g <- data %>% 
+        gather(key = "legend", value = "value", adjusted:moving_avg_long, factor_key = TRUE) %>% 
+        
+        ggplot(aes(date, value, color = legend)) +
+        geom_line(aes(linetype = legend)) +
+        
+        # scales
+        scale_y_continuous(labels = scales::dollar_format(largest_with_cents = 10)) +
+        scale_color_tq()+
+        
+        # labs
+        labs(x = "", y = "Adjusted Share Price")+ 
+        
+        # theme
+        theme_tq() 
+    
+    plot <- ggplotly(g)
+    
+    return(plot)
+    
+}
+
+# testing plot_stock_data()
+plot_stock_data(stock_data_tbl)
+
+"AMZN" %>% 
+    get_stock_data() %>% 
+    plot_stock_data()
 
 
 # 5.0 GENERATE COMMENTARY ----
