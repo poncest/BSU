@@ -137,7 +137,7 @@ plot_stock_data <- function(data) {
         scale_color_tq()+
         
         # labs
-        labs(x = "", y = "Adjusted Share Price")+ 
+        labs(x = "", y = "Adjusted Share Price" )+ 
         
         # theme
         theme_tq() 
@@ -157,8 +157,58 @@ plot_stock_data(stock_data_tbl)
 
 
 # 5.0 GENERATE COMMENTARY ----
+warning_signal <- stock_data_tbl %>% 
+    tail(1) %>% 
+    mutate(moving_warning_flag = moving_avg_short < moving_avg_long) %>% 
+    pull(moving_warning_flag)
+
+# develop a message
+
+# value for moving_avg_short
+n_short <- stock_data_tbl %>% pull(moving_avg_short) %>% is.na() %>% sum() + 1
+
+# value for moving_avg_long
+n_long <- stock_data_tbl %>% pull(moving_avg_long) %>% is.na() %>% sum() + 1
+
+if (warning_signal) {
+    str_glue("In reviewing the stock prices of {user_input}, the {n_short}-day moving average is below the {n_long}-day movig average, indicating negative trend") %>% str_wrap(width = 80)
+    
+} else {
+    str_glue("In reviewing the stock prices of {user_input}, the {n_short}-day moving average is above the {n_long}-day movig average, indicating positive trend") %>% str_wrap(width = 80)
+}
 
 
+
+generate_commentary <- function(data, user_input) {
+    warning_signal <- data %>% 
+        tail(1) %>% 
+        mutate(moving_warning_flag = moving_avg_short < moving_avg_long) %>% 
+        pull(moving_warning_flag)
+    
+    # value for moving_avg_short
+    n_short <- data %>% pull(moving_avg_short) %>% is.na() %>% sum() + 1
+    
+    # value for moving_avg_long
+    n_long <- data %>% pull(moving_avg_long) %>% is.na() %>% sum() + 1
+    
+    if (warning_signal) {
+        str_glue("In reviewing the stock prices of {user_input}, the {n_short}-day moving average is below the {n_long}-day movig average, indicating negative trend") %>% str_wrap(width = 80)
+        
+    } else {
+        str_glue("In reviewing the stock prices of {user_input}, the {n_short}-day moving average is above the {n_long}-day movig average, indicating positive trend") %>% str_wrap(width = 80)
+    }
+}
+
+# testing generate_commentary()
+generate_commentary(data = stock_data_tbl, user_input = "AMZN")
+generate_commentary(data = stock_data_tbl, user_input = "AAPL")
+
+
+get_stock_data(stock_symbol = "BMY", moving_avg_short = 10, moving_avg_long = 80) %>% 
+    plot_stock_data()  
+
+get_stock_data(stock_symbol = "BMY", moving_avg_short = 5, moving_avg_long = 80) %>% 
+    generate_commentary(user_input = "BMY")  
 
 # 6.0 TEST WORKFLOW ----
 
