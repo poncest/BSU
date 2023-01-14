@@ -192,10 +192,10 @@ generate_commentary <- function(data, user_input) {
     n_long <- data %>% pull(moving_avg_long) %>% is.na() %>% sum() + 1
     
     if (warning_signal) {
-        str_glue("In reviewing the stock prices of {user_input}, the {n_short}-day moving average is below the {n_long}-day movig average, indicating negative trend") %>% str_wrap(width = 80)
+        str_glue("In reviewing the stock prices of {user_input}, the {n_short}-day moving average is below the {n_long}-day movig average, indicating negative trend") 
         
     } else {
-        str_glue("In reviewing the stock prices of {user_input}, the {n_short}-day moving average is above the {n_long}-day movig average, indicating positive trend") %>% str_wrap(width = 80)
+        str_glue("In reviewing the stock prices of {user_input}, the {n_short}-day moving average is above the {n_long}-day movig average, indicating positive trend") 
     }
 }
 
@@ -210,8 +210,36 @@ get_stock_data(stock_symbol = "BMY", moving_avg_short = 10, moving_avg_long = 80
 get_stock_data(stock_symbol = "BMY", moving_avg_short = 5, moving_avg_long = 80) %>% 
     generate_commentary(user_input = "BMY")  
 
+
+
 # 6.0 TEST WORKFLOW ----
 
+# options available
+tq_index_options() 
+
+# get stock index list
+get_stock_list(stock_index = "SP500")
+
+# input index
+"ABT, Abbott Laboratories" %>% 
+    # get stock symbol
+    get_symbol_from_user_input() %>% 
+    # get stock data
+    get_stock_data(from = "2018-01-01", to = "2019-01-01") %>% 
+    # plot data
+    # plot_stock_data()  
+    # add commentary
+    generate_commentary(user_input = "ABT, Abbott Laboratories")
 
 
 # 7.0 SAVE SCRIPTS ----
+fs::dir_create(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts"))
+
+dump(
+    list = c("get_stock_list", "get_stock_data", "get_symbol_from_user_input", "plot_stock_data", "generate_commentary"),
+    file = here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/stock_analysis_functions.R"),
+    append = FALSE)
+
+ 
+
+
