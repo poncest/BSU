@@ -20,7 +20,31 @@ source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_
 
 # UI ----
 
-ui <- fluidPage(title = "Stock Analyzer")
+ui <- fluidPage(
+    title = "Stock Analyzer", 
+    
+    # 1.0 HEADER ----
+    div( 
+        h1("Stock Analyzer", "by Business Science"),
+        p("This is the first mini-project completed in our", "Expert Shiny Application Course (DS4B 202-R)") 
+    ),
+     
+    # 2.0 APPLICATION UI ----
+    div(
+        column(
+            width = 4,
+            wellPanel(
+                # picker input "stock_selection"
+                pickerInput(inputId = "stock_selection", choices = 1:10)
+            ) 
+            ),
+        
+        column(
+            width = 8, 
+            
+            ),
+    )
+    )
 
 # SERVER ----
 
