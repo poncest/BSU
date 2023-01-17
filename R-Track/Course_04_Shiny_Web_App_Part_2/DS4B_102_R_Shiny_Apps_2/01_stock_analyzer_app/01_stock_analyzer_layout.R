@@ -17,6 +17,8 @@ library(tidyverse)
 
 source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/stock_analysis_functions.R"))
 
+stock_list_tbl <- get_stock_list("SP500")
+
 
 # UI ----
 
@@ -29,13 +31,25 @@ ui <- fluidPage(
         p("This is the first mini-project completed in our", "Expert Shiny Application Course (DS4B 202-R)") 
     ),
      
-    # 2.0 APPLICATION UI ----
+    # 2.0 APPLICATION UI ---- 
     div(
         column(
             width = 4,
             wellPanel(
                 # picker input "stock_selection"
-                pickerInput(inputId = "stock_selection", choices = 1:10)
+                pickerInput(inputId  = "stock_selection", 
+                            label    = "Stock List (Pick One to Analyze)",
+                            choices  = stock_list_tbl$label,
+                            multiple = FALSE, 
+                            selected = stock_list_tbl %>% filter(label %>% str_detect("AAPL")) %>% pull(label),
+                            options  = pickerOptions(
+                                  actionsBox = FALSE, 
+                                  liveSearch = TRUE, 
+                                  size       = 10  
+                            )
+                ),
+                # analyze button
+                actionButton(inputId = "analyze", label = "Analyze", icon = icon("download"))
             ) 
             ),
         
