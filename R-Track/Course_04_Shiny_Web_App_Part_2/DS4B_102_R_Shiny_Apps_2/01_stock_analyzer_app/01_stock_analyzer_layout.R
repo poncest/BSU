@@ -18,6 +18,7 @@ library(tidyverse)
 source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/stock_analysis_functions.R"))
 
 stock_list_tbl <- get_stock_list("SP500")
+stock_data_tbl <- get_stock_data("AAPL", from = "2018-01-01", to = "2019-01-01")
 
 
 # UI ----
@@ -55,7 +56,12 @@ ui <- fluidPage(
         
         column(
             width = 8, 
-            
+            div(
+                div(h4("Placeholder -  Stock Selected is...")),
+                div(
+                    stock_data_tbl %>% plot_stock_data()
+                )
+            )
             ),
     )
     )
