@@ -60,12 +60,27 @@ ui <- fluidPage(
                 div(h4("Placeholder -  Stock Selected is...")),
                 div(
                     stock_data_tbl %>% plot_stock_data()
+                    )
                 )
             )
-            ),
-    )
-    )
-
+    ),
+        
+    # 3.0 ANALYST COMMENTARY ----
+    div(
+        column(
+            width = 12,
+            div(
+                div(h4("Analyst Commentary")),
+                div(
+                    stock_data_tbl %>% generate_commentary(user_input = "Placeholder")
+                    )
+                )
+           )
+     )
+)
+        
+        
+    
 # SERVER ----
 
 server <- function(input, output, session){
