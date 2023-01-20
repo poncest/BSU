@@ -18,7 +18,7 @@ library(tidyverse)
 source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/stock_analysis_functions.R"))
 
 stock_list_tbl <- get_stock_list("SP500")
-stock_data_tbl <- get_stock_data("AAPL", from = "2018-01-01", to = "2019-01-01")
+# stock_data_tbl <- get_stock_data("AAPL", from = "2018-01-01", to = "2019-01-01")
 
 
 # UI ----
@@ -48,15 +48,17 @@ ui <- fluidPage(
                         size = 10
                     )
                 ),
-                actionButton(inputId = "analyze", label = "Analyze", icon = icon("download"))
+                actionButton(inputId = "analyze", label = "Analyze", icon = icon("download")),
+                verbatimTextOutput(outputId = "selected_symbol")
             )
+            
         ),
         column(
             width = 8, 
             div(
                 div(h4("Placeholder - Stock Selected is...")),
                 div(
-                    stock_data_tbl %>% plot_stock_data()
+                    # stock_data_tbl %>% plot_stock_data()
                 )
             )
         )
@@ -69,7 +71,7 @@ ui <- fluidPage(
             div(
                 div(h4("Analyst Commentary")),
                 div(
-                    stock_data_tbl %>% generate_commentary(user_input = "Placeholder")
+                    # stock_data_tbl %>% generate_commentary(user_input = "Placeholder")
                 )
             )
         ) 
@@ -79,6 +81,11 @@ ui <- fluidPage(
 # SERVER ----
 server <- function(input, output, session) {
     
+    stock_symbol <- eventReactive(input$analyze, {
+        get_symbol_from_user_input(input$stock_selection)
+    })
+    
+    output$selected_symbol <- renderText(stock_symbol())
 }
 
 # RUN APP ----
