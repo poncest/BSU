@@ -56,8 +56,9 @@ ui <- fluidPage(
         column(
             width = 8, 
             div(
-                div(h4("Placeholder - Stock Selected is...")),
+                div(h4(textOutput(outputId = "plot_header"))),
                 div(
+                    # verbatimTextOutput(outputId = "stock_data")
                     # stock_data_tbl %>% plot_stock_data()
                 )
             )
@@ -77,16 +78,41 @@ ui <- fluidPage(
         ) 
     )
 )
-
+ 
 # SERVER ----
 server <- function(input, output, session) {
     
+    # stock symbol ----
     stock_symbol <- eventReactive(input$analyze, {
         get_symbol_from_user_input(input$stock_selection)
+    }, ignoreNULL = FALSE)
+    
+    output$selected_symbol <- renderPrint(stock_symbol())
+    
+    
+    # Plot Header ----
+    plot_header <- eventReactive(input$analyze, {
+        input$stock_selection
+    }, ignoreNULL = FALSE) 
+    
+    output$plot_header <- renderText({
+        plot_header() 
     })
     
-    output$selected_symbol <- renderText(stock_symbol())
+    # Get Stock Data ----
+    stock_data_tbl <- reactive({
+        stock_symbol() %>% get_stock_data(
+            from = today() - days(180), 
+            to = today(),
+            moving_avg_short = 20,
+            moving_avg_long = 50)
+    })
+    
+    # output$stock_data <- renderPrint(stock_data_tbl())
 }
+
 
 # RUN APP ----
 shinyApp(ui = ui, server = server)
+
+
