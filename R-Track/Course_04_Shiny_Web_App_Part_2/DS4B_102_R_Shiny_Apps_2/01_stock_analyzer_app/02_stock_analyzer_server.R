@@ -51,13 +51,14 @@ ui <- fluidPage(
                 actionButton(inputId = "analyze", label = "Analyze", icon = icon("download")),
                 verbatimTextOutput(outputId = "selected_symbol")
             )
-            
+             
         ),
         column(
             width = 8, 
             div(
                 div(h4(textOutput(outputId = "plot_header"))),
                 div(
+                    plotlyOutput(outputId = "plotly_plot")
                     # verbatimTextOutput(outputId = "stock_data")
                     # stock_data_tbl %>% plot_stock_data()
                 )
@@ -109,6 +110,12 @@ server <- function(input, output, session) {
     })
     
     # output$stock_data <- renderPrint(stock_data_tbl())
+    
+    # Plotly Plot ----
+    output$plotly_plot <- renderPlotly({
+        stock_data_tbl() %>% plot_stock_data()
+    })
+    
 }
 
 
