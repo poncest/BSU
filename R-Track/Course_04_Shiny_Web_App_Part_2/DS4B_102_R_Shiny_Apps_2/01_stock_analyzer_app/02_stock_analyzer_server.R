@@ -18,7 +18,6 @@ library(tidyverse)
 source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/stock_analysis_functions.R"))
 
 stock_list_tbl <- get_stock_list("SP500")
-# stock_data_tbl <- get_stock_data("AAPL", from = "2018-01-01", to = "2019-01-01")
 
 
 # UI ----
@@ -48,10 +47,8 @@ ui <- fluidPage(
                         size = 10
                     )
                 ),
-                actionButton(inputId = "analyze", label = "Analyze", icon = icon("download")),
-                verbatimTextOutput(outputId = "selected_symbol")
+                actionButton(inputId = "analyze", label = "Analyze", icon = icon("download"))
             )
-             
         ),
         column(
             width = 8, 
@@ -59,8 +56,6 @@ ui <- fluidPage(
                 div(h4(textOutput(outputId = "plot_header"))),
                 div(
                     plotlyOutput(outputId = "plotly_plot")
-                    # verbatimTextOutput(outputId = "stock_data")
-                    # stock_data_tbl %>% plot_stock_data()
                 )
             )
         )
@@ -73,13 +68,14 @@ ui <- fluidPage(
             div(
                 div(h4("Analyst Commentary")),
                 div(
-                    # stock_data_tbl %>% generate_commentary(user_input = "Placeholder")
+                    textOutput(outputId = "analyst_commentary")
+                    )
                 )
-            )
-        ) 
+            ) 
+        )
     )
-)
- 
+
+
 # SERVER ----
 server <- function(input, output, session) {
     
@@ -88,18 +84,12 @@ server <- function(input, output, session) {
         get_symbol_from_user_input(input$stock_selection)
     }, ignoreNULL = FALSE)
     
-    output$selected_symbol <- renderPrint(stock_symbol())
-    
-    
-    # Plot Header ----
-    plot_header <- eventReactive(input$analyze, {
+    # User Inpput ----
+    stock_selection_triggered <- eventReactive(input$analyze, {
         input$stock_selection
     }, ignoreNULL = FALSE) 
     
-    output$plot_header <- renderText({
-        plot_header() 
-    })
-    
+
     # Get Stock Data ----
     stock_data_tbl <- reactive({
         stock_symbol() %>% get_stock_data(
@@ -109,17 +99,31 @@ server <- function(input, output, session) {
             moving_avg_long = 50)
     })
     
-    # output$stock_data <- renderPrint(stock_data_tbl())
+
+    # Plot Header ----
+    output$plot_header <- renderText({
+        stock_selection_triggered() 
+    })
     
     # Plotly Plot ----
     output$plotly_plot <- renderPlotly({
         stock_data_tbl() %>% plot_stock_data()
     })
     
+    # Generate Commentary ----
+    
+    output$analyst_commentary <- renderText({
+        generate_commentary(data = stock_data_tbl(), user_input = stock_selection_triggered())
+        
+    })
 }
 
 
 # RUN APP ----
 shinyApp(ui = ui, server = server)
+
+
+
+
 
 
