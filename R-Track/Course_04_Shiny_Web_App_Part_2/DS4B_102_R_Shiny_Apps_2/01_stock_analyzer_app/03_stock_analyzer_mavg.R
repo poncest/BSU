@@ -47,7 +47,13 @@ ui <- fluidPage(
                         size = 10
                     )
                 ),
-                actionButton(inputId = "analyze", label = "Analyze", icon = icon("download"))
+                actionButton(inputId = "analyze", label = "Analyze", icon = icon("download")),
+                hr(),
+                sliderInput(inputId = "moving_avg_short", label = "Short Moving Average", 
+                            value = 20, min = 5, max = 40),
+                sliderInput(inputId = "moving_avg_long", label = "Long Moving Average", 
+                            value = 50, min = 50, max = 120)
+                # verbatimTextOutput(outputId = "slider_1")
             )
         ),
         column(
@@ -73,7 +79,7 @@ ui <- fluidPage(
                 )
             ) 
         )
-    )
+    ) 
 
 
 # SERVER ----
@@ -84,22 +90,23 @@ server <- function(input, output, session) {
         get_symbol_from_user_input(input$stock_selection)
     }, ignoreNULL = FALSE)
     
-    # User Inpput ----
+    # User Input ----
     stock_selection_triggered <- eventReactive(input$analyze, {
         input$stock_selection
     }, ignoreNULL = FALSE) 
+    
+   # output$slider_1 <- renderPrint(input$moving_avg_short)
     
 
     # Get Stock Data ----
     stock_data_tbl <- reactive({
         stock_symbol() %>% get_stock_data(
             from = today() - days(180), 
-            to = today(),
-            moving_avg_short = 20,
-            moving_avg_long = 50)
-    }) 
+            to   = today(),
+            moving_avg_short = input$moving_avg_short,
+            moving_avg_long  = input$moving_avg_long                         )
+    })
     
-
     # Plot Header ----
     output$plot_header <- renderText({
         stock_selection_triggered() 
@@ -111,7 +118,6 @@ server <- function(input, output, session) {
     })
     
     # Generate Commentary ----
-    
     output$analyst_commentary <- renderText({
         generate_commentary(data = stock_data_tbl(), user_input = stock_selection_triggered())
         
