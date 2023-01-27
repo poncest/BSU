@@ -23,20 +23,20 @@ ui <- shiny::fluidPage(
         
         p(class = "lead",  
           "This cheat sheet is the first of the", 
-          "Expert Shiny Application Development Course",
-          "by Business Science")
+          a(href   = "https://university.business-science.io/",
+            target = "_blank", "Expert Shiny Application Development Course"),
+          "by Business Science"
+         ),
         
+        ### 1.0 BOOTSTRAP GRID SYSTEM ----
+        h2("1.0 Boostrap Grid System"),
         
-        # HTML format
-        # HTML(
-        #     '<h1 class = "page-header">
-        #         Bootstrap Cheat Sheet
-        #         <small>For Shiny</small>
-        #         </h1>)'
-        # )
+        div(
+            class = "container text-center",
+            "Placeholder" 
+        )
         
-    )
-    
+       )
     )
 
 
