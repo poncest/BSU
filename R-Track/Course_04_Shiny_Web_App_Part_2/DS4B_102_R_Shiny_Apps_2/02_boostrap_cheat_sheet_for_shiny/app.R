@@ -33,10 +33,17 @@ ui <- shiny::fluidPage(
         
         div(
             class = "container text-center",
-            "Placeholder" 
+            fluidRow(
+                column(width = 4, class = "bg-primary", p("Grid width 4")),
+                column(width = 4, class = "bg-warning", p("Grid width 4")),
+                column(width = 4, class = "bg-danger", p("Grid width 4"))
+            ),
+            fluidRow(
+                column(width = 3, class = "bg-primary", p("Grid width 3")),
+                column(width = 9, class = "bg-warning", p("Grid width 9"))
+            )
         )
-        
-       )
+      )
     )
 
 
