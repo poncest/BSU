@@ -42,9 +42,23 @@ ui <- shiny::fluidPage(
                 column(width = 3, class = "bg-primary", p("Grid width 3")),
                 column(width = 9, class = "bg-warning", p("Grid width 9"))
             )
+        ),
+        
+        hr(),
+        
+        ### 2.0 WORKING WITH TEXT ----
+        h2("2.0 Working With Text"),
+        p(class = "lead", "Business Science University help us learn Shiny"),
+        p("We are creating a Boostrap for Shiny cheat sheet"),
+        p(strong("In section 1"), "we learn about the", strong(em("Boostrap Grid System."))),
+        
+        
+        div(style = "height: 400px;"),
+        
+            
         )
       )
-    )
+    
 
 
 # SERVER ----
