@@ -52,6 +52,7 @@ ui <- shiny::fluidPage(
         p("We are creating a Boostrap for Shiny cheat sheet"),
         p(strong("In section 1"), "we learn about the", strong(em("Boostrap Grid System."))),
         
+        p(tags$mark("In Section 2, "), ", we learned about working with text in", code("Boostrap"), "."),
         
         div(style = "height: 400px;"),
         
