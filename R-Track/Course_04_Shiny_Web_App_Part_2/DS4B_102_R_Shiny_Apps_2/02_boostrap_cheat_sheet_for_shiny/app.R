@@ -48,14 +48,27 @@ ui <- shiny::fluidPage(
         
         ### 2.0 WORKING WITH TEXT ----
         h2("2.0 Working With Text"),
-        p(class = "lead", "Business Science University help us learn Shiny"),
-        p("We are creating a Boostrap for Shiny cheat sheet"),
-        p(strong("In section 1"), "we learn about the", strong(em("Boostrap Grid System."))),
         
-        p(tags$mark("In Section 2, "), ", we learned about working with text in", code("Boostrap"), "."),
+        p(class = "lead", "Business Science University help us learn Shiny"),
+        
+        fluidRow(
+            column(width = 6,
+                   p("We are creating a Boostrap for Shiny cheat sheet"),
+                   p(strong("In section 1"), "we learn about the", strong(em("Boostrap Grid System."))),
+                   p(tags$mark("In Section 2, "), ", we learned about working with text in", code("Boostrap"), "."),
+                   
+                   ),
+            column(width = 6,
+                   tags$blockquote(
+                       class = "blockquote-reverse", 
+                       p("Learning data sicience, consistency is more important that quantity."),
+                       
+                       tags$footer("Quote by", tags$cite(title = "Matt Dancho", "Matt Dancho"))
+                   )
+             )
+        ),
         
         div(style = "height: 400px;"),
-        
             
         )
       )
