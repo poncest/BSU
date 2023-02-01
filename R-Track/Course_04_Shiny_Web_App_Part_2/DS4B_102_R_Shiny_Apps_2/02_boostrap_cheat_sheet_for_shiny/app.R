@@ -68,6 +68,20 @@ ui <- shiny::fluidPage(
              )
         ),
         
+        hr(),
+        
+        ### 3.0 TEXT ALIGNMENT ----
+        h2("3.0 Text Alignment"),
+        
+        div(
+            class = "container", 
+            id    = "text_alignment",
+            p(class = "text_left text-lowercase", "Left-aligned Lowercase Text"),
+            p(class = "text-center text-uppercase", "Center-aligned Uppercase Text"),
+            p(class = "text-right text-capitalized", "Right-aligned capitalized Text")
+        ), 
+        
+        
         div(style = "height: 400px;"),
             
         )
