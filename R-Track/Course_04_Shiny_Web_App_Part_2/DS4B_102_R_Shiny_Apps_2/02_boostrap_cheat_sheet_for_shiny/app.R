@@ -75,12 +75,24 @@ ui <- shiny::fluidPage(
         
         div(
             class = "container", 
-            id    = "text_alignment",
+            id    = "text_alignment_1",
             p(class = "text_left text-lowercase", "Left-aligned Lowercase Text"),
             p(class = "text-center text-uppercase", "Center-aligned Uppercase Text"),
             p(class = "text-right text-capitalized", "Right-aligned capitalized Text")
         ), 
         
+        div(
+            class = "container", 
+            id    = "text_alignment_2",
+            fluidRow(
+                p(class = "text_left text-lowercase", "Left-aligned Lowercase Text") %>% 
+                    column(width = 4, class = "bg-primary"),
+                p(class = "text-center text-uppercase", "Center-aligned Uppercase Text") %>% 
+                    column(width = 4, class = "bg-success"),
+                p(class = "text-right text-capitalized", "Right-aligned capitalized Text") %>% 
+                    column(width = 4, class = "bg-info")
+            )  
+        ), 
         
         div(style = "height: 400px;"),
             
