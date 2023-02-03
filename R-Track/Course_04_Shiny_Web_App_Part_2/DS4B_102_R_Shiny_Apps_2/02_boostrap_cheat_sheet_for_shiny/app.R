@@ -94,6 +94,34 @@ ui <- shiny::fluidPage(
             )  
         ), 
         
+        hr(),
+        
+        ### 4.0 LISTS ----
+        h2("4.0 Lists"),
+        
+        tags$ul(
+            tags$li("Item 1"),
+            tags$li("Item 2"),
+            tags$li("Item 3"),
+            tags$li("Item 4")
+        ),
+        
+        tags$ol(
+            tags$li("Item 1"),
+            tags$li("Item 2"),
+            tags$li("Item 3"),
+            tags$li("Item 4")
+        ),
+        
+        tags$ul(
+            class = "list-inline", 
+            tags$li("Item 1"),
+            tags$li("Item 2"),
+            tags$li("Item 3"),
+            tags$li("Item 4")
+        ),
+        
+        
         div(style = "height: 400px;"),
             
         )
