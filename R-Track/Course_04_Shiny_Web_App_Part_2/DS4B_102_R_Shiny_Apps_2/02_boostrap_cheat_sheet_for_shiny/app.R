@@ -121,6 +121,22 @@ ui <- shiny::fluidPage(
             tags$li("Item 4")
         ),
         
+        hr(),
+        
+        ### 5.0 CONTEXTUAL COLORS & BACKGROUNDS ----
+        h2("5.0 Contextual Colors & Background"),
+        
+        p(class = "text-primary", "Hello R"),
+        p(class = "text-success", "Hello R"),
+        p(class = "text-info", "Hello R"),
+        p(class = "text-warning", "Hello R"),
+        p(class = "text-danger", "Hello R"),
+        
+        p(class = "bg-primary", "Hello R"),
+        p(class = "bg-success", "Hello R"),
+        p(class = "bg-info", "Hello R"),
+        p(class = "bg-warning", "Hello R"),
+        p(class = "bg-danger", "Hello R"),
         
         div(style = "height: 400px;"),
             
