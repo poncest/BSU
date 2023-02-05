@@ -138,7 +138,37 @@ ui <- shiny::fluidPage(
         p(class = "bg-warning", "Hello R"),
         p(class = "bg-danger", "Hello R"),
         
-        div(style = "height: 400px;"),
+        hr(),
+        
+        ### 6.0 BUTTONS ----
+        h2("6.0 Buttons"),
+       
+        h3("Contextual Buttons"),
+        div(
+            class = "container",
+            a(href = "https://www.business-science.io/", class = "btn btn-default", "Go to Business Science"),
+            a(href = "https://www.business-science.io/", class = "btn btn-primary", "Go to Business Science"),
+            a(href = "https://www.business-science.io/", class = "btn btn-success", "Go to Business Science"),
+            a(href = "https://www.business-science.io/", class = "btn btn-warning", "Go to Business Science"),
+            a(href = "https://www.business-science.io/", class = "btn btn-danger", "Go to Business Science"),
+            a(href = "https://www.business-science.io/", class = "btn btn-info", "Go to Business Science")
+        ),
+       
+        br(),
+        
+        h3("Sizing Buttons"),
+        div(
+            class = "container",
+            a(href = "https://www.business-science.io/", class = "btn btn-default btn-lg", "Go to Business Science"),
+            a(href = "https://www.business-science.io/", class = "btn btn-primary btn-md", "Go to Business Science"),
+            a(href = "https://www.business-science.io/", class = "btn btn-success btn-sm", "Go to Business Science"),
+            a(href = "https://www.business-science.io/", class = "btn btn-warning btn-xs", "Go to Business Science")
+        ),
+        
+        
+    
+    
+        div(style = "height: 400px;")
             
         )
       )
