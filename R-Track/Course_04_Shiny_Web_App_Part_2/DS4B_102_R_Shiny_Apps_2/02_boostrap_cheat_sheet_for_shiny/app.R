@@ -143,7 +143,7 @@ ui <- shiny::fluidPage(
         ### 6.0 BUTTONS ----
         h2("6.0 Buttons"),
        
-        h3("Contextual Buttons"),
+        h3("a. Contextual Buttons"),
         div(
             class = "container",
             a(href = "https://www.business-science.io/", class = "btn btn-default", "Go to Business Science"),
@@ -156,7 +156,7 @@ ui <- shiny::fluidPage(
        
         br(),
         
-        h3("Sizing Buttons"),
+        h3("b. Sizing Buttons"),
         div(
             class = "container",
             a(href = "https://www.business-science.io/", class = "btn btn-default btn-lg", "Go to Business Science"),
@@ -165,7 +165,18 @@ ui <- shiny::fluidPage(
             a(href = "https://www.business-science.io/", class = "btn btn-warning btn-xs", "Go to Business Science")
         ),
         
+        br(),
         
+        h3("c. Shiny Buttons"),
+        div(
+            class = "container",
+            shiny::actionButton(
+                inputId = "btn_1", 
+                label   = "Shiny Button - Click Me!",
+                class   = "btn-primary btn lg", 
+                icon    = icon("sync", class = "fa-1x", lib = "font-awesome")),
+            
+        ),
     
     
         div(style = "height: 400px;")
