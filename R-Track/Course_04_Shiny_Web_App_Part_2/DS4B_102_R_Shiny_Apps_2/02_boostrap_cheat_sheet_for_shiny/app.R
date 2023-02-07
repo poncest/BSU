@@ -176,18 +176,32 @@ ui <- shiny::fluidPage(
                 class   = "btn-primary btn lg", 
                 icon    = icon("sync", class = "fa-1x", lib = "font-awesome")),
             
+            shiny::textOutput(outputId = "btn_1_txt")
+            
         ),
     
     
         div(style = "height: 400px;")
             
-        )
+        ) 
       )
     
 
 
 # SERVER ----
 server <- function(input, output, session) {
+    
+    counter <<- 0
+    btn_1_click <- eventReactive(input$btn_1, {
+        TRUE
+        counter <<- counter + 1
+    })
+    
+    output$btn_1_txt <- renderText({
+        if(btn_1_click()) {
+            str_glue("You click me {counter} times!")
+        } 
+    })
      
 }
 
