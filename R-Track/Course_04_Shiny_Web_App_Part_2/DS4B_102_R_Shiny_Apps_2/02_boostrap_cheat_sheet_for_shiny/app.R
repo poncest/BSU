@@ -179,6 +179,25 @@ ui <- shiny::fluidPage(
             shiny::textOutput(outputId = "btn_1_txt")
             
         ),
+        
+        hr(),
+        
+        ### 7.0 IMAGES ----
+        h2("7.0 Images"),
+        div(
+            class = "container",
+            column(width = 4, 
+                   img(class = "thumbnail img-responsive", src = "business-science-logo.png", style = "width:200px")),
+            
+            column(width = 4,
+                   img(class = "img-rounded img-responsive", src = "business-science-logo.png", style = "width:200px")),
+            
+            column(width = 4,
+                   img(class = "img-circle img-responsive", src = "matt-pic.jpg", style = "width:200px"))
+        ),
+        
+        
+        
     
     
         div(style = "height: 400px;")
