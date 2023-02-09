@@ -197,7 +197,8 @@ ui <- shiny::fluidPage(
         ),
         
         
-        
+        ### 7.0 IMAGES ----
+        h2("7.0 Images"),
     
     
         div(style = "height: 400px;")
