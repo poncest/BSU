@@ -196,9 +196,44 @@ ui <- shiny::fluidPage(
                    img(class = "img-circle img-responsive", src = "matt-pic.jpg", style = "width:200px"))
         ),
         
+        hr(),
         
-        ### 7.0 IMAGES ----
-        h2("7.0 Images"),
+        ### 8.0 THUMNAILS ----
+        h2("8.0 Thumbnails"),
+        fluidRow(
+            column(width = 4,
+                   div(
+                       class = "thumbnail text-center",
+                       style = "paddding: 20px",
+                       img(class = "img-rounded img-responsive", src = "matt-pic.jpg"),
+                       h3("Thumbnail Label"),
+                       p("Text about this thumbnail"),
+                       a(class = "btn btn-primary btn-sm", href = "#", "Learn More")
+                   )
+               ), 
+            column(width = 4,
+                   div(
+                       class = "thumbnail text-center",
+                       style = "paddding: 20px",
+                       img(class = "img-rounded img-responsive", src = "matt-pic.jpg"),
+                       h3("Thumbnail Label"),
+                       p("Text about this thumbnail"),
+                       a(class = "btn btn-primary btn-sm", href = "#", "Learn More")
+                   )
+            ),
+            column(width = 4,
+                   div(
+                       class = "thumbnail text-center",
+                       style = "paddding: 20px",
+                       img(class = "img-rounded img-responsive", src = "matt-pic.jpg"),
+                       h3("Thumbnail Label"),
+                       p("Text about this thumbnail"),
+                       a(class = "btn btn-primary btn-sm", href = "#", "Learn More")
+                   )
+            ),
+        ),
+        
+        
     
     
         div(style = "height: 400px;")
