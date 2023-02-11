@@ -234,6 +234,12 @@ ui <- shiny::fluidPage(
         ),
         
         
+        hr(),
+        
+        ### 9.0 NAVBARS ----
+        h2("9.0 Navbars"),
+        navbarPage(title = "Business Science", inverse = TRUE, collapsible = TRUE),
+        
     
     
         div(style = "height: 400px;")
