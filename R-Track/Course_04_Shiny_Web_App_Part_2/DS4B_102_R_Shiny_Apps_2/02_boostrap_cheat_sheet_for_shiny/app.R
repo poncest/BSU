@@ -235,10 +235,19 @@ ui <- shiny::fluidPage(
         
         
         hr(),
-        
+         
         ### 9.0 NAVBARS ----
         h2("9.0 Navbars"),
-        navbarPage(title = "Business Science", inverse = TRUE, collapsible = TRUE),
+        navbarPage(title = "Business Science", inverse = TRUE, collapsible = TRUE,
+                   tabPanel(title = "What is Shiny?", value = "page_1",
+                            h1("What is Shiny?", tags$small("A Framework for Building Web Apps with R")),
+                            p("All of the cool feastures of shiny")
+                   ),
+                   tabPanel(title = "What is Boostrap?", value = "page_2",
+                            h2("What is Boostrap?", tags$small("A Web Framework that Extends HTML and CSS")),
+                            p("All of the cool feastures of boostrap")
+                   )    
+        ),
         
     
     
