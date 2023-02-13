@@ -246,10 +246,15 @@ ui <- shiny::fluidPage(
                    tabPanel(title = "What is Boostrap?", value = "page_2",
                             h2("What is Boostrap?", tags$small("A Web Framework that Extends HTML and CSS")),
                             p("All of the cool feastures of boostrap")
-                   )    
+                   ),
+                   navbarMenu(title = "Using Shiny and Booststrap", 
+                              tabPanel(title = "Make Plots"),
+                              tabPanel(title = "Add Shiny Components"),
+                              "-----",
+                              tabPanel(title = "More Info")
+                              )
         ),
         
-    
     
         div(style = "height: 400px;")
             
