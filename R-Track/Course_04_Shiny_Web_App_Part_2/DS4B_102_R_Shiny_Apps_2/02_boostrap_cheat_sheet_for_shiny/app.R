@@ -271,7 +271,16 @@ ui <- shiny::fluidPage(
         
         h3("Pills"),
         tabsetPanel(
-            id = "tabset_1", type = 'pills', 
+            id = "tabset_2", type = 'pills', 
+            tabPanel(title = "Shiny", h3("What is Shiny?"), p("Shiny is awesome")),
+            tabPanel(title = "Boostrap", h3("What is Boostrap?"), p("Boostrap is awesome")),
+        ),
+        
+        br(),
+        
+        h3("Navlist Panel"),
+        navlistPanel(
+            id = "navlist_1", 
             tabPanel(title = "Shiny", h3("What is Shiny?"), p("Shiny is awesome")),
             tabPanel(title = "Boostrap", h3("What is Boostrap?"), p("Boostrap is awesome")),
         ),
