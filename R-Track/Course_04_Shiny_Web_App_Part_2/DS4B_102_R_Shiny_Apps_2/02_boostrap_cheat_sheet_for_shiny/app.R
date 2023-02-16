@@ -285,6 +285,21 @@ ui <- shiny::fluidPage(
             tabPanel(title = "Boostrap", h3("What is Boostrap?"), p("Boostrap is awesome")),
         ),
         
+        hr(),
+        
+        ### 11.0 SIDEBAR LAYOUT ----
+        h2("11.0 Sidebar Layout"),
+        
+        sidebarLayout(
+            sidebarPanel = sidebarPanel(
+                width = 3,
+                p("UI Elements Go Here"), 
+                shiny::dateRangeInput(inputId = "date_range_1", label = "Enter a Date Range")
+                ),
+            mainPanel = mainPanel("Plot Elements and Analysis Go Here", width = 9),
+            ),
+        
+        
     
         div(style = "height: 400px;")
             
