@@ -299,6 +299,17 @@ ui <- shiny::fluidPage(
             mainPanel = mainPanel("Plot Elements and Analysis Go Here", width = 9),
             ),
         
+        hr(),
+        
+        ### 12.0 JUMBOTRON ----
+        h2("12.0 Jumbotron"),
+        
+        div(
+            class = "jumbotron", 
+            h1("Learning Shiny"),
+            p("It's your solution for building web applications with ", code("R")),
+            "Learn More" %>% a(class ="btn btn-lg btn-primary", href = "#") %>% p()
+        ),  
         
     
         div(style = "height: 400px;")
