@@ -306,10 +306,35 @@ ui <- shiny::fluidPage(
         
         div(
             class = "jumbotron", 
-            h1("Learning Shiny"),
-            p("It's your solution for building web applications with ", code("R")),
-            "Learn More" %>% a(class ="btn btn-lg btn-primary", href = "#") %>% p()
+            #style = "background:url('business-science-logo.png');background-size:cover;",
+            div(
+                lass = "container",
+                style = "background-color:#9999999c",
+                h1("Learning Shiny"),
+                p("It's your solution for building web applications with ", code("R")),
+                "Learn More" %>% a(class ="btn btn-lg btn-primary", href = "#") %>% p()
+            )
         ),  
+        
+        hr(),
+        
+        ### 13.0 PANELS ----
+        h2("13.0 Panels"),
+        div(
+            class = "panel panel-default",
+            div(
+                class = "panel-heading",
+                h3("Chart Title")
+            ),
+            div(
+                class = "panel-body",
+                p("Insert Chart"),
+            ),
+            div(
+                class = "panel-footer",
+                p("Footer") %>% tags$small()
+            )
+        ),
         
     
         div(style = "height: 400px;")
