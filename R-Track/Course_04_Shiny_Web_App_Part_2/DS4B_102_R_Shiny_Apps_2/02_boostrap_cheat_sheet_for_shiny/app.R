@@ -321,18 +321,20 @@ ui <- shiny::fluidPage(
         ### 13.0 PANELS ----
         h2("13.0 Panels"),
         div(
-            class = "panel panel-default",
+            class = "panel panel-primary",
             div(
                 class = "panel-heading",
-                h3("Chart Title")
+                h3("Chart Title - Scatterplot of MPG vs. Wt.")
             ),
             div(
-                class = "panel-body",
+                class = "panel-body bg-info",
                 p("Insert Chart"),
+                plotlyOutput(outputId = "mtcars"),
             ),
             div(
-                class = "panel-footer",
-                p("Footer") %>% tags$small()
+                class = "panel-footer bg-info",
+                style = "background-color: #d9edf7;",
+                p("Footer - Caption: This is a plot of vehicle weight vs. fuel efficiency") %>% tags$small()
             )
         ),
         
@@ -357,6 +359,15 @@ server <- function(input, output, session) {
         if(btn_1_click()) {
             str_glue("You click me {counter} times!")
         } 
+    })
+    
+    # Plot mtcars
+    output$mtcars <- renderPlotly({
+        g <- mtcars %>% 
+            ggplot(aes(wt, mpg)) +
+            geom_point()
+        
+        ggplotly(g)
     })
      
 }
