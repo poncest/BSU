@@ -338,7 +338,31 @@ ui <- shiny::fluidPage(
             )
         ),
         
-    
+        hr(),
+        
+        ### 14.0 MOBILE ----
+        h2("14.0 Mobile"),
+
+        fluidRow(
+            class = "hidden-xs",
+            div(
+                class="jumbotron", 
+                h1("Learning Shiny"),
+                p("lead", "Will help you distribute interactive data products"),
+                a(class = "btn bt-primary, btn-lg", href = "#", "Learn more")
+                )
+             ),
+        
+        fluidRow(
+            class = "hidden-sm hidden-md hidden-lg",
+            div(
+                class = "thumbnail text-center",
+                img(class = "img-responsive", style = "width:200px;", src = "business-science-logo.png"),
+                h3("Learning Shiny"),
+                p(class = "lead", "Will help you distribute interactive data products."),
+                a(class = "btn btn-primary btn-sm", href = "#", "Learn more")
+            )
+        ),
         div(style = "height: 400px;")
             
         ) 
