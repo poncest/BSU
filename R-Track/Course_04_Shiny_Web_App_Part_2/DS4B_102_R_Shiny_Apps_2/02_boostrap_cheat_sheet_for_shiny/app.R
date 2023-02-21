@@ -4,7 +4,7 @@
 
 # LIBRARIES ----
 library(pacman)
-p_load(shiny, tidyverse, plotly)
+p_load(shiny, tidyverse, plotly, shinythemes)
 
 
 # USER INTERFACE ----
@@ -363,6 +363,24 @@ ui <- shiny::fluidPage(
                 a(class = "btn btn-primary btn-sm", href = "#", "Learn more")
             )
         ),
+        
+        hr(),
+        
+        ### 15.0 CSS & THEME ----
+        h2("15.0 CSS & Theme"),
+        
+        fluidPage(
+            # theme = shinytheme("flatly"),
+            # themeSelector()  # good for testing
+            
+            # using 'sketchy theme from bootswatch (https://bootswatch.com/sketchy/)
+            tags$head(
+                 tags$link(rel = "stylesheet", type = "text/css", href = "bootstrap.min.css"),
+                #tags$link(rel = "stylesheet", type = "text/css", href = "my_styles.css")
+                     )
+            ),
+        
+        
         div(style = "height: 400px;")
             
         ) 
