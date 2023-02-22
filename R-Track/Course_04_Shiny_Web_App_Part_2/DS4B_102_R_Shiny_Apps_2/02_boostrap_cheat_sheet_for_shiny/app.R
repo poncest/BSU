@@ -204,7 +204,7 @@ ui <- shiny::fluidPage(
             column(width = 4,
                    div(
                        class = "thumbnail text-center",
-                       style = "paddding: 20px",
+                       #style = "paddding: 20px",
                        img(class = "img-rounded img-responsive", src = "matt-pic.jpg"),
                        h3("Thumbnail Label"),
                        p("Text about this thumbnail"),
@@ -214,7 +214,7 @@ ui <- shiny::fluidPage(
             column(width = 4,
                    div(
                        class = "thumbnail text-center",
-                       style = "paddding: 20px",
+                       #style = "paddding: 20px",
                        img(class = "img-rounded img-responsive", src = "matt-pic.jpg"),
                        h3("Thumbnail Label"),
                        p("Text about this thumbnail"),
@@ -370,13 +370,13 @@ ui <- shiny::fluidPage(
         h2("15.0 CSS & Theme"),
         
         fluidPage(
-            # theme = shinytheme("flatly"),
+            theme = shinytheme("flatly"),
             # themeSelector()  # good for testing
             
             # using 'sketchy theme from bootswatch (https://bootswatch.com/sketchy/)
             tags$head(
-                 tags$link(rel = "stylesheet", type = "text/css", href = "bootstrap.min.css"),
-                #tags$link(rel = "stylesheet", type = "text/css", href = "my_styles.css")
+                # tags$link(rel = "stylesheet", type = "text/css", href = "bootstrap.min.css"),
+                tags$link(rel = "stylesheet", type = "text/css", href = "my_styles.css")
                      )
             ),
         
