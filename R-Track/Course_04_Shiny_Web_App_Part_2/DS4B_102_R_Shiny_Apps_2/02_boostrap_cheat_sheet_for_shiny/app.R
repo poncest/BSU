@@ -5,6 +5,7 @@
 # LIBRARIES ----
 library(pacman)
 p_load(shiny, tidyverse, plotly, shinythemes)
+p_load(shinyjs, DT)
 
 
 # USER INTERFACE ----
@@ -379,6 +380,13 @@ ui <- shiny::fluidPage(
                 tags$link(rel = "stylesheet", type = "text/css", href = "my_styles.css")
                      )
             ),
+        
+        hr(),
+        
+        ### 16.0 JAVASCRIPT ----
+        h2("16.0 JavaScript (ShinyJS"),
+        
+       useShinyjs(),
         
         
         div(style = "height: 400px;")
