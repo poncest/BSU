@@ -387,6 +387,40 @@ ui <- shiny::fluidPage(
         h2("16.0 JavaScript (ShinyJS"),
         
        useShinyjs(),
+       fluidRow(
+           column(
+               width = 4,
+               class = "well",
+               
+               # Toggle Button
+               shiny::actionButton(inputId = "toggle_form", label = "Toggle Form"),
+               
+               # Controls
+               div(
+                   id = 'controls',
+                   br(),
+                   shiny::textInput(inputId = "first_name", label = "First Name", placeholder = "Enter your first name"),
+                   shiny::textInput(inputId = "email", label = "Email", placeholder = "Enter your email"),
+                   shiny::actionButton(inputId = "submit_form", label = "Submit")
+               ) %>% shinyjs::hidden(),
+               
+               # Thank You
+               div(
+                   id = "thank_you",
+                   br(),
+                   div(
+                       class = "alert alert-success",
+                       role  = "alert",
+                       p("Thank you!", shiny::actionButton(inputId = "close_alert", label = "X", class = "pull-right btn-xs"))
+                   )
+               )%>% shinyjs::hidden()
+               
+           ),
+           column(
+               width = 8,
+               p("Placeholder for DT")
+           )
+       ),
         
         
         div(style = "height: 400px;")
