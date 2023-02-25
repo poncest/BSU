@@ -453,6 +453,21 @@ server <- function(input, output, session) {
         
         ggplotly(g)
     })
+    
+    # 16.0 ShinyJS ----
+    
+    # toggle form
+    shinyjs::onclick(id = "toggle_form", {
+        shinyjs::toggle(id = "controls", anim = TRUE)
+    })
+    
+    # submit button
+    observe({
+        shinyjs::toggleState(id = "submit_form", condition = {
+            !(input$first_name == "") && !(input$email == "")
+        })
+    })
+    
      
 }
 
