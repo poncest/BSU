@@ -5,7 +5,7 @@
 # LIBRARIES ----
 library(pacman)
 p_load(shiny, tidyverse, plotly, shinythemes)
-p_load(shinyjs, DT)
+p_load(shinyjs, DT, lubridate)
 
 
 # USER INTERFACE ----
@@ -414,12 +414,12 @@ ui <- shiny::fluidPage(
                        p("Thank you!", shiny::actionButton(inputId = "close_alert", label = "X", class = "pull-right btn-xs"))
                    )
                )%>% shinyjs::hidden()
-               
+                                                  
            ),
            column(
                width = 8,
-               p("Placeholder for DT")
-           )
+               DTOutput(outputId = "new_user_dt")
+           ) 
        ),
         
         
@@ -468,6 +468,17 @@ server <- function(input, output, session) {
         })
     })
     
+    new_user_tbl <- eventReactive(eventExpr = input$submit_form, {
+        new_user_tbl <- tibble(
+            first_name = input$first_name,
+            email      = input$email,
+            timestamp  = lubridate::now()
+        )
+    })
+    
+    output$new_user_dt <- renderDataTable({
+        new_user_tbl() %>% datatable()
+    })
      
 }
 
