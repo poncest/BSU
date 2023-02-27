@@ -29,7 +29,31 @@ ui <- shiny::fluidPage(
           "by Business Science"
          ),
         
+        # TOC ----
+        h2("Table of Content"),
+        tags$ul(
+            tags$li("1.0 Boostrap Grid System" %>% a(href = "#section_01")),  
+            tags$li("2.0 Working With Text"), 
+            tags$li("3.0 Text Alignment"), 
+            tags$li("4.0 Lists"), 
+            tags$li("5.0 Contextual Colors & Background"), 
+            tags$li("6.0 Buttons"), 
+            tags$li("7.0 Images"), 
+            tags$li("8.0 Thumbnails"), 
+            tags$li("9.0 Navbars"), 
+            tags$li("10.0 Navs"), 
+            tags$li("11.0 Sidebar Layout"), 
+            tags$li("12.0 Jumbotron"), 
+            tags$li("13.0 Panels"), 
+            tags$li("14.0 Mobile"), 
+            tags$li("15.0 CSS & Theme"), 
+            tags$li("16.0 JavaScript (ShinyJS)"), 
+        ),
+        
+        # TODO - add: (1) %>% a(href = "#section_01"), and (2) div(id = 'section_01'), to all sections
+        
         ### 1.0 BOOTSTRAP GRID SYSTEM ----
+        div(id = 'section_01'),
         h2("1.0 Boostrap Grid System"),
         
         div(
@@ -384,7 +408,7 @@ ui <- shiny::fluidPage(
         hr(),
         
         ### 16.0 JAVASCRIPT ----
-        h2("16.0 JavaScript (ShinyJS"),
+        h2("16.0 JavaScript (ShinyJS)"),
         
        useShinyjs(),
        fluidRow(
@@ -479,7 +503,17 @@ server <- function(input, output, session) {
     output$new_user_dt <- renderDataTable({
         new_user_tbl() %>% datatable()
     })
-     
+    
+    # show thank you
+    observeEvent(eventExpr = input$submit_form, {
+        shinyjs::toggle(id = "thank_you", anim = TRUE, animType = "fade", time = 0.25)
+    })
+    
+    # hide thank you
+    shinyjs::onclick(id = "close_alert", {
+        shinyjs::toggle(id = "thank_you", anim = TRUE, animType = "fade", time = 0.25)
+    })
 }
 
 shinyApp(ui = ui, server = server)
+
