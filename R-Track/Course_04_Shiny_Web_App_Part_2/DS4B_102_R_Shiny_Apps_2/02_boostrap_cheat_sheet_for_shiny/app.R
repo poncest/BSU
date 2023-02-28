@@ -33,21 +33,21 @@ ui <- shiny::fluidPage(
         h2("Table of Content"),
         tags$ul(
             tags$li("1.0 Boostrap Grid System" %>% a(href = "#section_01")),  
-            tags$li("2.0 Working With Text"), 
-            tags$li("3.0 Text Alignment"), 
-            tags$li("4.0 Lists"), 
-            tags$li("5.0 Contextual Colors & Background"), 
-            tags$li("6.0 Buttons"), 
-            tags$li("7.0 Images"), 
-            tags$li("8.0 Thumbnails"), 
-            tags$li("9.0 Navbars"), 
-            tags$li("10.0 Navs"), 
-            tags$li("11.0 Sidebar Layout"), 
-            tags$li("12.0 Jumbotron"), 
-            tags$li("13.0 Panels"), 
-            tags$li("14.0 Mobile"), 
-            tags$li("15.0 CSS & Theme"), 
-            tags$li("16.0 JavaScript (ShinyJS)"), 
+            tags$li("2.0 Working With Text" %>% a(href = "#section_02")), 
+            tags$li("3.0 Text Alignment" %>% a(href = "#section_03")), 
+            tags$li("4.0 Lists" %>% a(href = "#section_04")), 
+            tags$li("5.0 Contextual Colors & Background" %>% a(href = "#section_05")), 
+            tags$li("6.0 Buttons" %>% a(href = "#section_06")), 
+            tags$li("7.0 Images" %>% a(href = "#section_07")), 
+            tags$li("8.0 Thumbnails" %>% a(href = "#section_08")), 
+            tags$li("9.0 Navbars" %>% a(href = "#section_09")), 
+            tags$li("10.0 Navs" %>% a(href = "#section_10")), 
+            tags$li("11.0 Sidebar Layout" %>% a(href = "#section_11")), 
+            tags$li("12.0 Jumbotron" %>% a(href = "#section_12")), 
+            tags$li("13.0 Panels" %>% a(href = "#section_12")), 
+            tags$li("14.0 Mobile" %>% a(href = "#section_13")), 
+            tags$li("15.0 CSS & Theme" %>% a(href = "#section_15")), 
+            tags$li("16.0 JavaScript (ShinyJS)" %>% a(href = "#section_16")), 
         ),
         
         # TODO - add: (1) %>% a(href = "#section_01"), and (2) div(id = 'section_01'), to all sections
@@ -72,6 +72,7 @@ ui <- shiny::fluidPage(
         hr(),
         
         ### 2.0 WORKING WITH TEXT ----
+        div(id = 'section_02'),
         h2("2.0 Working With Text"),
         
         p(class = "lead", "Business Science University help us learn Shiny"),
@@ -96,6 +97,7 @@ ui <- shiny::fluidPage(
         hr(),
         
         ### 3.0 TEXT ALIGNMENT ----
+        div(id = 'section_03'),
         h2("3.0 Text Alignment"),
         
         div(
@@ -122,6 +124,7 @@ ui <- shiny::fluidPage(
         hr(),
         
         ### 4.0 LISTS ----
+        div(id = 'section_04'),
         h2("4.0 Lists"),
         
         tags$ul(
@@ -149,6 +152,7 @@ ui <- shiny::fluidPage(
         hr(),
         
         ### 5.0 CONTEXTUAL COLORS & BACKGROUNDS ----
+        div(id = 'section_05'),
         h2("5.0 Contextual Colors & Background"),
         
         p(class = "text-primary", "Hello R"),
@@ -166,6 +170,7 @@ ui <- shiny::fluidPage(
         hr(),
         
         ### 6.0 BUTTONS ----
+        div(id = 'section_06'),
         h2("6.0 Buttons"),
        
         h3("a. Contextual Buttons"),
@@ -208,6 +213,7 @@ ui <- shiny::fluidPage(
         hr(),
         
         ### 7.0 IMAGES ----
+        div(id = 'section_07'),
         h2("7.0 Images"),
         div(
             class = "container",
@@ -224,6 +230,7 @@ ui <- shiny::fluidPage(
         hr(),
         
         ### 8.0 THUMNAILS ----
+        div(id = 'section_08'),
         h2("8.0 Thumbnails"),
         fluidRow(
             column(width = 4,
@@ -262,6 +269,7 @@ ui <- shiny::fluidPage(
         hr(),
          
         ### 9.0 NAVBARS ----
+        div(id = 'section_09'),
         h2("9.0 Navbars"),
         navbarPage(title = "Business Science", inverse = TRUE, collapsible = TRUE,
                    tabPanel(title = "What is Shiny?", value = "page_1",
@@ -284,6 +292,7 @@ ui <- shiny::fluidPage(
         hr(),
         
         ### 10.0 NAVS ----
+        div(id = 'section_10'),
         h2("10.0 Navs"),
         
         
@@ -313,6 +322,7 @@ ui <- shiny::fluidPage(
         hr(),
         
         ### 11.0 SIDEBAR LAYOUT ----
+        div(id = 'section_11'),
         h2("11.0 Sidebar Layout"),
         
         sidebarLayout(
@@ -327,6 +337,7 @@ ui <- shiny::fluidPage(
         hr(),
         
         ### 12.0 JUMBOTRON ----
+        div(id = 'section_12'),
         h2("12.0 Jumbotron"),
         
         div(
@@ -344,6 +355,7 @@ ui <- shiny::fluidPage(
         hr(),
         
         ### 13.0 PANELS ----
+        div(id = 'section_13'),
         h2("13.0 Panels"),
         div(
             class = "panel panel-primary",
@@ -366,6 +378,7 @@ ui <- shiny::fluidPage(
         hr(),
         
         ### 14.0 MOBILE ----
+        div(id = 'section_14'),
         h2("14.0 Mobile"),
 
         fluidRow(
@@ -392,6 +405,7 @@ ui <- shiny::fluidPage(
         hr(),
         
         ### 15.0 CSS & THEME ----
+        div(id = 'section_15'),
         h2("15.0 CSS & Theme"),
         
         fluidPage(
@@ -408,6 +422,7 @@ ui <- shiny::fluidPage(
         hr(),
         
         ### 16.0 JAVASCRIPT ----
+        div(id = 'section_16'),
         h2("16.0 JavaScript (ShinyJS)"),
         
        useShinyjs(),
