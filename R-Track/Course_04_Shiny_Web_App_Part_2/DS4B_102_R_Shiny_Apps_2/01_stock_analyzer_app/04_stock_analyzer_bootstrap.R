@@ -39,38 +39,53 @@ ui <- navbarPage(
         title = "Analysis",
         
         # CSS ----
-        shinythemes::themeSelector(),
+        # shinythemes::themeSelector(),
         
         # 1.0 HEADER ----
         div(
-            h1("Stock Analyzer", "by Business Science"),
-            p("This is the first mini-project completed in our", "Expert Shiny Applications Course (DS4B 202-R)")
+            class = "container",
+            id    = "header",
+            h1(class = "page-header", "Stock Analyzer", tags$small("by Business Science")),
+            p(class = "lead", "This is the first mini-project completed in our", 
+              a(href = "https://www.business-science.io/", target = "_blank", "Expert Shiny Applications Course (DS4B 202-R)"))
         ),
         
         # 2.0 APPLICATION UI -----
         div(
+            class = "container",
+            id    = "application_ui",
             column(
                 width = 4, 
                 wellPanel(
-                    pickerInput(
-                        inputId = "stock_selection", 
-                        label   = "Stock List (Pick One to Analyze)",
-                        choices = stock_list_tbl$label,
-                        multiple = FALSE, 
-                        selected = stock_list_tbl %>% filter(label %>% str_detect("AAPL")) %>% pull(label),
-                        options = pickerOptions(
-                            actionsBox = FALSE,
-                            liveSearch = TRUE,
-                            size = 10
+                    div(
+                        id = "input_main",
+                        pickerInput(
+                            inputId = "stock_selection", 
+                            label   = "Stock List (Pick One to Analyze)",
+                            choices = stock_list_tbl$label,
+                            multiple = FALSE, 
+                            selected = stock_list_tbl %>% filter(label %>% str_detect("AAPL")) %>% pull(label),
+                            options = pickerOptions(
+                                actionsBox = FALSE,
+                                liveSearch = TRUE,
+                                size = 10
+                            )
+                        ) 
+                    ),
+                    div(
+                        id = "input_buttons",
+                        actionButton(inputId = "analyze", label = "Analyze", icon = icon("download")),
+                        div(
+                            class = "pull-right",
+                            actionButton(inputId = "setting_toggle", label = NULL, icon = icon("cog"))
                         )
                     ),
-                    actionButton(inputId = "analyze", label = "Analyze", icon = icon("download")),
-                    hr(),
-                    sliderInput(inputId = "moving_avg_short", label = "Short Moving Average", 
-                                value = 20, min = 5, max = 40),
-                    sliderInput(inputId = "moving_avg_long", label = "Long Moving Average", 
-                                value = 50, min = 50, max = 120)
-                    # verbatimTextOutput(outputId = "slider_1")
+                    div(
+                        id = "input_settings",
+                        hr(),
+                        sliderInput(inputId = "moving_avg_short", label = "Short Moving Average", value = 20, min = 5, max = 40),
+                        sliderInput(inputId = "moving_avg_long", label = "Long Moving Average", value = 50, min = 50, max = 120)
+                    )
                 )
             ),
             column(
@@ -86,6 +101,8 @@ ui <- navbarPage(
         
         # 3.0 ANALYST COMMENTARY ----
         div(
+            class = "container",
+            id    = "commentary",
             column(
                 width = 12,
                 div(
