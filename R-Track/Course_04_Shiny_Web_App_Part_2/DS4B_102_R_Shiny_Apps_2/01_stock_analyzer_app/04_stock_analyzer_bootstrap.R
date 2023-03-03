@@ -91,8 +91,12 @@ ui <- navbarPage(
             column(
                 width = 8, 
                 div(
-                    div(h4(textOutput(outputId = "plot_header"))),
+                    class = "panel",
                     div(
+                        class = "panel-header", 
+                        h4(textOutput(outputId = "plot_header"))),
+                    div(
+                        class = "panel-body", 
                         plotlyOutput(outputId = "plotly_plot")
                     )
                 )
