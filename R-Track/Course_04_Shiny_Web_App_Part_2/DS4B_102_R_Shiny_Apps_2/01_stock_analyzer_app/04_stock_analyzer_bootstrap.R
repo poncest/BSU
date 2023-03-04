@@ -39,7 +39,10 @@ ui <- navbarPage(
         title = "Analysis",
         
         # CSS ----
-        # shinythemes::themeSelector(),
+        shinythemes::themeSelector(),
+        tags$head(
+            tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")
+        ),
         
         # 1.0 HEADER ----
         div(
@@ -110,8 +113,10 @@ ui <- navbarPage(
             column(
                 width = 12,
                 div(
-                    div(h4("Analyst Commentary")),
+                    class = "panel",
+                    div(class = "panel-header", h4("Analyst Commentary")),
                     div(
+                        class = "panel-body",
                         textOutput(outputId = "analyst_commentary")
                     )
                 )
