@@ -16,6 +16,7 @@
 library(shiny)
 library(shinyWidgets)
 library(shinythemes)
+library(shinyjs)
 
 library(plotly)
 library(tidyquant)
@@ -43,6 +44,10 @@ ui <- navbarPage(
         tags$head(
             tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")
         ),
+        
+        # JS ----
+        shinyjs::useShinyjs(),
+        
         
         # 1.0 HEADER ----
         div(
@@ -80,7 +85,7 @@ ui <- navbarPage(
                         actionButton(inputId = "analyze", label = "Analyze", icon = icon("download")),
                         div(
                             class = "pull-right",
-                            actionButton(inputId = "setting_toggle", label = NULL, icon = icon("cog"))
+                            actionButton(inputId = "settings_toggle", label = NULL, icon = icon("cog"))
                         )
                     ),
                     div(
@@ -88,7 +93,7 @@ ui <- navbarPage(
                         hr(),
                         sliderInput(inputId = "moving_avg_short", label = "Short Moving Average", value = 20, min = 5, max = 40),
                         sliderInput(inputId = "moving_avg_long", label = "Long Moving Average", value = 50, min = 50, max = 120)
-                    )
+                    ) %>% hidden()
                 )
             ),
             column(
@@ -121,17 +126,20 @@ ui <- navbarPage(
                     )
                 )
             ) 
-        )
+        ) 
     ),
-    
-    
 ) 
 
 
 # SERVER ----
 server <- function(input, output, session) {
     
-    # stock symbol ----
+    # Toggle Settings ----
+    observeEvent(input$settings_toggle, {
+        toggle(id = "input_settings", anim = TRUE)
+    })
+    
+    # Stock Symbol ----
     stock_symbol <- eventReactive(input$analyze, {
         get_symbol_from_user_input(input$stock_selection)
     }, ignoreNULL = FALSE)
@@ -140,9 +148,6 @@ server <- function(input, output, session) {
     stock_selection_triggered <- eventReactive(input$analyze, {
         input$stock_selection
     }, ignoreNULL = FALSE) 
-    
-    # output$slider_1 <- renderPrint(input$moving_avg_short)
-    
     
     # Get Stock Data ----
     stock_data_tbl <- reactive({
