@@ -226,7 +226,7 @@ ui <- shiny::fluidPage(
             column(width = 4,
                    img(class = "img-circle img-responsive", src = "matt-pic.jpg", style = "width:200px"))
         ),
-        
+          
         hr(),
         
         ### 8.0 THUMNAILS ----
