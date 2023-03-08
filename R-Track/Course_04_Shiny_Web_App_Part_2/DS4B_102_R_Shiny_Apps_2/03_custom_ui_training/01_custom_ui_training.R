@@ -15,6 +15,28 @@ library(shinythemes)
 library(tidyverse)
 
 # CUSTOM FUNCTIONS ----
+jumbotron <- function(..., background_img = NULL) {
+    
+    if (is.null(background_img)){
+        style_jumbotron = ""
+    } else{
+        style_jumbotron  <-  str_glue("background-image:url({background_img}); background-size:cover;")
+    }
+    
+    div(
+        class = "jumbotron",
+        style = style_jumbotron,
+        
+        div(
+            class = "jumbotron-ui-box text-default bg-default",
+            style = "color: white; background-color: rgba(0,0,0,0.5); padding:25px",
+            
+            # User Input Go Here
+            ...
+        )
+    )
+    
+}
 
 
 
@@ -27,7 +49,7 @@ ui <- fixedPage(
     h1(class = "page-header", "Custom UI Training"),
     
     # JUMBOTRON COMPONENT ----
-    div(
+    div( 
         class = "container",
         id = "jumbotron",
         h2("Jumbotron Component"),
@@ -39,11 +61,24 @@ ui <- fixedPage(
              style = "background-image:url('data_science_team.jpg'); background-size:cover;",
              
              div(
-                 class = "jumbotron-ui-box text-default bg-primary",
-                 style = "background-color: rgba(0,0,0,0.5); padding:25px",
-                 p("placeholder")
+                 class = "jumbotron-ui-box text-default bg-default",
+                 style = "color: white; background-color: rgba(0,0,0,0.5); padding:25px",
+                 
+                 # User Input Go Here
+                 h1("Why Learn Shiny?", style = "color: white;"),
+                 a(href = "#", class = "btn btn-primary", "Learn More")
              )
-           )
+           ),
+         column(
+             width = 12,
+             jumbotron(
+                 background_img = 'data_science_team.jpg',
+                 
+                 # User Input Go Here
+                 h1("Why Learn Shiny?", style = "color: white;"),
+                 a(href = "#", class = "btn btn-primary", "Learn More")
+                 )
+         )
         )
     ),
     
