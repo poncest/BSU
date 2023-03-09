@@ -15,7 +15,8 @@ library(shinythemes)
 library(tidyverse)
 
 # CUSTOM FUNCTIONS ----
-jumbotron <- function(..., background_img = NULL) {
+jumbotron <- function(..., background_img = NULL, 
+                      ui_box_bg_color = "rgba(0,0,0,0.5)", ui_box_text_color = "white") {
     
     if (is.null(background_img)){
         style_jumbotron = ""
@@ -29,7 +30,7 @@ jumbotron <- function(..., background_img = NULL) {
         
         div(
             class = "jumbotron-ui-box text-default bg-default",
-            style = "color: white; background-color: rgba(0,0,0,0.5); padding:25px",
+            style = str_glue("color: {ui_box_text_color}; background-color: {ui_box_bg_color}; padding:25px;"),
             
             # User Input Go Here
             ...
@@ -72,13 +73,15 @@ ui <- fixedPage(
          column(
              width = 12,
              jumbotron(
-                 background_img = 'data_science_team.jpg',
+                 background_img    = 'data_science_team.jpg',
+                 ui_box_bg_color   = "rgba(0,125,255,0.35)", 
+                 ui_box_text_color = "white",
                  
                  # User Input Go Here
-                 h1("Why Learn Shiny?", style = "color: white;"),
+                 h1("Why Learn Shiny?"),
                  a(href = "#", class = "btn btn-primary", "Learn More")
                  )
-         )
+            )
         )
     ),
     
@@ -90,7 +93,6 @@ ui <- fixedPage(
     ),
     
     # THUMBNAIL CHALLENGE ----
-    
     div(
         class = "container",
         id    = "thumbnails",
@@ -108,3 +110,4 @@ server <- function(input, output, session) {
 }
 
 shinyApp(ui, server)
+
