@@ -89,7 +89,25 @@ ui <- fixedPage(
     div(
         class = "container",
         id = "cards",
-        h2("Info Card")
+        h2("Info Card"),
+        
+        column(
+            width = 4,
+            div(
+                class = "panel panel-default",
+                div(
+                    class = "panel-body bg-default text-default",
+                    p(class = "pull-right", icon(clas = "fa-3x", "chart-line")),
+                    h4("APPL"),
+                    h5("20-day <small> vs. 50-day </small>" %>% HTML()),
+                    p(
+                        class = "text-sucess",
+                        icon("arrow-up"),
+                        tags$small("20%")
+                    )
+                )
+            )
+        )
     ),
     
     # THUMBNAIL CHALLENGE ----
