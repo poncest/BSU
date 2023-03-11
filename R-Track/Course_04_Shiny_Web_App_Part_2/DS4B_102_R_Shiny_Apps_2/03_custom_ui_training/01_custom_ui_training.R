@@ -36,9 +36,30 @@ jumbotron <- function(..., background_img = NULL,
             ...
         )
     )
-    
 }
 
+info_card <- function(title, value, sub_value,
+                      main_icon      = "chart-line",
+                      sub_icon       = "arrow-up",
+                      bg_color       = "default",
+                      text_color     = "default",
+                      sub_text_color = "success"){
+    
+    div(
+        class = "panel panel-default",
+        div(
+            class = str_glue("panel-body bg-{bg_color} text-{text_color}"),
+            p(class = "pull-right", icon(class = "fa-3x", main_icon)),
+            h4(title),
+            h5(value),
+            p(
+                class = str_glue("text-{sub_text_color}"),
+                icon(sub_icon),
+                tags$small(sub_value)
+            )
+        )
+    )
+} 
 
 
 # UI ----
@@ -72,6 +93,8 @@ ui <- fixedPage(
            ),
          column(
              width = 12,
+             
+             ## Jumbotron Function
              jumbotron(
                  background_img    = 'data_science_team.jpg',
                  ui_box_bg_color   = "rgba(0,125,255,0.35)", 
@@ -99,7 +122,7 @@ ui <- fixedPage(
                     class = "panel-body bg-default text-default",
                     p(class = "pull-right", icon(clas = "fa-3x", "chart-line")),
                     h4("APPL"),
-                    h5("20-day <small> vs. 50-day </small>" %>% HTML()),
+                    h5("20-Day <small> vs. 50-day </small>" %>% HTML()),
                     p(
                         class = "text-sucess",
                         icon("arrow-up"),
@@ -107,7 +130,19 @@ ui <- fixedPage(
                     )
                 )
             )
-        )
+        ),
+        column(
+            width = 4,
+            
+            ## Info Card Function
+            info_card(
+                title   = "NFLX", 
+                value      = p("20-Day", tags$small("vs. 50-Day")), 
+                sub_value  = "-10%", 
+                sub_icon   = "arrow-dowmn", 
+                sub_text_color = "danger" )
+            )
+        
     ),
     
     # THUMBNAIL CHALLENGE ----
