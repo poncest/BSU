@@ -146,10 +146,27 @@ ui <- fixedPage(
     ),
     
     # THUMBNAIL CHALLENGE ----
+     
     div(
         class = "container",
         id    = "thumbnails",
-        h2("Thumbnails")
+        h2("Thumbnails"),
+        
+        column(
+            width = 4,
+            div(
+                class = "thumbnail text-center",
+                img(src = "data_science_team.jpg"),
+                div(
+                    class = "caption",
+                    
+                    # User Input (...)
+                    h3("Learn Data Science in Weeks, Not Years"),
+                    p("These students are learning Shiny through Business Science University!"),
+                    a(class = "btn btn-primary btn-sm", href = "#", "Learn More")
+                )
+            )
+        )
     ),
     
     div(style = "height:400px;")
