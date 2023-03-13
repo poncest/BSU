@@ -15,6 +15,8 @@ library(shinythemes)
 library(tidyverse)
 
 # CUSTOM FUNCTIONS ----
+
+## Junbuton function
 jumbotron <- function(..., background_img = NULL, 
                       ui_box_bg_color = "rgba(0,0,0,0.5)", ui_box_text_color = "white") {
     
@@ -38,6 +40,7 @@ jumbotron <- function(..., background_img = NULL,
     )
 }
 
+## Info Card function
 info_card <- function(title, value, sub_value,
                       main_icon      = "chart-line",
                       sub_icon       = "arrow-up",
@@ -60,6 +63,22 @@ info_card <- function(title, value, sub_value,
         )
     )
 } 
+
+## thumbnail function
+thumbnail <- function(..., img = NULL, text_align = "center") {
+    
+    div(
+        class = str_glue("thumbnail text-{text_align}"),
+        img(src = img),
+        div(
+            class = "caption",
+            
+            # User Input (...)
+            ...
+        )
+    )
+    
+}
 
 
 # UI ----
@@ -146,7 +165,7 @@ ui <- fixedPage(
     ),
     
     # THUMBNAIL CHALLENGE ----
-     
+    
     div(
         class = "container",
         id    = "thumbnails",
@@ -166,13 +185,27 @@ ui <- fixedPage(
                     a(class = "btn btn-primary btn-sm", href = "#", "Learn More")
                 )
             )
+        ),
+        
+        column(
+            width = 4,
+            thumbnail(
+                img = "data_science_team.jpg",
+                text_align = "right",
+                
+                # User Input (...)
+                h3("Learn Data Science in Weeks, Not Years"),
+                p("These students are learning Shiny through Business Science University!"),
+                a(class = "btn btn-primary btn-sm", href = "#", "Learn More")
+            )
         )
+        
     ),
     
     div(style = "height:400px;")
     
-    
 )
+
 
 # SERVER ----
 server <- function(input, output, session) {
