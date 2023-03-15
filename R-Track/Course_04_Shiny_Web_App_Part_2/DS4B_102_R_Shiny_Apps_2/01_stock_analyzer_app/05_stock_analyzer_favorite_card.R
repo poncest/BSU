@@ -21,8 +21,8 @@ source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_
 
 source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/info_card.R"))
 
-
 stock_list_tbl <- get_stock_list("SP500")
+
 
 # UI ----
 ui <- navbarPage(
@@ -54,7 +54,33 @@ ui <- navbarPage(
               a(href = "https://www.business-science.io/", target = "_blank", "Expert Shiny Applications Course (DS4B 202-R)"))
         ),
         
-        # 2.0 APPLICATION UI -----
+        # 2.0 FAVORITES ----
+        div(
+            class = "container",
+            id = "favorite_container",
+            
+            div(
+                class = "container",
+                column(
+                    width = 12,
+                    h5("Favorites")
+                )
+            ),
+            div(
+                class = "container",
+                id = "favorite_cards",
+                column(
+                    width = 3,
+                    info_card(
+                        title = "AAPL", 
+                        value = HTML("20-Day<small> vs. 50-Day</small>"),
+                        sub_value = "20%")
+                )
+            )
+        ),
+        
+        
+        # 3.0 APPLICATION UI -----
         div(
             class = "container",
             id    = "application_ui",
