@@ -56,7 +56,7 @@ ui <- navbarPage(
         
         # 2.0 FAVORITES ----
         div(
-            class = "container",
+            class = "container hidden-sm, hidden-xs",
             id = "favorite_container",
             
             div(
@@ -75,6 +75,15 @@ ui <- navbarPage(
                         title = "AAPL", 
                         value = HTML("20-Day<small> vs. 50-Day</small>"),
                         sub_value = "20%")
+                ),
+                column(
+                    width = 3,
+                    info_card(
+                        title = "NFLX", 
+                        value = HTML("20-Day<small> vs. 50-Day</small>"),
+                        sub_value = "-20%",
+                        sub_icon  = "arrow-down",
+                        sub_text_color = "danger")
                 )
             )
         ),
@@ -133,7 +142,7 @@ ui <- navbarPage(
             )
         ),
         
-        # 3.0 ANALYST COMMENTARY ----
+        # 4.0 ANALYST COMMENTARY ----
         div(
             class = "container",
             id    = "commentary",
