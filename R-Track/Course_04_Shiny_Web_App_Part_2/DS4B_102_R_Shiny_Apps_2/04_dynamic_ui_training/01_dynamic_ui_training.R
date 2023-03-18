@@ -71,16 +71,18 @@ ui <- fixedPage(
                          label   = "Metric Percent", 
                          value   = 0.5),
             
-            actionButton(inputId = "created_card_1", 
+            actionButton(inputId = "create_card_1", 
                          label   = "Create Card")
             
         ),
         column(
             width = 8,
-            column(
-                width = 3,
-                info_card(title = "Revenue", value = "North", sub_value = "20%")
-                )
+            # column(
+            #     width = 3,
+            #     info_card(title = "Revenue", value = "North", sub_value = "20%")
+            #     )
+            
+            uiOutput(outputId = "single_card")
         )
         
     ),
@@ -104,7 +106,21 @@ ui <- fixedPage(
 server <- function(input, output, session) {
     
     # 1.0 Single Item -----
+    sales_card <- eventReactive(input$create_card_1, {
+        column(
+            width = 3,
+            info_card(
+                title = input$sales_metric_1,
+                value = input$sales_region_1,
+                sub_value = input$metric_value_1 %>% scales::percent(),
+            )
+        )
+    })
     
+    # test
+    output$single_card <- renderUI({
+        sales_card() 
+    })
     
     # 2.0 Multi Item -----
     
