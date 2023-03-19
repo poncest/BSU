@@ -110,9 +110,11 @@ server <- function(input, output, session) {
         column(
             width = 3,
             info_card(
-                title = input$sales_metric_1,
-                value = input$sales_region_1,
-                sub_value = input$metric_value_1 %>% scales::percent(),
+                title     = input$sales_metric_1,
+                value     = input$sales_region_1,
+                sub_value = input$metric_value_1 %>% scales::percent(), 
+                sub_icon  = ifelse(input$metric_value_1 > 0, "arrow-up", "arrow-down"),
+                sub_text_color = ifelse(input$metric_value_1 > 0, "success", "danger"),
             )
         )
     })
