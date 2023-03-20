@@ -87,12 +87,44 @@ ui <- fixedPage(
         
     ),
     
-    # 2.0 MULTI ITEM -----
+    # 2.0 MULTI ITEM ----- 
     h2("Multi-UI Rendering with User Data Storage"),
     div(
         class = "container",
         id = "multi_item",
-        p("Multi item placeholder...")
+        column(
+            width = 4,
+            class = "well",
+            
+            selectInput(inputId  = "sales_metric_2", 
+                        label    = "Sales Metric", 
+                        choices  = c("Revenue", "Profit", "Qty"),
+                        selected = "Revenue"),
+            
+            selectInput(inputId  = "sales_region_2", 
+                        label    = "Sales Region", 
+                        choices  = c("North", "South", "East", "West"),
+                        selected = "North"),
+            
+            numericInput(inputId = "metric_value_2", 
+                         label   = "Metric Percent", 
+                         value   = 0.5),
+            
+            actionButton(inputId = "add_card_2", 
+                         label   = "Add"),
+            
+            hr(),
+            uiOutput(outputId = "drop_list"),
+            
+            actionButton(inputId = "delete_card_2", 
+                         label   = "Drop")
+            
+            
+        ),
+        column(
+            width = 8,
+            p("text")
+        )
         
     ),
     
