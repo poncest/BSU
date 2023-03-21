@@ -159,16 +159,18 @@ server <- function(input, output, session) {
     # 2.0 Multi Item -----
     
     # 2.1 Reactive Values & Storing User Input ----
+    reactive_values <- reactiveValues()
     
+    reactive_values$favotites_tbl <- tible()
     
     # 2.2 Rendering Multiple Items (tagList & map) ----
-    
+     
     
     # 2.3 Rendering Inputs Items ----
-    
+     
     
     # 2.4 Delete Item ----
-    
+     
     
 }
 
