@@ -123,7 +123,7 @@ ui <- fixedPage(
         ),
         column(
             width = 8,
-            p("text")
+            verbatimTextOutput(outputId = "favs_print")
         )
         
     ),
@@ -160,8 +160,27 @@ server <- function(input, output, session) {
     
     # 2.1 Reactive Values & Storing User Input ----
     reactive_values <- reactiveValues()
+    reactive_values$favotites_tbl <- tibble()
     
-    reactive_values$favotites_tbl <- tible()
+    observeEvent(input$add_card_2, {
+        
+        new_row_tbl <- tibble(
+            sales_metric = input$sales_metric_2,
+            sales_region = input$sales_region_2,
+            metric_value = input$metric_value_2,
+        ) %>% 
+            mutate(id = str_glue("{sales_metric}_{sales_region}_{metric_value}"))
+        
+        reactive_values$favotites_tbl <- reactive_values$favotites_tbl %>% 
+            bind_rows(new_row_tbl)
+        
+    })
+    
+    
+    output$favs_print <- renderPrint({
+        reactive_values$favotites_tbl
+    })
+    
     
     # 2.2 Rendering Multiple Items (tagList & map) ----
      
