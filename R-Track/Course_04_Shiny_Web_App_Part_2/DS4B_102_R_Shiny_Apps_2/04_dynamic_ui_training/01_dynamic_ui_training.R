@@ -123,7 +123,9 @@ ui <- fixedPage(
         ),
         column(
             width = 8,
-            verbatimTextOutput(outputId = "favs_print")
+            verbatimTextOutput(outputId = "favs_print"),
+            
+            uiOutput("multi_card")
         )
         
     ),
@@ -172,17 +174,34 @@ server <- function(input, output, session) {
             mutate(id = str_glue("{sales_metric}_{sales_region}_{metric_value}"))
         
         reactive_values$favotites_tbl <- reactive_values$favotites_tbl %>% 
-            bind_rows(new_row_tbl)
+            bind_rows(new_row_tbl) %>% 
+            distinct()
         
     })
     
     
     output$favs_print <- renderPrint({
-        reactive_values$favotites_tbl
+        if(nrow(reactive_values$favotites_tbl) > 0){
+            reactive_values$favotites_tbl %>% 
+                mutate(id = as_factor(id)) %>% 
+                split(.$id)
+        }
     })
     
     
     # 2.2 Rendering Multiple Items (tagList & map) ----
+    output$multi_card <- renderUI({
+        
+        if(nrow(reactive_values$favotites_tbl) > 0){
+            
+            reactive_values$favotites_tbl
+            
+            tagList(
+                p("test_1"),
+                p("test_2")
+            )
+        }
+    })
      
     
     # 2.3 Rendering Inputs Items ----
