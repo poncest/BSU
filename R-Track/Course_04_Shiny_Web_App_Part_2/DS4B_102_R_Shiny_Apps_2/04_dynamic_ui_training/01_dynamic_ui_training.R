@@ -181,10 +181,11 @@ server <- function(input, output, session) {
     
     
     output$favs_print <- renderPrint({
-        if(nrow(reactive_values$favotites_tbl) > 0){
-            reactive_values$favotites_tbl %>% 
-                mutate(id = as_factor(id)) %>% 
-                split(.$id)
+       
+         if(nrow(reactive_values$favotites_tbl) > 0){
+             reactive_values$favotites_tbl #%>% 
+                # mutate(id = as_factor(id)) %>% 
+                # split(.$id)
         }
     })
     
@@ -194,12 +195,32 @@ server <- function(input, output, session) {
         
         if(nrow(reactive_values$favotites_tbl) > 0){
             
-            reactive_values$favotites_tbl
+            reactive_values$favotites_tbl %>% 
+                
+                # split row-wise into a list
+                mutate(id = as_factor(id)) %>% 
+                split(.$id) %>% 
             
-            tagList(
-                p("test_1"),
-                p("test_2")
-            )
+                # Map to data in the list to the info card elements
+                map(.f = function(data) {
+                    
+                    column(
+                        width = 4,
+                        info_card(
+                            title     = data$sales_metric,
+                            value     = data$sales_region,
+                            sub_value = data$metric_value,
+                            sub_icon  = ifelse(data$metric_value > 0, "arrow-up", "arrow-down"),
+                            sub_text_color = ifelse(data$metric_value > 0, "success", "danger"),
+                                )
+                           )
+                }) %>% 
+                tagList()
+            
+            # tagList(
+            #     p("test_1"),
+            #     p("test_2")
+            # )
         }
     })
      
