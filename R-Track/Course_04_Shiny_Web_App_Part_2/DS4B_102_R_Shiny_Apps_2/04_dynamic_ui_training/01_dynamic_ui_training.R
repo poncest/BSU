@@ -162,7 +162,7 @@ server <- function(input, output, session) {
     
     # 2.1 Reactive Values & Storing User Input ----
     reactive_values <- reactiveValues()
-    reactive_values$favotites_tbl <- tibble()
+    reactive_values$favorites_tbl <- tibble()
     
     observeEvent(input$add_card_2, {
         
@@ -173,7 +173,7 @@ server <- function(input, output, session) {
         ) %>% 
             mutate(id = str_glue("{sales_metric}_{sales_region}_{metric_value}"))
         
-        reactive_values$favotites_tbl <- reactive_values$favotites_tbl %>% 
+        reactive_values$favorites_tbl <- reactive_values$favorites_tbl %>% 
             bind_rows(new_row_tbl) %>% 
             distinct()
         
@@ -182,8 +182,8 @@ server <- function(input, output, session) {
     
     output$favs_print <- renderPrint({
        
-         if(nrow(reactive_values$favotites_tbl) > 0){
-             reactive_values$favotites_tbl #%>% 
+         if(nrow(reactive_values$favorites_tbl) > 0){
+             reactive_values$favorites_tbl #%>% 
                 # mutate(id = as_factor(id)) %>% 
                 # split(.$id)
         }
@@ -193,9 +193,9 @@ server <- function(input, output, session) {
     # 2.2 Rendering Multiple Items (tagList & map) ----
     output$multi_card <- renderUI({
         
-        if(nrow(reactive_values$favotites_tbl) > 0){
+        if(nrow(reactive_values$favorites_tbl) > 0){
             
-            reactive_values$favotites_tbl %>% 
+            reactive_values$favorites_tbl %>% 
                 
                 # split row-wise into a list
                 mutate(id = as_factor(id)) %>% 
@@ -226,7 +226,15 @@ server <- function(input, output, session) {
      
     
     # 2.3 Rendering Inputs Items ----
-     
+    
+    output$drop_list <- renderUI({
+        if(nrow(reactive_values$favorites_tbl) > 0){
+            
+            selectInput(inputId = "drop_item", 
+                        label = "Item to Delete", 
+                        choices = reactive_values$favorites_tbl %>% pull(id))
+        }
+    }) 
     
     # 2.4 Delete Item ----
      
