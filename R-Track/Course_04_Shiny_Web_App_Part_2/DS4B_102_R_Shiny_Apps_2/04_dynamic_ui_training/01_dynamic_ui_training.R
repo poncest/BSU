@@ -222,7 +222,7 @@ server <- function(input, output, session) {
             #     p("test_2")
             # )
         }
-    })
+    }) 
      
     
     # 2.3 Rendering Inputs Items ----
@@ -237,6 +237,16 @@ server <- function(input, output, session) {
     }) 
     
     # 2.4 Delete Item ----
+    observeEvent(input$delete_card_2, {
+        if(nrow(reactive_values$favorites_tbl) > 0){
+            
+            reactive_values$favorites_tbl <- reactive_values$favorites_tbl %>% 
+                filter(!(id %in% input$drop_item))
+        }
+            
+            
+        
+    })
      
     
 }
