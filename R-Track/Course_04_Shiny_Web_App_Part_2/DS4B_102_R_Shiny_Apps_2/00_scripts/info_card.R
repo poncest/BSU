@@ -4,9 +4,10 @@ info_card <- function(title, value, sub_value,
     
     div(
         class = "panel panel-default",
+        style = "padding: 0px;",
         div(
             class = str_glue("panel-body bg-{bg_color} text-{text_color}"),
-            p(class = "pull-right", icon(class = "fa-3x", main_icon)),
+            p(class = "pull-right", icon(class = "fa-4x", main_icon)),
             h4(title),
             h5(value),
             p(

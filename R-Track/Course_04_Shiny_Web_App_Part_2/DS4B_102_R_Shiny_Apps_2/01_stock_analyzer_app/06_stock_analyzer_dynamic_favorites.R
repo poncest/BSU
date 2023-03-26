@@ -1,13 +1,13 @@
 # BUSINESS SCIENCE ----
 # DS4B 202-R ----
-# STOCK ANALYZER APP - INFO CARD -----
+# STOCK ANALYZER APP - DYNAMIC FAVORITE CARDS -----
 # Version 1
 
 # APPLICATION DESCRIPTION ----
-# - Add Custom Info Cards
+# - Add functionality that users can add and delete cards
 
 
-# LIBRARIES & FUNCTIONS----
+# LIBRARIES ----
 library(shiny)
 library(shinyWidgets)
 library(shinythemes)
@@ -18,10 +18,11 @@ library(tidyquant)
 library(tidyverse)
 
 source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/stock_analysis_functions.R"))
-
 source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/info_card.R"))
 
 stock_list_tbl <- get_stock_list("SP500")
+
+
 
 
 # UI ----
@@ -60,14 +61,14 @@ ui <- navbarPage(
             id = "favorite_container",
             
             div(
-                class = "container",
+                class = "",
                 column(
                     width = 12,
                     h5("Favorites")
                 )
             ),
             div(
-                class = "container",
+                class = "",
                 id = "favorite_cards",
                 column(
                     width = 3,
