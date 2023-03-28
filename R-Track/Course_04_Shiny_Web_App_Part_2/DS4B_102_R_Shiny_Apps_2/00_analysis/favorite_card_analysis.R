@@ -12,6 +12,7 @@
 # SETUP ----
 library(tidyquant)
 library(tidyverse)
+library(shiny)
 
 source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/stock_analysis_functions.R"))
 source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/info_card.R"))
@@ -46,11 +47,49 @@ get_stock_mavg_info <- function(data) {
 }
 
 # testing get_stock_mavg_info()
-stock_data_favorites_tbl %>% 
-    map(get_stock_mavg_info)
+stock_data_favorites_tbl %>%
+    map_df(get_stock_mavg_info, .id = "stock")
 
 
 # 3.0 Generate Favorite Card ----
+favorites <- favorite_list_on_start 
+
+favorites %>% 
+    
+    # Step 1 - pull the stock data and mavg calculations as a list
+    map(.f = function(x) {
+        
+        x %>% 
+            get_stock_data(
+                moving_avg_short = 30,
+                moving_avg_long  = 90
+            )
+    }) %>% 
+    
+    set_names(favorites) %>% 
+    
+    # Step 2 - within each list, pull the last row 
+    map(.f = function(data) {
+         
+        data %>% 
+            get_stock_mavg_info()
+    }) %>% 
+    
+    # Step 3 - stacks all the rows together 
+    bind_rows(.id = "stock") %>% 
+    mutate(stock = as_factor(stock)) %>%         # keep the order by using a factor
+    split(.$stock) %>%                           # split into a list with the named stock
+    
+    map(.f = function(data){
+        data %>% 
+            mutate(stock = as.character(stock))  # replace the factored stock with character
+    })                                       
+    
+    # Step 3
+    
+    
+
+
 
 
 # 4.0 Generate All Favorite Cards in a TagList ----
