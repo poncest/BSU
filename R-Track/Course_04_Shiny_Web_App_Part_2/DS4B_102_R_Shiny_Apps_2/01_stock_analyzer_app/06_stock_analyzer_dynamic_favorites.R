@@ -19,9 +19,11 @@ library(tidyverse)
 
 source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/stock_analysis_functions.R"))
 source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/info_card.R"))
+source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/generate_favorite_cards.R"))
 
 stock_list_tbl <- get_stock_list("SP500")
 
+current_user_favorites <- c("APPL", "GOOG", "NFLX")
 
 
 
