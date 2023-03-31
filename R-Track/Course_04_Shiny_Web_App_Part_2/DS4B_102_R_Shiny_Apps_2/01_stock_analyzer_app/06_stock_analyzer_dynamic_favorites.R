@@ -23,7 +23,7 @@ source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_
 
 stock_list_tbl <- get_stock_list("SP500")
 
-current_user_favorites <- c("APPL", "GOOG", "NFLX")
+current_user_favorites <- c("AAPL", "GOOG", "NFLX")
 
 
 
@@ -66,28 +66,15 @@ ui <- navbarPage(
                 class = "",
                 column(
                     width = 12,
-                    h5("Favorites")
+                    h5(class = "pull-left", "Favorites"),
+                    actionButton(class = "pull-right", inputId = "favorites_clear", "Clear Favorites"),
+                    actionButton(class = "pull-right", inputId = "favorites_toggle", "Show/Hide"),
                 )
             ),
             div(
                 class = "",
-                id = "favorite_cards",
-                column(
-                    width = 3,
-                    info_card(
-                        title = "AAPL", 
-                        value = HTML("20-Day<small> vs. 50-Day</small>"),
-                        sub_value = "20%")
-                ),
-                column(
-                    width = 3,
-                    info_card(
-                        title = "NFLX", 
-                        value = HTML("20-Day<small> vs. 50-Day</small>"),
-                        sub_value = "-20%",
-                        sub_icon  = "arrow-down",
-                        sub_text_color = "danger")
-                )
+                id = "favorite_cards", 
+                generate_favorite_cards(favorites = current_user_favorites)
             )
         ),
         
@@ -119,14 +106,17 @@ ui <- navbarPage(
                         actionButton(inputId = "analyze", label = "Analyze", icon = icon("download")),
                         div(
                             class = "pull-right",
+                            actionButton(inputId = "favorites_add", label = NULL, icon = icon("heart")),
                             actionButton(inputId = "settings_toggle", label = NULL, icon = icon("cog"))
                         )
                     ),
                     div(
                         id = "input_settings",
                         hr(),
-                        sliderInput(inputId = "moving_avg_short", label = "Short Moving Average", value = 20, min = 5, max = 40),
-                        sliderInput(inputId = "moving_avg_long", label = "Long Moving Average", value = 50, min = 50, max = 120)
+                        sliderInput(inputId = "moving_avg_short", label = "Short Moving Average", 
+                                    value = 20, min = 5, max = 40),
+                        sliderInput(inputId = "moving_avg_long", label = "Long Moving Average", 
+                                    value = 50, min = 50, max = 120)
                     ) %>% hidden()
                 )
             ),
