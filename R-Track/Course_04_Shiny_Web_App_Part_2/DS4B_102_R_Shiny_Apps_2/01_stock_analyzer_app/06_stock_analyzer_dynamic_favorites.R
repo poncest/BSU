@@ -228,6 +228,32 @@ server <- function(input, output, session) {
             )
     })
     
+    # 2.4 Delete Favorites ----
+    observeEvent(input$favorites_clear, {
+        modalDialog(
+            title     = "Clear Favorites", 
+            size      = "m",
+            easyClose = TRUE,
+            
+            p("Are you sure you want to remove favorites?"),
+            br(),
+            div(
+                selectInput(inputId = "drop_list", 
+                            label   = "Remove Single Favorite",
+                            choices = reactive_values$favorites_list %>% sort()),
+                
+                actionButton(inputId = "remove_single_favorite",
+                             label   = "Clear Single",
+                             class   = "btn-warning"),
+                
+                actionButton(inputId = "remove_all_favorites",
+                             label   = "Clear ALL",
+                             class   = "btn-danger")
+            ),
+            
+            footer = modalButton("Exit")
+        ) %>% showModal()
+    })
     
 }
 
