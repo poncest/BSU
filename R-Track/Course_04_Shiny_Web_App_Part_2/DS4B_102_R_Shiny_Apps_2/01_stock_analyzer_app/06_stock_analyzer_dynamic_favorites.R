@@ -255,6 +255,19 @@ server <- function(input, output, session) {
         ) %>% showModal()
     })
     
+    # 2.4.1. Clear Single ----
+    observeEvent(input$remove_single_favorite, {
+        reactive_values$favorites_list <- reactive_values$favorites_list %>% 
+            .[reactive_values$favorites_list != input$drop_list]
+        
+        updateSelectInput(session = session, 
+                         inputId = "drop_list",
+                         choices = reactive_values$favorites_list %>% sort())
+    })
+    
+    
+    # 2.4.2. Clear ALL ----
+    
 }
 
 
