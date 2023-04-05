@@ -72,12 +72,10 @@ ui <- navbarPage(
                 )
             ),
             div(
-                class = "",
-                id = "favorite_cards", 
-                
-                verbatimTextOutput(outputId = "favorites_print"), 
-                # generate_favorite_cards(favorites = current_user_favorites)
-                uiOutput(outputId = "favorite_cards")
+                class = "row",
+                id = "favorite_cards_section", 
+                uiOutput(outputId = "favorite_cards",
+                         class = "container")
             )
         ),
         
@@ -207,8 +205,6 @@ server <- function(input, output, session) {
     reactive_values <- reactiveValues()
     reactive_values$favorites_list <- current_user_favorites
     
-    output$favorites_print <- renderPrint(reactive_values$favorites_list)
-    
     # 2.2 Add Favorites ----
     observeEvent(input$favorites_add, {
         
@@ -217,15 +213,18 @@ server <- function(input, output, session) {
         reactive_values$favorites_list <- c(reactive_values$favorites_list, new_symbol) %>% unique()
     })
     
-    # Render Favorite Cards ----
+    # 2.3 Render Favorite Cards ----
     output$favorite_cards <- renderUI({
-        generate_favorite_cards(
-            favorites        = reactive_values$favorites_list,
-            from             = today() - days(180), 
-            to               = today(),
-            moving_avg_short = input$moving_avg_short,
-            moving_avg_long  = input$moving_avg_long
+        
+        if (!is.null(reactive_values$favorites_list)) {
+            generate_favorite_cards(
+                favorites        = reactive_values$favorites_list,
+                from             = today() - days(180), 
+                to               = today(),
+                moving_avg_short = input$moving_avg_short,
+                moving_avg_long  = input$moving_avg_long
             )
+        }
     })
     
     # 2.4 Delete Favorites ----
@@ -266,7 +265,21 @@ server <- function(input, output, session) {
     })
     
     
-    # 2.4.2. Clear ALL ----
+    # 2.4.2. Clear ALL ---- 
+    observeEvent(input$remove_all_favorites, {
+        reactive_values$favorites_list <- NULL
+        
+        updateSelectInput(session = session, 
+                          inputId = "drop_list",
+                          choices = reactive_values$favorites_list %>% sort())
+    })
+    
+    # 2.5 Show/Hide Favorites ----
+    observeEvent(input$favorites_toggle, {
+        shinyjs::toggle(id   = "favorite_cards_section", 
+                        anim = TRUE,
+                        animType = 'slide')
+    })
     
 }
 
