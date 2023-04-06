@@ -1,10 +1,10 @@
 # BUSINESS SCIENCE ----
 # DS4B 202-R ----
-# STOCK ANALYZER APP - DYNAMIC FAVORITE CARDS -----
+# STOCK ANALYZER APP - DYNAMIC PLOT TABS -----
 # Version 1
 
 # APPLICATION DESCRIPTION ----
-# - Add functionality that users can add and delete cards
+# - Add functionality that users can control plots for stock favorites
 
 
 # LIBRARIES ----
@@ -26,14 +26,13 @@ stock_list_tbl <- get_stock_list("SP500")
 current_user_favorites <- c("AAPL", "GOOG", "NFLX")
 
 
-
 # UI ----
 ui <- navbarPage(
     title = "Stock Analyzer", 
     inverse = FALSE, 
     collapsible = TRUE,
     
-    theme = shinytheme(theme = 'paper'),
+    theme = shinytheme(theme = 'cyborg'),
     
     tabPanel(
         title = "Analysis",
@@ -260,8 +259,8 @@ server <- function(input, output, session) {
             .[reactive_values$favorites_list != input$drop_list]
         
         updateSelectInput(session = session, 
-                         inputId = "drop_list",
-                         choices = reactive_values$favorites_list %>% sort())
+                          inputId = "drop_list",
+                          choices = reactive_values$favorites_list %>% sort())
     })
     
     
@@ -286,4 +285,3 @@ server <- function(input, output, session) {
 
 # RUN APP ----
 shinyApp(ui = ui, server = server)
-
