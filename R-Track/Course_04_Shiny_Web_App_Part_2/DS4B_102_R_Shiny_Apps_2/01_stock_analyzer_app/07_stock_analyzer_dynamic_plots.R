@@ -61,6 +61,7 @@ ui <- navbarPage(
             class = "container hidden-sm, hidden-xs",
             id = "favorite_container",
             
+            ## 2.1 INPUTS --- 
             div(
                 class = "",
                 column(
@@ -70,6 +71,8 @@ ui <- navbarPage(
                     actionButton(class = "pull-right", inputId = "favorites_toggle", "Show/Hide"),
                 )
             ),
+            
+            ## 2.2 FAVORITE CARDS ---
             div(
                 class = "row",
                 id = "favorite_cards_section", 
@@ -83,6 +86,8 @@ ui <- navbarPage(
         div(
             class = "container",
             id    = "application_ui",
+            
+            ## 3.1 USER INPUTS ----
             column(
                 width = 4, 
                 wellPanel(
@@ -120,18 +125,22 @@ ui <- navbarPage(
                     ) %>% hidden()
                 )
             ),
+            
+            ## 3.2 PLOT PANEL ----
+            
             column(
                 width = 8, 
-                div(
-                    class = "panel",
-                    div(
-                        class = "panel-header", 
-                        h4(textOutput(outputId = "plot_header"))),
-                    div(
-                        class = "panel-body", 
-                        plotlyOutput(outputId = "plotly_plot")
-                    )
-                )
+                uiOutput(outputId = "stock_charts")
+                # div(
+                #     class = "panel",
+                #     div(
+                #         class = "panel-header", 
+                #         h4(textOutput(outputId = "plot_header"))),
+                #     div(
+                #         class = "panel-body", 
+                #         plotlyOutput(outputId = "plotly_plot")
+                #     )
+                # )
             )
         ),
         
@@ -200,11 +209,11 @@ server <- function(input, output, session) {
     
     # 2.0 FAVORITES ----
     
-    # 2.1 Reactive Values - User Favorites ----
+    ## 2.1 Reactive Values - User Favorites ----
     reactive_values <- reactiveValues()
     reactive_values$favorites_list <- current_user_favorites
     
-    # 2.2 Add Favorites ----
+    ## 2.2 Add Favorites ----
     observeEvent(input$favorites_add, {
         
         new_symbol <- get_symbol_from_user_input(input$stock_selection)
@@ -212,7 +221,7 @@ server <- function(input, output, session) {
         reactive_values$favorites_list <- c(reactive_values$favorites_list, new_symbol) %>% unique()
     })
     
-    # 2.3 Render Favorite Cards ----
+    ## 2.3 Render Favorite Cards ----
     output$favorite_cards <- renderUI({
         
         if (length(reactive_values$favorites_list) > 0) {
@@ -226,7 +235,7 @@ server <- function(input, output, session) {
         }
     })
     
-    # 2.4 Delete Favorites ----
+    ## 2.4 Delete Favorites ----
     observeEvent(input$favorites_clear, {
         modalDialog(
             title     = "Clear Favorites", 
@@ -253,7 +262,7 @@ server <- function(input, output, session) {
         ) %>% showModal()
     })
     
-    # 2.4.1. Clear Single ----
+    ### 2.4.1. Clear Single ----
     observeEvent(input$remove_single_favorite, {
         reactive_values$favorites_list <- reactive_values$favorites_list %>% 
             .[reactive_values$favorites_list != input$drop_list]
@@ -264,7 +273,7 @@ server <- function(input, output, session) {
     })
     
     
-    # 2.4.2. Clear ALL ---- 
+    ### 2.4.2. Clear ALL ---- 
     observeEvent(input$remove_all_favorites, {
         reactive_values$favorites_list <- NULL
         
@@ -273,11 +282,25 @@ server <- function(input, output, session) {
                           choices = reactive_values$favorites_list %>% sort())
     })
     
-    # 2.5 Show/Hide Favorites ----
+    ## 2.5 Show/Hide Favorites ----
     observeEvent(input$favorites_toggle, {
         shinyjs::toggle(id   = "favorite_cards_section", 
                         anim = TRUE,
                         animType = 'slide')
+    })
+    
+    # 3.0 FAVORTITE PLOTS ----
+    output$stock_charts <- renderUI({
+        div(
+            class = "panel",
+            div(
+                class = "panel-header", 
+                h4(textOutput(outputId = "plot_header"))),
+            div(
+                class = "panel-body", 
+                plotlyOutput(outputId = "plotly_plot")
+            )
+        )
     })
     
 }
