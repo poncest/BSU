@@ -131,16 +131,6 @@ ui <- navbarPage(
             column(
                 width = 8, 
                 uiOutput(outputId = "stock_charts")
-                # div(
-                #     class = "panel",
-                #     div(
-                #         class = "panel-header", 
-                #         h4(textOutput(outputId = "plot_header"))),
-                #     div(
-                #         class = "panel-body", 
-                #         plotlyOutput(outputId = "plotly_plot")
-                #     )
-                # )
             )
         ),
         
@@ -291,16 +281,62 @@ server <- function(input, output, session) {
     
     # 3.0 FAVORTITE PLOTS ----
     output$stock_charts <- renderUI({
-        div(
-            class = "panel",
+        
+        
+        tab_panel_1 <- tabPanel(
+            title = "Last Analysis",
             div(
-                class = "panel-header", 
-                h4(textOutput(outputId = "plot_header"))),
-            div(
-                class = "panel-body", 
-                plotlyOutput(outputId = "plotly_plot")
+                class = "panel",
+                div(
+                    class = "panel-header", 
+                    h4(stock_symbol())
+                    ),
+                div(
+                    class = "panel-body", 
+                    plotlyOutput(outputId = "plotly_plot")
+                )
             )
         )
+        
+        favorite_tab_panels <- tagList(
+        tabPanel(
+            title = reactive_values$favorites_list[[1]],
+            div(
+                class = "panel",
+                div(
+                    class = "panel-header", 
+                    h4(reactive_values$favorites_list[[1]]),
+                    div(
+                        class = "panel-body", 
+                        reactive_values$favorites_list[[1]] %>% 
+                            get_stock_data(
+                                from = today() - days(180), 
+                                to   = today(),
+                                moving_avg_short = input$moving_avg_short,
+                                moving_avg_long  = input$moving_avg_long
+                            ) %>% 
+                            plot_stock_data()
+                        )
+                    )
+                )
+            )
+        )
+        
+        # testing
+        do.call(what = mean, 
+                args = list(x = c(3, 7, NA),
+                            na.rm = TRUE))
+        
+        tabsetPanel(
+            id = "tab_panel_stock_chart", 
+            type = "pills",
+            
+            tab_panel_1,
+            
+            favorite_tab_panels
+            
+            )
+  
     })
     
 }
