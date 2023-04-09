@@ -298,7 +298,7 @@ server <- function(input, output, session) {
             )
         )
         
-        favorite_tab_panels <- tagList(
+        favorite_tab_panels <- list(
         tabPanel(
             title = reactive_values$favorites_list[[1]],
             div(
@@ -318,24 +318,54 @@ server <- function(input, output, session) {
                             plot_stock_data()
                         )
                     )
+                ),
+        
+            
+            tabPanel(
+                title = reactive_values$favorites_list[[2]],
+                div(
+                    class = "panel",
+                    div(
+                        class = "panel-header", 
+                        h4(reactive_values$favorites_list[[2]]),
+                        div(
+                            class = "panel-body", 
+                            reactive_values$favorites_list[[2]] %>% 
+                                get_stock_data(
+                                    from = today() - days(180), 
+                                    to   = today(),
+                                    moving_avg_short = input$moving_avg_short,
+                                    moving_avg_long  = input$moving_avg_long
+                                ) %>% 
+                                plot_stock_data()
+                        )
+                    )
                 )
             )
-        )
+        
         
         # testing
-        do.call(what = mean, 
-                args = list(x = c(3, 7, NA),
-                            na.rm = TRUE))
+        # do.call(what = mean, 
+        #         args = list(x = c(3, 7, NA),
+        #                     na.rm = TRUE))
         
-        tabsetPanel(
-            id = "tab_panel_stock_chart", 
-            type = "pills",
-            
-            tab_panel_1,
-            
-            favorite_tab_panels
-            
-            )
+        # testing
+        #list("A") %>% append(list("B", "C", "D"))
+        
+        do.call(what = tabsetPanel,
+                args = list(tab_panel_1) %>% 
+                    append(favorite_tab_panels)
+                )
+        
+        # tabsetPanel(
+        #     id = "tab_panel_stock_chart", 
+        #     type = "pills",
+        #     
+        #     tab_panel_1,
+        #     
+        #     favorite_tab_panels
+        #     
+        #     )
   
     })
     
