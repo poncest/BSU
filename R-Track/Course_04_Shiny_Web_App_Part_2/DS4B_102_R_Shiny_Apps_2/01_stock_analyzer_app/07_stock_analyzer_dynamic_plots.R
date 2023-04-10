@@ -252,125 +252,97 @@ server <- function(input, output, session) {
         ) %>% showModal()
     })
     
-    ### 2.4.1. Clear Single ----
+    # 2.4.1 Clear Single ----
     observeEvent(input$remove_single_favorite, {
-        reactive_values$favorites_list <- reactive_values$favorites_list %>% 
+        
+        reactive_values$favorites_list <- reactive_values$favorites_list %>%
             .[reactive_values$favorites_list != input$drop_list]
         
         updateSelectInput(session = session, 
-                          inputId = "drop_list",
+                          inputId = "drop_list", 
                           choices = reactive_values$favorites_list %>% sort())
     })
     
-    
-    ### 2.4.2. Clear ALL ---- 
+    # 2.4.2 Clear All ----
     observeEvent(input$remove_all_favorites, {
+        
         reactive_values$favorites_list <- NULL
         
         updateSelectInput(session = session, 
-                          inputId = "drop_list",
+                          inputId = "drop_list", 
                           choices = reactive_values$favorites_list %>% sort())
     })
     
-    ## 2.5 Show/Hide Favorites ----
+    # 2.5 Show/Hide Favorites ----
     observeEvent(input$favorites_toggle, {
-        shinyjs::toggle(id   = "favorite_cards_section", 
-                        anim = TRUE,
-                        animType = 'slide')
+        shinyjs::toggle(id = "favorite_card_section", anim = TRUE, animType = "slide")
     })
     
-    # 3.0 FAVORTITE PLOTS ----
+    
+    # 3.0 FAVORITE PLOTS ----
+    
     output$stock_charts <- renderUI({
         
-        
+        # First Tab Panel
         tab_panel_1 <- tabPanel(
             title = "Last Analysis",
             div(
-                class = "panel",
+                class = "panel", 
                 div(
-                    class = "panel-header", 
+                    class = "panel-header",
                     h4(stock_symbol())
-                    ),
+                ),
                 div(
-                    class = "panel-body", 
+                    class = "panel-body",
                     plotlyOutput(outputId = "plotly_plot")
                 )
             )
         )
         
-        favorite_tab_panels <- list(
-        tabPanel(
-            title = reactive_values$favorites_list[[1]],
-            div(
-                class = "panel",
-                div(
-                    class = "panel-header", 
-                    h4(reactive_values$favorites_list[[1]]),
-                    div(
-                        class = "panel-body", 
-                        reactive_values$favorites_list[[1]] %>% 
-                            get_stock_data(
-                                from = today() - days(180), 
-                                to   = today(),
-                                moving_avg_short = input$moving_avg_short,
-                                moving_avg_long  = input$moving_avg_long
-                            ) %>% 
-                            plot_stock_data()
-                        )
-                    )
-                ),
-        
+        # Favorite Panels
+        favorite_tab_panels <- NULL
+        if (length(reactive_values$favorites_list) > 0) {
             
-            tabPanel(
-                title = reactive_values$favorites_list[[2]],
-                div(
-                    class = "panel",
-                    div(
-                        class = "panel-header", 
-                        h4(reactive_values$favorites_list[[2]]),
+            favorite_tab_panels <- reactive_values$favorites_list %>%
+                map(.f = function(x) {
+                    tabPanel(
+                        title = x,
                         div(
-                            class = "panel-body", 
-                            reactive_values$favorites_list[[2]] %>% 
-                                get_stock_data(
-                                    from = today() - days(180), 
-                                    to   = today(),
-                                    moving_avg_short = input$moving_avg_short,
-                                    moving_avg_long  = input$moving_avg_long
-                                ) %>% 
-                                plot_stock_data()
+                            class = "panel", 
+                            div(
+                                class = "panel-header",
+                                h4(x)
+                            ),
+                            div(
+                                class = "panel-body",
+                                
+                                x %>%
+                                    get_stock_data(
+                                        from = today() - days(180), 
+                                        to   = today(),
+                                        moving_avg_short = input$moving_avg_short,
+                                        moving_avg_long  = input$moving_avg_long
+                                    ) %>%
+                                    plot_stock_data()
+                            )
                         )
                     )
-                )
-            )
+                })
+            
+        }
         
+        # Building the Tabset Panel
+        do.call(
+            what = tabsetPanel,
+            args = list(tab_panel_1) %>%
+                append(favorite_tab_panels) %>%
+                append(list(id = "tab_panel_stock_chart", type = "pills"))
+        )
         
-        # testing
-        # do.call(what = mean, 
-        #         args = list(x = c(3, 7, NA),
-        #                     na.rm = TRUE))
-        
-        # testing
-        #list("A") %>% append(list("B", "C", "D"))
-        
-        do.call(what = tabsetPanel,
-                args = list(tab_panel_1) %>% 
-                    append(favorite_tab_panels)
-                )
-        
-        # tabsetPanel(
-        #     id = "tab_panel_stock_chart", 
-        #     type = "pills",
-        #     
-        #     tab_panel_1,
-        #     
-        #     favorite_tab_panels
-        #     
-        #     )
-  
     })
     
+    
 }
-
 
 # RUN APP ----
 shinyApp(ui = ui, server = server)
