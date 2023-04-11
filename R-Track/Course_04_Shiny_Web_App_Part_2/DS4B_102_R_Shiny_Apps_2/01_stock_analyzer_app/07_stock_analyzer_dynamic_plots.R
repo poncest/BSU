@@ -121,7 +121,8 @@ ui <- navbarPage(
                         sliderInput(inputId = "moving_avg_short", label = "Short Moving Average", 
                                     value = 20, min = 5, max = 40),
                         sliderInput(inputId = "moving_avg_long", label = "Long Moving Average", 
-                                    value = 50, min = 50, max = 120)
+                                    value = 50, min = 50, max = 120),
+                        actionButton(inputId = "apply_and_save", label = "Apply & Save", icon = icon("save"))
                     ) %>% hidden()
                 )
             ),
@@ -172,13 +173,22 @@ server <- function(input, output, session) {
         input$stock_selection
     }, ignoreNULL = FALSE) 
     
+    # Apply & Save Setting ----
+    moving_avg_short <- eventReactive(input$apply_and_save, {
+        input$moving_avg_short
+    }, ignoreNULL = FALSE)
+    
+    moving_avg_long <- eventReactive(input$apply_and_save, {
+        input$moving_avg_long
+    }, ignoreNULL = FALSE)
+    
     # Get Stock Data ----
     stock_data_tbl <- reactive({
         stock_symbol() %>% get_stock_data(
             from = today() - days(180), 
             to   = today(),
-            moving_avg_short = input$moving_avg_short,
-            moving_avg_long  = input$moving_avg_long )
+            moving_avg_short = moving_avg_short(),
+            moving_avg_long  = moving_avg_long())
     })
     
     # Plot Header ----
@@ -219,8 +229,8 @@ server <- function(input, output, session) {
                 favorites        = reactive_values$favorites_list,
                 from             = today() - days(180), 
                 to               = today(),
-                moving_avg_short = input$moving_avg_short,
-                moving_avg_long  = input$moving_avg_long
+                moving_avg_short = moving_avg_short(),
+                moving_avg_long  = moving_avg_long()
             )
         }
     })
@@ -320,8 +330,8 @@ server <- function(input, output, session) {
                                     get_stock_data(
                                         from = today() - days(180), 
                                         to   = today(),
-                                        moving_avg_short = input$moving_avg_short,
-                                        moving_avg_long  = input$moving_avg_long
+                                        moving_avg_short = moving_avg_short(),
+                                        moving_avg_long  = moving_avg_long()
                                     ) %>%
                                     plot_stock_data()
                             )
