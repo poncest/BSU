@@ -341,12 +341,23 @@ server <- function(input, output, session) {
             
         }
         
+        # Selected Argument (tabset)
+        if (is.character(input$tab_panel_stock_chart)) {
+            # Tab already selected
+            selected_tab <- input$tab_panel_stock_chart
+            
+        } else {
+            # Tab panel not build yet
+            selected_tab <- "Last Analysis"
+        }
+            
+        
         # Building the Tabset Panel
         do.call(
             what = tabsetPanel,
             args = list(tab_panel_1) %>%
                 append(favorite_tab_panels) %>%
-                append(list(id = "tab_panel_stock_chart", type = "pills"))
+                append(list(id = "tab_panel_stock_chart", type = "pills", selected = selected_tab))
         )
         
     })
