@@ -20,6 +20,8 @@ library(tidyverse)
 source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/stock_analysis_functions.R"))
 source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/info_card.R"))
 source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/generate_favorite_cards.R"))
+source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/panel_card.R"))
+
 
 stock_list_tbl <- get_stock_list("SP500")
 
@@ -302,18 +304,6 @@ server <- function(input, output, session) {
     })
     
     
-    # 3.0 PLOT OUTPUT ----
-    
-    # 3.1 Plot Header ----
-    output$plot_header <- renderText({
-        stock_selection_triggered() 
-    })
-    
-    # 3.2 Plotly Plot ----
-    output$plotly_plot <- renderPlotly({
-        stock_data_tbl() %>% plot_stock_data()
-    })
-    
     # 3.3 Favorites Plots ----
     
     output$stock_charts <- renderUI({
@@ -321,18 +311,11 @@ server <- function(input, output, session) {
         # First Tab Panel
         tab_panel_1 <- tabPanel(
             title = "Last Analysis",
-            div(
-                class = "panel", 
-                div(
-                    class = "panel-header",
-                    h4(stock_symbol())
-                ),
-                div(
-                    class = "panel-body",
-                    plotlyOutput(outputId = "plotly_plot")
-                )
+            panel_card(
+                title = stock_symbol(),
+                plotlyOutput(outputId = "plotly_plot")
             )
-        )
+          )
         
         # Favorite Panels
         favorite_tab_panels <- NULL
@@ -342,24 +325,16 @@ server <- function(input, output, session) {
                 map(.f = function(x) {
                     tabPanel(
                         title = x,
-                        div(
-                            class = "panel", 
-                            div(
-                                class = "panel-header",
-                                h4(x)
-                            ),
-                            div(
-                                class = "panel-body",
-                                
-                                x %>%
-                                    get_stock_data(
-                                        from = today() - days(180), 
-                                        to   = today(),
-                                        moving_avg_short = moving_avg_short(),
-                                        moving_avg_long  = moving_avg_long()
-                                    ) %>%
-                                    plot_stock_data()
-                            )
+                        panel_card(
+                            title = x,
+                            x %>%
+                                get_stock_data(
+                                    from = today() - days(180),
+                                    to   = today(),
+                                    moving_avg_short = moving_avg_short(),
+                                    moving_avg_long  = moving_avg_long()
+                                ) %>%
+                                plot_stock_data()
                         )
                     )
                 })
