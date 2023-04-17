@@ -13,7 +13,6 @@ library(shiny)
 library(shinythemes)
 library(tidyverse)
 library(shinyjs)
-
 library(shinyauthr) # devtools::install_github("business-science/shinyauthr")
 
 ui <- navbarPage(
@@ -27,7 +26,29 @@ ui <- navbarPage(
         
         h2("No Module"),
         
-        #TODO
+        div(
+            id = "login",
+            style = "width: 500px; max-width: 100%; margin: 0 auto;; padding: 20px;",
+            div(
+                class = "well",
+                h2(class = "text-center", "Please Login"),
+                
+                textInput(inputId     = "user_name", 
+                          label       = tagList(icon("user"), "User Name"), 
+                          placeholder = "Enter user name"),
+                
+                passwordInput(inputId     = "password", 
+                              label       = tagList(icon("unlock-alt"), "Password"),
+                              placeholder = "Enter password"),
+                
+                div(
+                    class = "text-center",
+                    actionButton(inputId = "login_button", "Log in", 
+                                 class = "btn-primary", style = "color:white;")
+                    
+                )
+            )
+        ),
         
         h2("Using A Module"),
         
