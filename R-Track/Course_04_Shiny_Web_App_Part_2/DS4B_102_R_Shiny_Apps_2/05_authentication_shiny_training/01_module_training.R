@@ -50,6 +50,8 @@ ui <- navbarPage(
             )
         ),
         
+        uiOutput(outputId = "display_content"),
+        
         h2("Using A Module"),
         
         # TODO
@@ -69,6 +71,19 @@ server <- function(input, output, session) {
     
     # NO MODULE ----
     
+    validate <- FALSE
+    
+    output$display_content <- renderUI({
+        
+        req(validate)
+        
+        div(
+            class = "well",
+            id = "success", 
+            h1(class = "page-header", "Stock Analyzer", tags$small("by Business Science")),
+            p(class = "lead", "Page conetent...")
+        )
+    })
     
     # MODULE ----
     
