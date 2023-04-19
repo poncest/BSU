@@ -73,9 +73,21 @@ server <- function(input, output, session) {
     
     validate <- FALSE
     
+    validate_password <- eventReactive(input$login_button, {
+        
+        validate <- FALSE
+        
+        if(input$user_name == user_base_tbl$user_name && input$password == user_base_tbl$password) {
+            validate <- TRUE
+        }
+        
+        validate
+            
+    })
+    
     output$display_content <- renderUI({
         
-        req(validate)
+        req(validate_password())
         
         div(
             class = "well",
