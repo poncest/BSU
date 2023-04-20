@@ -15,6 +15,11 @@ library(tidyverse)
 library(shinyjs)
 library(shinyauthr) # devtools::install_github("business-science/shinyauthr")
 
+source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/05_authentication_shiny_training/modules/01_module_login.R"))
+
+
+
+
 ui <- navbarPage(
     title = "Module Training", 
     theme = shinytheme("flatly"),
