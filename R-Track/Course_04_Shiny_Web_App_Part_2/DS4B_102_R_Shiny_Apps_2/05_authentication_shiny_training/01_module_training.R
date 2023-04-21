@@ -59,7 +59,8 @@ ui <- navbarPage(
         
         h2("Using A Module"),
         
-        # TODO
+        # modular login using login_ui()
+        login_ui(id = "login_2", title = "Modular Login"),
         
         h2('Using Shiny Auth')
         
@@ -75,8 +76,6 @@ server <- function(input, output, session) {
     )
     
     # NO MODULE ----
-    
-    validate <- FALSE
     
     validate_password <- eventReactive(input$login_button, {
         
