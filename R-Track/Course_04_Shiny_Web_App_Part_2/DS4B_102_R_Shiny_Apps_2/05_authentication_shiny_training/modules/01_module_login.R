@@ -50,6 +50,9 @@ validate_pwd <- function(input, output, session, data, user_col, pwd_col) {
             validate <- TRUE
         }
         
+        # After validating the password, hide the login section
+        if(validate) shinyjs::hide(id = "login")        
+        
         validate
         
     })

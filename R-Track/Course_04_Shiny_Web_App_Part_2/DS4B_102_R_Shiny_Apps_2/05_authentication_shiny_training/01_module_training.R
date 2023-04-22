@@ -62,6 +62,8 @@ ui <- navbarPage(
         # modular login using login_ui()
         login_ui(id = "login_2", title = "Modular Login"),
         
+        uiOutput(outputId = "display_content_2"),
+        
         h2('Using Shiny Auth')
         
         # TODO
@@ -102,8 +104,27 @@ server <- function(input, output, session) {
     })
     
     # MODULE ----
+    validate_2 <- callModule(
+        module   = validate_pwd, 
+        id       = "login_2",
+        data     = user_base_tbl,
+        user_col = user_name,
+        pwd_col  = password)
+    
+    output$display_content_2 <- renderUI({
+        
+        req(validate_2())
+        
+        div(
+            class = "well",
+            id = "success", 
+            h1(class = "page-header", "Stock Analyzer (Validate Module)", tags$small("by Business Science")),
+            p(class = "lead", "Page conetent...")
+        )
+    })
     
     
+
     # SHINYAUTHR ----
     
     
