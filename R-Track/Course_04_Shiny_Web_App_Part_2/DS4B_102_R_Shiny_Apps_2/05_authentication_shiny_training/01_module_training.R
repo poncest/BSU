@@ -29,44 +29,11 @@ ui <- navbarPage(
         useShinyjs(),
         title = "Login Module",
         
-        h2("No Module"),
+        shinyauthr::loginUI(id = "login_3"),
         
-        div(
-            id = "login",
-            style = "width: 500px; max-width: 100%; margin: 0 auto;; padding: 20px;",
-            div(
-                class = "well",
-                h2(class = "text-center", "Please Login"),
-                
-                textInput(inputId     = "user_name", 
-                          label       = tagList(icon("user"), "User Name"), 
-                          placeholder = "Enter user name"),
-                
-                passwordInput(inputId     = "password", 
-                              label       = tagList(icon("unlock-alt"), "Password"),
-                              placeholder = "Enter password"),
-                
-                div(
-                    class = "text-center",
-                    actionButton(inputId = "login_button", "Log in", 
-                                 class = "btn-primary", style = "color:white;")
-                    
-                )
-            )
-        ),
+        verbatimTextOutput(outputId = "creds"),
         
-        uiOutput(outputId = "display_content"),
-        
-        h2("Using A Module"),
-        
-        # modular login using login_ui()
-        login_ui(id = "login_2", title = "Modular Login"),
-        
-        uiOutput(outputId = "display_content_2"),
-        
-        h2('Using Shiny Auth')
-        
-        # TODO
+        uiOutput(outputId = "web_page")
     )
 )
 
@@ -83,7 +50,8 @@ server <- function(input, output, session) {
         
         validate <- FALSE
         
-        if(input$user_name == user_base_tbl$user_name && input$password == user_base_tbl$password) {
+        if(input$user_name == user_base_tbl$user_name && 
+           input$password == user_base_tbl$password) {
             validate <- TRUE
         }
         
@@ -127,6 +95,79 @@ server <- function(input, output, session) {
 
     # SHINYAUTHR ----
     
+    credentials <- callModule(
+        module   = shinyauthr::login,
+        id       = "login_3",
+        data     = user_base_tbl,
+        user_col = user_name,
+        pwd_col  = password,
+        log_out  = reactive(logout_init()))
+    
+    user_auth <- reactive({
+        credentials()$user_auth
+        
+    })
+    
+    user_data <- reactive({
+        credentials()$info
+    })
+    
+    logout_init <- callModule(
+        module = shinyauthr::logout,
+        id     = "logout",
+        active = reactive(user_auth())
+    )
+                          
+    output$creds <- renderPrint({
+        credentials()
+    })
+    
+    output$web_page <- renderUI({
+        
+        req(FALSE)
+        
+        tagList(
+            
+            h2("No Module"),
+            
+            div(
+                id = "login",
+                style = "width: 500px; max-width: 100%; margin: 0 auto;; padding: 20px;",
+                div(
+                    class = "well",
+                    h2(class = "text-center", "Please Login"),
+                    
+                    textInput(inputId     = "user_name", 
+                              label       = tagList(icon("user"), "User Name"), 
+                              placeholder = "Enter user name"),
+                    
+                    passwordInput(inputId     = "password", 
+                                  label       = tagList(icon("unlock-alt"), "Password"),
+                                  placeholder = "Enter password"),
+                    
+                    div(
+                        class = "text-center",
+                        actionButton(inputId = "login_button", "Log in", 
+                                     class = "btn-primary", style = "color:white;")
+                        
+                    )
+                )
+            ),
+            
+            uiOutput(outputId = "display_content"),
+            
+            h2("Using A Module"),
+            
+            # modular login using login_ui()
+            login_ui(id = "login_2", title = "Modular Login"),
+            
+            uiOutput(outputId = "display_content_2"),
+            
+            h2('Using Shiny Auth')
+            
+            # TODO
+        )
+    })
     
 }
 
