@@ -124,7 +124,7 @@ server <- function(input, output, session) {
     
     output$web_page <- renderUI({
         
-        req(FALSE)
+        req(user_auth())
         
         tagList(
             
