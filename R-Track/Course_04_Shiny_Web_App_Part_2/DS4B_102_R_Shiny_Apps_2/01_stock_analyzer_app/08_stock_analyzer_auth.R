@@ -38,11 +38,42 @@ user_base_tbl <- tibble(
 )
 
 # UI ----
-ui <- uiOutput(outputId = "website")
+ui <- tagList(
+    # CSS ----
+    tags$head(
+        tags$link(rel = "stylesheet", type = "text/css", href = shinytheme("cyborg")),
+        tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")
+    ),
+    
+    # JS ----
+    shinyjs::useShinyjs(),
+    
+    # User Login ----
+    shinyauthr::loginUI(
+        id    = "login", 
+        title = tagList(h2(class = "text-center", "Stock Analyzer", tags$small("Business Science")),
+                        p(class = "text-center", "Please Log In")),
+        login_title = "Enter"
+        ),
+    
+    # Website
+    uiOutput(outputId = "website")
+)
+    
 
 
 # SERVER ----
 server <- function(input, output, session) {
+    
+    # 0.0 USER LOGIN ----
+    callModule(
+        module   = shinyauthr::login, 
+        id       = "login", 
+        data     = user_base_tbl, 
+        user_col = user, 
+        pwd_col  = password, 
+        log_out  = reactive(logout_init())
+    )
     
     # 1.0 SETTINGS ----
     
@@ -243,6 +274,9 @@ server <- function(input, output, session) {
     
     # 5.0 RENDER WEBSITE ----
     output$website <- renderUI({
+        
+        req(FALSE)
+        
         navbarPage(
             title = "Stock Analyzer", 
             inverse = FALSE, 
@@ -255,14 +289,7 @@ server <- function(input, output, session) {
                 
                 # CSS ----
                 shinythemes::themeSelector(),
-                tags$head(
-                    tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")
-                ),
-                
-                # JS ----
-                shinyjs::useShinyjs(),
-                
-                
+               
                 # 1.0 HEADER ----
                 div(
                     class = "container",
