@@ -56,6 +56,9 @@ ui <- tagList(
         login_title = "Enter"
         ),
     
+    # delete
+    verbatimTextOutput(outputId = "creds"), 
+    
     # Website
     uiOutput(outputId = "website")
 )
@@ -66,7 +69,7 @@ ui <- tagList(
 server <- function(input, output, session) {
     
     # 0.0 USER LOGIN ----
-    callModule(
+    credentials <- callModule(
         module   = shinyauthr::login, 
         id       = "login", 
         data     = user_base_tbl, 
@@ -74,6 +77,17 @@ server <- function(input, output, session) {
         pwd_col  = password, 
         log_out  = reactive(logout_init())
     )
+    
+    logout_init <- callModule(
+        module = shinyauthr::logout,
+        id     = "logout",
+        active = reactive(credentials()$user_auth)
+    )
+    
+    output$creds <- renderPrint({
+        credentials()
+    })
+    
     
     # 1.0 SETTINGS ----
     
