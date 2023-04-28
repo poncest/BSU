@@ -289,7 +289,7 @@ server <- function(input, output, session) {
     # 5.0 RENDER WEBSITE ----
     output$website <- renderUI({
         
-        req(FALSE)
+        req(credentials()$user_auth) 
         
         navbarPage(
             title = "Stock Analyzer", 
