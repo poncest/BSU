@@ -69,6 +69,9 @@ ui <- tagList(
 server <- function(input, output, session) {
     
     # 0.0 USER LOGIN ----
+    
+    
+    # 0.1 Credentials ----
     credentials <- callModule(
         module   = shinyauthr::login, 
         id       = "login", 
@@ -84,8 +87,28 @@ server <- function(input, output, session) {
         active = reactive(credentials()$user_auth)
     )
     
+    # 0.2 Instantiating User Information ----
+    reactive_values <- reactiveValues()
+    
+    observe({
+        if (credentials()$user_auth) {
+            
+            user_data_tbl <- credentials()$info
+            
+            reactive_values$permisions     <- user_data_tbl$permissions
+            reactive_values$user_name      <- user_data_tbl$name
+            reactive_values$favorites_list <- user_data_tbl %>% pull(favorites) %>% pluck(1)
+            reactive_values$last_symbol    <- user_data_tbl$last_symbol
+        }    
+    })
+    
     output$creds <- renderPrint({
-        credentials()
+        list(
+            reactive_values$permisions,
+            reactive_values$user_name,
+            reactive_values$favorites_list,
+            reactive_values$last_symbol
+            )
     })
     
     
@@ -142,8 +165,7 @@ server <- function(input, output, session) {
     # 2.0 FAVORITE CARDS ----
     
     # 2.1 Reactive Values - User Favorites ----
-    reactive_values <- reactiveValues()
-    reactive_values$favorites_list <- current_user_favorites
+    
     
     # 2.2 Add Favorites ----
     observeEvent(input$favorites_add, {
@@ -290,6 +312,7 @@ server <- function(input, output, session) {
     output$website <- renderUI({
         
         req(credentials()$user_auth) 
+        
         
         navbarPage(
             title = "Stock Analyzer", 
