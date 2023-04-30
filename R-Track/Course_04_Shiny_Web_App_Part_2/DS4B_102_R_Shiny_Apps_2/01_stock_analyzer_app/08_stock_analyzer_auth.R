@@ -321,6 +321,12 @@ server <- function(input, output, session) {
             
             theme = shinytheme(theme = 'cyborg'),
             
+            header = div(
+                class = "pull-right",
+                style = "padding-right: 20px;",
+                p("Welcome, ", reactive_values$user_name)
+            ),
+            
             tabPanel(
                 title = "Analysis",
                 
@@ -367,7 +373,7 @@ server <- function(input, output, session) {
                     class = "container",
                     id    = "application_ui",
                     
-                    ## 3.1 USER INPUTS ----
+                    # 3.1 USER INPUTS ----
                     column(
                         width = 4, 
                         wellPanel(
@@ -378,7 +384,9 @@ server <- function(input, output, session) {
                                     label   = "Stock List (Pick One to Analyze)",
                                     choices = stock_list_tbl$label,
                                     multiple = FALSE, 
-                                    selected = stock_list_tbl %>% filter(label %>% str_detect("AAPL")) %>% pull(label),
+                                    selected = stock_list_tbl %>% 
+                                        filter(label %>% str_detect(pattern = paste0(reactive_values$last_symbol, ","))) %>%
+                                        pull(label),
                                     options = pickerOptions(
                                         actionsBox = FALSE,
                                         liveSearch = TRUE,
