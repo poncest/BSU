@@ -13,10 +13,11 @@ library(shinyWidgets)
 library(shinythemes)
 library(shinyjs)
 library(shinyauthr)  # devtools::install_github("business-science/shinyauthr")
-
+ 
 library(plotly)
-library(tidyquant)
-library(tidyverse)
+library(tidyquant) 
+library(tidyverse) 
+
 
 source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/stock_analysis_functions.R"))
 source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/info_card.R"))
