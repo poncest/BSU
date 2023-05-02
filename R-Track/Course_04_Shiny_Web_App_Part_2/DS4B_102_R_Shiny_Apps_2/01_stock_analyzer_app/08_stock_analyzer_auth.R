@@ -28,14 +28,13 @@ stock_list_tbl <- get_stock_list("SP500")
 
 
 # USER DATA ----
-current_user_favorites <- c("AAPL", "GOOG", "NFLX")
-user_base_tbl <- tibble(
+user_base_tbl   <- tibble(
     user        = c("user1", "user2"),
     password    = c("pass1", "pass2"), 
     permissions = c("admin", "standard"),
     name        = c("User One", "User Two"),
-    favorites   = list(c("AAPL", "GOOG", "NFLX"), c("MA", "V", "FB")),
-    last_symbol = c("GOOG", "NFLX")
+    favorites   = list(c("AAPL", "GOOG", "NFLX"), c("PFE", "BMY", "MRK")),
+    last_symbol = c("GOOG", "BMY")
 )
 
 # UI ----
@@ -50,15 +49,13 @@ ui <- tagList(
     shinyjs::useShinyjs(),
     
     # User Login ----
+    # verbatimTextOutput(outputId = "creds"),   # delete
     shinyauthr::loginUI(
         id    = "login", 
         title = tagList(h2(class = "text-center", "Stock Analyzer", tags$small("Business Science")),
                         p(class = "text-center", "Please Log In")),
         login_title = "Enter"
         ),
-    
-    # delete
-    verbatimTextOutput(outputId = "creds"), 
     
     # Website
     uiOutput(outputId = "website")
@@ -312,7 +309,7 @@ server <- function(input, output, session) {
     # 5.0 RENDER WEBSITE ----
     output$website <- renderUI({
         
-        req(credentials()$user_auth) 
+        req(credentials()$user_auth)
         
         
         navbarPage(
@@ -330,11 +327,8 @@ server <- function(input, output, session) {
             
             tabPanel(
                 title = "Analysis",
-                
-                # CSS ----
-                shinythemes::themeSelector(),
                
-                # 1.0 HEADER ----
+                # 5.1.0 HEADER ----
                 div(
                     class = "container",
                     id    = "header",
@@ -343,12 +337,12 @@ server <- function(input, output, session) {
                       a(href = "https://www.business-science.io/", target = "_blank", "Expert Shiny Applications Course (DS4B 202-R)"))
                 ),
                 
-                # 2.0 FAVORITES ----
+                # 5.2.0 FAVORITES ----
                 div(
                     class = "container hidden-sm, hidden-xs",
                     id = "favorite_container",
                     
-                    # 2.1 INPUTS --- 
+                    # 5.2.1 INPUTS --- 
                     div(
                         class = "",
                         column(
@@ -359,7 +353,7 @@ server <- function(input, output, session) {
                         )
                     ),
                     
-                    # 2.2 FAVORITE CARDS ---
+                    # 5.2.2 FAVORITE CARDS ---
                     div(
                         class = "row",
                         id = "favorite_cards_section", 
@@ -369,12 +363,12 @@ server <- function(input, output, session) {
                 ),
                 
                 
-                # 3.0 APPLICATION UI -----
+                # 5.3.0 APPLICATION UI -----
                 div(
                     class = "container",
                     id    = "application_ui",
                     
-                    # 3.1 USER INPUTS ----
+                    # 5.3.1 USER INPUTS ----
                     column(
                         width = 4, 
                         wellPanel(
@@ -386,7 +380,7 @@ server <- function(input, output, session) {
                                     choices = stock_list_tbl$label,
                                     multiple = FALSE, 
                                     selected = stock_list_tbl %>% 
-                                        filter(label %>% str_detect(pattern = paste0(reactive_values$last_symbol, ","))) %>%
+                                        filter(label %>% str_detect(pattern = paste0(reactive_values$last_symbol, ","))) %>% 
                                         pull(label),
                                     options = pickerOptions(
                                         actionsBox = FALSE,
@@ -416,7 +410,7 @@ server <- function(input, output, session) {
                         )
                     ),
                     
-                    # 3.2 PLOT PANEL ----
+                    # 5.3.2 PLOT PANEL ----
                     
                     column(
                         width = 8, 
@@ -424,7 +418,7 @@ server <- function(input, output, session) {
                     )
                 ),
                 
-                # 4.0 ANALYST COMMENTARY ----
+                # 5.4.0 ANALYST COMMENTARY ----
                 div(
                     class = "container",
                     id    = "commentary",
