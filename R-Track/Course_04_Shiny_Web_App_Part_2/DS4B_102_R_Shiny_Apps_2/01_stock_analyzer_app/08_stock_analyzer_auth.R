@@ -34,8 +34,11 @@ user_base_tbl   <- tibble(
     permissions = c("admin", "standard"),
     name        = c("User One", "User Two"),
     favorites   = list(c("AAPL", "GOOG", "NFLX"), c("PFE", "BMY", "MRK")),
-    last_symbol = c("GOOG", "BMY")
+    last_symbol = c("GOOG", "BMY"),
+    user_settings = list(tibble(moving_avg_short = 20, moving_avg_long = 50, time_window = 180), 
+                         tibble(moving_avg_short = 30, moving_avg_long = 90, time_window = 365))
 )
+
 
 # UI ----
 ui <- tagList(
