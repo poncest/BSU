@@ -29,12 +29,12 @@ stock_list_tbl <- get_stock_list("SP500")
 
 # USER DATA ----
 user_base_tbl   <- tibble(
-    user        = c("user1", "user2"),
-    password    = c("pass1", "pass2"), 
-    permissions = c("admin", "standard"),
-    name        = c("User One", "User Two"),
-    favorites   = list(c("AAPL", "GOOG", "NFLX"), c("PFE", "BMY", "MRK")),
-    last_symbol = c("GOOG", "BMY"),
+    user          = c("user1", "user2"),
+    password      = c("pass1", "pass2"), 
+    permissions   = c("admin", "standard"),
+    name          = c("User One", "User Two"),
+    favorites     = list(c("AAPL", "GOOG", "NFLX"), c("PFE", "BMY", "MRK")),
+    last_symbol   = c("GOOG", "BMY"),
     user_settings = list(tibble(moving_avg_short = 20, moving_avg_long = 50, time_window = 180), 
                          tibble(moving_avg_short = 30, moving_avg_long = 90, time_window = 365))
 )
@@ -52,7 +52,7 @@ ui <- tagList(
     shinyjs::useShinyjs(),
     
     # User Login ----
-    # verbatimTextOutput(outputId = "creds"),   # delete
+    verbatimTextOutput(outputId = "creds"),   # delete
     shinyauthr::loginUI(
         id    = "login", 
         title = tagList(h2(class = "text-center", "Stock Analyzer", tags$small("Business Science")),
@@ -100,6 +100,7 @@ server <- function(input, output, session) {
             reactive_values$user_name      <- user_data_tbl$name
             reactive_values$favorites_list <- user_data_tbl %>% pull(favorites) %>% pluck(1)
             reactive_values$last_symbol    <- user_data_tbl$last_symbol
+            reactive_values$user_settings  <- user_data_tbl$user_settings
         }    
     })
     
@@ -108,7 +109,8 @@ server <- function(input, output, session) {
             reactive_values$permisions,
             reactive_values$user_name,
             reactive_values$favorites_list,
-            reactive_values$last_symbol
+            reactive_values$last_symbol,
+            reactive_values$user_settings
             )
     })
     
