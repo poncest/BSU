@@ -406,10 +406,18 @@ server <- function(input, output, session) {
                             div(
                                 id = "input_settings",
                                 hr(),
-                                sliderInput(inputId = "moving_avg_short", label = "Short Moving Average", 
-                                            value = 20, min = 5, max = 40),
-                                sliderInput(inputId = "moving_avg_long", label = "Long Moving Average", 
-                                            value = 50, min = 50, max = 120),
+                                sliderInput(inputId = "moving_avg_short", 
+                                            label = "Short Moving Average", 
+                                            value = reactive_values$user_settings %>% pluck(1) %>% pull(moving_avg_short),   #20,
+                                            min   = 5, 
+                                            max   = 40),
+                                
+                                sliderInput(inputId = "moving_avg_long", 
+                                            label = "Long Moving Average", 
+                                            value = reactive_values$user_settings %>% pluck(1) %>% pull(moving_avg_long),   #50 
+                                            min   = 50, 
+                                            max   = 120),
+                                
                                 actionButton(inputId = "apply_and_save", label = "Apply & Save", icon = icon("save"))
                             ) %>% hidden()
                         )
