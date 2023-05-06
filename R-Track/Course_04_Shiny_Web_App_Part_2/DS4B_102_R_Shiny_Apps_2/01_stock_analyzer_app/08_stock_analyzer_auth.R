@@ -141,6 +141,10 @@ server <- function(input, output, session) {
         input$moving_avg_long
     }, ignoreNULL = FALSE)
     
+    time_window <- eventReactive(input$apply_and_save, {
+        input$time_window
+    }, ignoreNULL = FALSE)
+    
     selected_tab <- eventReactive(input$apply_and_save, {
         # Selected Argument (tabset)
         if (is.character(input$tab_panel_stock_chart)) {
@@ -158,7 +162,7 @@ server <- function(input, output, session) {
     # 1.5 Get Stock Data ----
     stock_data_tbl <- reactive({
         stock_symbol() %>% get_stock_data(
-            from = today() - days(180), 
+            from = today() - time_window(), 
             to   = today(),
             moving_avg_short = moving_avg_short(),
             moving_avg_long  = moving_avg_long())
@@ -184,7 +188,7 @@ server <- function(input, output, session) {
         if (length(reactive_values$favorites_list) > 0) {
             generate_favorite_cards(
                 favorites        = reactive_values$favorites_list,
-                from             = today() - days(180), 
+                from             = today() - time_window(), 
                 to               = today(),
                 moving_avg_short = moving_avg_short(),
                 moving_avg_long  = moving_avg_long()
@@ -283,7 +287,7 @@ server <- function(input, output, session) {
                             title = x,
                             x %>%
                                 get_stock_data(
-                                    from = today() - days(180),
+                                    from = today() - time_window(),
                                     to   = today(),
                                     moving_avg_short = moving_avg_short(),
                                     moving_avg_long  = moving_avg_long()
@@ -407,16 +411,22 @@ server <- function(input, output, session) {
                                 id = "input_settings",
                                 hr(),
                                 sliderInput(inputId = "moving_avg_short", 
-                                            label = "Short Moving Average", 
-                                            value = reactive_values$user_settings %>% pluck(1) %>% pull(moving_avg_short),   #20,
+                                            label = "Short Moving Average (Days)", 
+                                            value = reactive_values$user_settings %>% pluck(1) %>% pull(moving_avg_short),   
                                             min   = 5, 
                                             max   = 40),
                                 
                                 sliderInput(inputId = "moving_avg_long", 
-                                            label = "Long Moving Average", 
-                                            value = reactive_values$user_settings %>% pluck(1) %>% pull(moving_avg_long),   #50 
+                                            label = "Long Moving Average (Days)", 
+                                            value = reactive_values$user_settings %>% pluck(1) %>% pull(moving_avg_long),   
                                             min   = 50, 
                                             max   = 120),
+                                
+                                sliderInput(inputId = "time_window", 
+                                            label = "Time Window (Days)", 
+                                            value = reactive_values$user_settings %>% pluck(1) %>% pull(time_window),   
+                                            min   = 180, 
+                                            max   = 730),
                                 
                                 actionButton(inputId = "apply_and_save", label = "Apply & Save", icon = icon("save"))
                             ) %>% hidden()
