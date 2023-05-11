@@ -5,6 +5,10 @@
 # CRUD WORKFLOW
 
 
+library(tidyverse)
+
+# 1.0 WORKFLOW FOR CRUD OPERATIONS USING BASE R ----
+
 user_base_tbl <<- read_rds(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_data_local/user_base_tbl.rds"))
 
 user_base_tbl[user_base_tbl$user == "user1", ][["last_symbol"]] <- "MA"
@@ -31,3 +35,12 @@ data <- read_rds(file = "R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny
 data %>% 
     filter(user == "user1") %>% 
     pull(user_settings)
+
+
+# 2.0 MODULARIZE FOR LOCAL STORAGE ----
+
+read_user_base <- function() {
+    read_rds(file = "R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_data_local/user_base_tbl.rds")
+}
+
+read_user_base()
