@@ -40,7 +40,34 @@ data %>%
 # 2.0 MODULARIZE FOR LOCAL STORAGE ----
 
 read_user_base <- function() {
-    read_rds(file = "R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_data_local/user_base_tbl.rds")
+    user_base_tbl <<- read_rds(file = "R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_data_local/user_base_tbl.rds")
 }
 
 read_user_base()
+
+
+# update_user_base()
+update_user_base <- function(user_name, column_name, assign_input) {
+    user_base_tbl[user_base_tbl$user == user_name, ][[column_name]] <<- assign_input
+}
+
+update_user_base(user_name = "user1", column_name = "last_symbol", assign_input = "MA")
+user_base_tbl
+
+
+# write_user_base()
+write_user_base <- function() {
+    write_rds(
+        user_base_tbl,
+        file = "R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_data_local/user_base_tbl.rds"
+        )
+}
+
+write_user_base()
+
+read_user_base()
+
+user_base_tbl
+
+
+
