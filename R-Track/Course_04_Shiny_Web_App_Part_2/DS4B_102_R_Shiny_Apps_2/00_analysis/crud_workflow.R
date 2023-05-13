@@ -2,7 +2,9 @@
 # DS4B 202-R ----
 # STOCK ANALYZER APP - PERSISTENT DATA -----
 # Version 1
-# CRUD WORKFLOW
+
+
+# CRUD WORKFLOWm ----
 
 
 library(tidyverse)
@@ -69,5 +71,28 @@ read_user_base()
 
 user_base_tbl
 
+
+# combined function
+update_amd_write_user_base <- function(user_name, column_name, assign_input) {
+    
+    user_base_tbl[user_base_tbl$user == user_name, ][[column_name]] <<- assign_input
+    
+    write_rds(
+        user_base_tbl,
+        file = "R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_data_local/user_base_tbl.rds"
+    )
+}
+
+# 3.0 CHECK WORKFLOW ----
+
+read_user_base()
+user_base_tbl
+
+update_amd_write_user_base(user_name = "user1", column_name = "last_symbol", assign_input = "V")
+
+
+# SAVE FUNCTIONS ----
+dump(c("read_user_base", "update_amd_write_user_base"), 
+       file = "R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/crud_operations_local.R" )
 
 
