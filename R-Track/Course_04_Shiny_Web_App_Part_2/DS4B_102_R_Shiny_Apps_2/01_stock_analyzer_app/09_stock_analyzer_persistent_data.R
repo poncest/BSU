@@ -24,6 +24,8 @@ source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_
 source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/generate_favorite_cards.R"))
 source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/panel_card.R"))
 
+source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/crud_operations_local.R"))
+
 stock_list_tbl <- get_stock_list("SP500")
 
 # UI ----
@@ -56,7 +58,7 @@ ui <- tagList(
 server <- function(input, output, session) {
     
     # 0.0 READ DATA ----
-    user_base_tbl <<- read_rds(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_data_local/user_base_tbl.rds"))
+    read_user_base()
     
     # 
     
