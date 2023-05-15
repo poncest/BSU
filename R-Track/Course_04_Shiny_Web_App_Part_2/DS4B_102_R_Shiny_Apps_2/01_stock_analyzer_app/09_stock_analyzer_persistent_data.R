@@ -8,7 +8,7 @@
 # - Use local data storage via RDS File
 
 
-# LIBRARIES ----
+# LIBRARIES ---- 
 library(shiny)
 library(shinyWidgets)
 library(shinythemes)
@@ -59,8 +59,6 @@ server <- function(input, output, session) {
     
     # 0.0 READ DATA ----
     read_user_base()
-    
-    # 
     
     # 0.0 USER LOGIN ----
     
@@ -116,6 +114,14 @@ server <- function(input, output, session) {
     })
     
     # 1.2 Stock Symbol ----
+    observeEvent(input$analyze, {
+        update_and_write_user_base(
+            user_name    = credentials()$info$user,
+            column_name  = "last_symbol",
+            assign_input =  get_symbol_from_user_input(input$stock_selection)
+        )
+    })
+    
     stock_symbol <- eventReactive(input$analyze, {
         get_symbol_from_user_input(input$stock_selection)
     }, ignoreNULL = FALSE)
