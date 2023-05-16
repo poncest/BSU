@@ -132,6 +132,21 @@ server <- function(input, output, session) {
     }, ignoreNULL = FALSE) 
     
     # 1.4 Apply & Save Setting ----
+    observeEvent(input$apply_and_save, {
+        
+        user_settings_tbl <- tibble(
+            moving_avg_short = input$moving_avg_short,
+            moving_avg_long  = input$moving_avg_long,
+            time_window      = input$time_window
+        )
+        
+        update_and_write_user_base(
+            user_name    = credentials()$info$user,
+            column_nmae  = "user_settings",
+            assign_input = list(user_settings_tbl)
+        )
+    })
+    
     moving_avg_short <- eventReactive(input$apply_and_save, {
         input$moving_avg_short
     }, ignoreNULL = FALSE)
