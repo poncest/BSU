@@ -19,12 +19,13 @@ library(plotly)
 library(tidyquant)
 library(tidyverse)
 
-source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/stock_analysis_functions.R"))
-source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/info_card.R"))
-source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/generate_favorite_cards.R"))
-source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/panel_card.R"))
 
-source(here::here("R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/crud_operations_local.R"))
+source(file = "R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/stock_analysis_functions.R")
+source(file = "R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/info_card.R")
+source(file = "R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/generate_favorite_cards.R")
+source(file = "R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/panel_card.R")
+
+source(file = "R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/crud_operations_local.R")
 
 stock_list_tbl <- get_stock_list("SP500")
 
@@ -192,8 +193,21 @@ server <- function(input, output, session) {
     observeEvent(input$favorites_add, {
         
         new_symbol <- get_symbol_from_user_input(input$stock_selection)
+        new_symbol_already_in_favorites <- new_symbol %in% reactive_values$favorites_list
         
-        reactive_values$favorites_list <- c(reactive_values$favorites_list, new_symbol) %>% unique()
+        if (!new_symbol_already_in_favorites) {
+            
+            reactive_values$favorites_list <- c(reactive_values$favorites_list, new_symbol) %>% unique()
+            
+            updateTabsetPanel(session = session, inputId = "tab_panel_stock_chart", selected = new_symbol)
+            
+            update_and_write_user_base(
+                user_name = credentials()$info$user,
+                column_name = "favorites",
+                assign_input = list(reactive_values$favorites_list)
+            )
+        }
+        
     })
     
     # 2.3 Render Favorite Cards ----
