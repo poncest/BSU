@@ -1,0 +1,11 @@
+default:
+    host:   "cluster0.r2dxafw.mongodb.net"
+    username: "stevenponce"
+    password: ""
+production:
+    host:   "cluster0.r2dxafw.mongodb.net"
+    username: "stevenponce"
+    password: ""
+
+
+
