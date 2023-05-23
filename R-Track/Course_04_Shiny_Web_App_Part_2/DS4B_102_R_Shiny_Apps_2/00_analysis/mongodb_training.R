@@ -17,6 +17,27 @@ library(lubridate)
 
 # Setup config Package & database YAML
 
+#sys.getenv()
+Sys.setenv(R_CONFIG_ACTIVE = "default")
+
+config <- config::get(file = "R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/01_stock_analyzer_app/config.yml")
+config
+
+mongo_connect <- function(collection, database, 
+                          hots     = config$host,
+                          username = config$username,
+                          password = config$password) {
+    
+    mongo(
+        collection = collection,
+        url        = str_glue("mongodb+srv://{username}:{password}@{host}/{database}")
+    )
+    
+}
+
+
+mongo_connection <- mongo_connect(collection = "mtcars", database = "rstats")
+
 
 # Connect to MongoDB Atlas Cloud Database
 
