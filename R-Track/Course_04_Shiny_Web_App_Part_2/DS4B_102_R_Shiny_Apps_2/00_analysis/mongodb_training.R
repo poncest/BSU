@@ -36,19 +36,20 @@ mongo_connect <- function(collection, database,
 }
 
 
+# Connect to MongoDB Atlas Cloud Database
 mongo_connection <- mongo_connect(collection = "mtcars", database = "rstats")
 
-
-# Connect to MongoDB Atlas Cloud Database
 
 
 # 2.0 ADD DATA ----
 
 # Connect to collection
-
+mongo_connection <- mongo_connect(collection = "mtcars", database = "rstats")
 
 # Adding data
-
+mtcars %>% 
+    as_tibble(rownames = "model") %>% 
+    mongo_connection$insert()
 
 # 3.0 QUERYING DATA ----
 
