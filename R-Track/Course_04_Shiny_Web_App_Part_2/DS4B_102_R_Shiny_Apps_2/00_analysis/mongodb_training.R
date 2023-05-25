@@ -37,7 +37,7 @@ mongo_connect <- function(collection, database,
 
 
 # Connect to MongoDB Atlas Cloud Database
-mongo_connection <- mongo_connect(collection = "mtcars", database = "rstats")
+mongo_connect(collection = "mtcars", database = "rstats")
 
 
 
@@ -52,7 +52,14 @@ mtcars %>%
     mongo_connection$insert()
 
 # 3.0 QUERYING DATA ----
+mongo_connection$find()  # pull everything
 
+mongo_connection$find(limit = 6) %>% 
+    toJSON() %>% 
+    prettify()
+
+mongo_connection$find(query '"{model": "Hornet Sportabout"}') %>% 
+    as_tibble()
 
 
 # 4.0 MODIFYING A COLLECTION ----
