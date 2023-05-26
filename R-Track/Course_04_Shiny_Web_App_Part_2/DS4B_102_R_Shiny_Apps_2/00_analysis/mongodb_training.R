@@ -58,8 +58,11 @@ mongo_connection$find(limit = 6) %>%
     toJSON() %>% 
     prettify()
 
-mongo_connection$find(query '"{model": "Hornet Sportabout"}') %>% 
+mongo_connection$find(query = '"{model": "Hornet Sportabout"}') %>% 
     as_tibble()
+
+
+mongo_connection$count()
 
 
 # 4.0 MODIFYING A COLLECTION ----
@@ -82,7 +85,11 @@ new_car_tbl <- tibble(
 new_car_tbl
 
 # 4.1 Insert New Record
+mongo_connection$insert(new_car_tbl)
 
+mongo_connection$count()
+
+mongo_connection$find(query = '{"model": "Ford F150"}')
 
 # 4.2 Change a Record
 
