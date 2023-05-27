@@ -91,7 +91,38 @@ mongo_connection$count()
 
 mongo_connection$find(query = '{"model": "Ford F150"}')
 
+tibble(
+    model = "Ford F150"
+) %>% 
+    toJSON() %>% 
+    str_remove_all(pattern = "^\\[|\\]$") %>%  # remove first and last square brackets
+    prettify() %>% 
+    mongo_connection$find(query = .) %>% 
+    as_tibble()
+
+
 # 4.2 Change a Record
+
+mongo_connection$update(query  = '{"model": "Ford F150"}',
+                        update = '{"$set" : {"mpg" : 10.8} }')
+
+# not updated because F250 does not exist in the dataset
+mongo_connection$update(query  = '{"model": "Ford F250"}',
+                        update = '{"$set" : {"mpg" : 10.8} }')
+
+mongo_connection$find(query = '{"model": "Ford F250"}')
+
+
+# If a record does not match, add a new record
+mongo_connection$update(query  = '{"model": "Ford F250"}',
+                        update = '{"$set" : {"mpg" : 10.8} }',
+                        upsert = TRUE)
+
+mongo_connection$find(query = '{"model": "Ford F250"}')
+
+mongo_connection$count()
+
+mongo_connection$find() %>% as_tibble() %>% tail()
 
 
 # 4.3 Remove a record
