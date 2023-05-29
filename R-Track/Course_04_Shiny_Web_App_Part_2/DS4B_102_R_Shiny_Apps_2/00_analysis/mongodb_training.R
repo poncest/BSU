@@ -125,14 +125,22 @@ mongo_connection$count()
 mongo_connection$find() %>% as_tibble() %>% tail()
 
 
+
 # 4.3 Remove a record
 
+mongo_connection$remove(query = '{"model": "Ford F250"}')
+
+mongo_connection$find() %>% as_tibble() %>% tail()
 
 # 4.4 Remove entire table (be careful)
 
+# mongo_connection$drop()
 
 
+# 4.5 Disconnecting from Database ----
 
+mongo_connection$disconnect()
+    
 # 5.0 NESTED STRUCTURES ----
 
 mongo_connection <- mongo_connect(
