@@ -163,14 +163,24 @@ user_base_tbl <- tibble(
     account_created = c(ymd_hms("2019-05-12 12:31:09"), ymd_hms("2019-06-04 06:18:02"))
 ) 
 
+
 # Converting to JSON
+
+user_base_tbl %>% toJSON()
+
+user_base_tbl %>% toJSON() %>% prettify()
+
+user_base_tbl %>% toJSON(POSIXt = "mongo") %>% prettify()
 
 
 # Adding nested structure to mongodb
 
+mongo_connection$insert(user_base_tbl)
+
 
 # Retrieve - Preserves nested structure and format
 
+mongo_connection$find() %>% as_tibble() 
 
 
 # 6.0 STOCK ANALYZER APP - CRUD WORKFLOW -----
