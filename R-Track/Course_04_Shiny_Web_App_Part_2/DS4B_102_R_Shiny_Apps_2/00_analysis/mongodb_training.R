@@ -191,8 +191,14 @@ mongo_connection <- mongo_connect(
     collection = "user_base"
 )
 
+mongo_connection$drop()
+mongo_connection$count()
+mongo_connection$find()
+
+
 # 6.1 Add User Data ----
 
+mongo_connection$insert(user_base_tbl)
 
 
 # 6.2 Get User Data ----
