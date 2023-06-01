@@ -188,7 +188,7 @@ mongo_connection$find() %>% as_tibble()
 # Create new collection
 mongo_connection <- mongo_connect(
     database   = "stock_analyzer",
-    collection = "user_base"
+    collection = "user_base_test"
 )
 
 mongo_connection$drop()
@@ -207,6 +207,29 @@ mongo_connection$insert(user_base_tbl)
 # }
 
 
+mongo_read_user_base <- function(database = "stock_analyzer", collection = "user_base_test") {
+    
+    mongo_connection <- mongo_connect(
+        database   = database,
+        collection = collection,
+        host       = config$host,
+        username   = config$username,
+        password   = config$password
+        )
+    
+    user_base_tbl <<- mongo_connection$find() %>% as_tibble() # save `user_base_tbl` to our Global Environment
+    
+    mongo_connection$disconnect()
+    
+}
+
+# testing
+
+rm(user_base_tbl)
+
+mongo_read_user_base()
+
+mongo_read_user_base(database = "stock_analyzer", collection = "user_base")
 
 # 6.3 What shinyauthr does... ----
 
