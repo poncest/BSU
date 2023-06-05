@@ -231,8 +231,16 @@ mongo_read_user_base()
 
 mongo_read_user_base(database = "stock_analyzer", collection = "user_base")
 
+
 # 6.3 What shinyauthr does... ----
 
+user_1_tbl <- user_base_tbl %>% 
+    filter(
+        user     == "user1",
+        password == "pass1"
+    )
+
+user_1_tbl
 
 
 # 6.5 Update Mongo ----
