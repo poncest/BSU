@@ -242,6 +242,13 @@ user_1_tbl <- user_base_tbl %>%
 
 user_1_tbl
 
+user_1_tbl %>% pull(favorites)
+
+pluck(user_1_tbl, "favorites", 1) <- c("AAPL", "GOOG", "NFLX", "ADBE")
+
+pluck(user_1_tbl, "favorites", 1)
+
+
 
 # 6.5 Update Mongo ----
 
@@ -249,6 +256,36 @@ user_1_tbl
 #     user_base_tbl[user_base_tbl$user == user_name, ][[column_name]] <<- assign_input
 #     write_rds(user_base_tbl, path = "00_data_local/user_base_tbl.rds")
 # }
+
+
+
+
+update_and_write_user_base <- function(user_name, column_name, assign_input,
+                                       database   = "stock_analyzer",
+                                       collection = "user_base_test") {
+    
+    user_base_tbl[user_base_tbl$user == user_name, ][[column_name]] <<- assign_input
+    
+    mongo_connection <- mongo_connect(
+        database   = database,
+        collection = collection,
+        host       = config$host,
+        username   = config$username,
+        password   = config$password
+    )
+    
+    mongo_connection$update(
+        query  = '{"model": "Ford F250"}',
+        update = '{"$set" : {"mpg" : 10.8} }'
+    )
+    
+    write_rds(user_base_tbl, path = "00_data_local/user_base_tbl.rds")
+}
+
+
+# Query
+
+# Update
 
 
 
