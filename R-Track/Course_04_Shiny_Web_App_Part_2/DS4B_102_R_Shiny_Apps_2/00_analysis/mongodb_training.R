@@ -258,11 +258,13 @@ pluck(user_1_tbl, "favorites", 1)
 # }
 
 
+user_name <- "user1"
 
+mongo_connection$find(query = query_string)
 
-update_and_write_user_base <- function(user_name, column_name, assign_input,
-                                       database   = "stock_analyzer",
-                                       collection = "user_base_test") {
+mongo_update_and_write_user_base <- function(user_name, column_name, assign_input,
+                                           database   = "stock_analyzer",
+                                           collection = "user_base_test") {
     
     user_base_tbl[user_base_tbl$user == user_name, ][[column_name]] <<- assign_input
     
@@ -283,9 +285,16 @@ update_and_write_user_base <- function(user_name, column_name, assign_input,
 }
 
 
-# Query
+# Query String
+query_string <- str_c('{"user": " ', user_name,' "}')
+
+query_string %>% prittify()
+
+# Update String
+
 
 # Update
+
 
 
 
