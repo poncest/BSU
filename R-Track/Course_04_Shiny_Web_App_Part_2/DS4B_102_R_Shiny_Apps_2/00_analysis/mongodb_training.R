@@ -291,11 +291,20 @@ query_string <- str_c('{"user": " ', user_name,' "}')
 query_string %>% prittify()
 
 # Update String
-
+update_string <- user_base_tbl %>% 
+    filter(user == user_name) %>% 
+    select(-c(user, password, permission)) %>% 
+    toJSON(POSIXt = "mongo") %>% 
+    str_remove_all(pattern = "^\\[|\\]$") 
 
 # Update
 
+mongo_connection$update(
+    query  = query_string,
+    update = str_c('{"$set" : ', update_string, '}')
+    )
 
+write_rds(user_base_tbl, path = "00_data_local/user_base_tbl.rds")
 
 
 # Before update
