@@ -174,13 +174,11 @@ user_base_tbl %>% toJSON(POSIXt = "mongo") %>% prettify()
 
 
 # Adding nested structure to mongodb
-
 mongo_connection$insert(user_base_tbl)
 
 
 # Retrieve - Preserves nested structure and format
-
-mongo_connection$find() %>% as_tibble() 
+mongo_connection$find() %>% as_tibble()
 
 
 # 6.0 STOCK ANALYZER APP - CRUD WORKFLOW -----
@@ -195,9 +193,7 @@ mongo_connection$drop()
 mongo_connection$count()
 mongo_connection$find()
 
-
 # 6.1 Add User Data ----
-
 mongo_connection$insert(user_base_tbl)
 
 
@@ -206,35 +202,29 @@ mongo_connection$insert(user_base_tbl)
 #     user_base_tbl <<- read_rds(path = "00_data_local/user_base_tbl.rds")
 # }
 
-
 mongo_read_user_base <- function(database = "stock_analyzer", collection = "user_base_test") {
     
     mongo_connection <- mongo_connect(
-        database   = database,
-        collection = collection,
-        host       = config$host,
-        username   = config$username,
-        password   = config$password
-        )
+        database    = database,
+        collection  = collection,
+        host        = config$host, 
+        username    = config$username, 
+        password    = config$password
+    )
     
-    user_base_tbl <<- mongo_connection$find() %>% as_tibble() # save `user_base_tbl` to our Global Environment
+    user_base_tbl <<- mongo_connection$find() %>% as_tibble()
     
     mongo_connection$disconnect()
     
 }
 
-# testing
-
 rm(user_base_tbl)
-
-mongo_read_user_base()
 
 mongo_read_user_base(database = "stock_analyzer", collection = "user_base")
 
-
 # 6.3 What shinyauthr does... ----
 
-user_1_tbl <- user_base_tbl %>% 
+user_1_tbl <- user_base_tbl %>%
     filter(
         user     == "user1",
         password == "pass1"
@@ -242,76 +232,69 @@ user_1_tbl <- user_base_tbl %>%
 
 user_1_tbl
 
-user_1_tbl %>% pull(favorites)
+user_1_tbl %>%
+    pull(favorites)
 
 pluck(user_1_tbl, "favorites", 1) <- c("AAPL", "GOOG", "NFLX", "ADBE")
 
 pluck(user_1_tbl, "favorites", 1)
 
-
-
 # 6.5 Update Mongo ----
 
-# update_and_write_user_base <- function(user_name, column_name, assign_input) {
-#     user_base_tbl[user_base_tbl$user == user_name, ][[column_name]] <<- assign_input
-#     write_rds(user_base_tbl, path = "00_data_local/user_base_tbl.rds")
-# }
+user_name <- "user2"
 
+# mongo_connection$find(query = query_string)
 
-user_name <- "user1"
-
-mongo_connection$find(query = query_string)
-
-mongo_update_and_write_user_base <- function(user_name, column_name, assign_input,
-                                           database   = "stock_analyzer",
-                                           collection = "user_base_test") {
+mongo_update_and_write_user_base <- function(user_name, column_name, assign_input, 
+                                             database   = "stock_analyzer",
+                                             collection = "user_base_test") {
     
     user_base_tbl[user_base_tbl$user == user_name, ][[column_name]] <<- assign_input
     
     mongo_connection <- mongo_connect(
-        database   = database,
-        collection = collection,
-        host       = config$host,
-        username   = config$username,
-        password   = config$password
+        database    = database,
+        collection  = collection,
+        host        = config$host, 
+        username    = config$username, 
+        password    = config$password
     )
     
+    # Query String
+    query_string <- str_c('{"user": "', user_name, '"}')
+    
+    # Update String
+    update_string <- user_base_tbl %>%
+        filter(user == user_name) %>%
+        select(-user, -password, -permissions) %>%
+        toJSON(POSIXt = "mongo") %>%
+        str_remove_all(pattern = "^\\[|\\]$") 
+    
+    # Update
     mongo_connection$update(
-        query  = '{"model": "Ford F250"}',
-        update = '{"$set" : {"mpg" : 10.8} }'
+        query  = query_string, 
+        update = str_c('{"$set" : ', update_string, ' }') 
     )
     
-    write_rds(user_base_tbl, path = "00_data_local/user_base_tbl.rds")
+    mongo_connection$disconnect()
 }
 
 
-# Query String
-query_string <- str_c('{"user": " ', user_name,' "}')
-
-query_string %>% prittify()
-
-# Update String
-update_string <- user_base_tbl %>% 
-    filter(user == user_name) %>% 
-    select(-c(user, password, permission)) %>% 
-    toJSON(POSIXt = "mongo") %>% 
-    str_remove_all(pattern = "^\\[|\\]$") 
-
-# Update
-
-mongo_connection$update(
-    query  = query_string,
-    update = str_c('{"$set" : ', update_string, '}')
-    )
-
-write_rds(user_base_tbl, path = "00_data_local/user_base_tbl.rds")
-
 
 # Before update
+mongo_connection$find()
 
+user_1_tbl %>% pull(user_settings)
 
 # After update
-
+mongo_update_and_write_user_base(
+    user_name    = "user1",
+    column_name  = "user_settings",
+    assign_input = list(tibble(
+        moving_avg_short = 15,
+        moving_avg_short = 75,
+        time_window = 720
+    ))
+)
 
 # 7.0 Save Functions ----
 
