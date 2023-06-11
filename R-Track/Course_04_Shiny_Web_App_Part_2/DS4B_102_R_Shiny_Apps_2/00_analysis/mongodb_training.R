@@ -44,7 +44,7 @@ mongo_connect(collection = "mtcars", database = "rstats")
 # 2.0 ADD DATA ----
 
 # Connect to collection
-mongo_connection <- mongo_connect(collection = "mtcars", database = "rstats")
+mongo_connection <- mongo_connect(collection = "mtcars", database = "rstats")``
 
 # Adding data
 mtcars %>% 
@@ -298,7 +298,9 @@ mongo_update_and_write_user_base(
 
 # 7.0 Save Functions ----
 
-dump(c("mongo_connect", "mongo_get_user_base", "mongo_update_user_record"), 
-     file = "00_scripts/crud_operations_mongodb.R", append = FALSE)
+dump(c("mongo_connect", "mongo_read_user_base", "mongo_update_and_write_user_base"), 
+     file = "R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/crud_operations_mongodb.R", 
+     append = FALSE)
+
 
 
