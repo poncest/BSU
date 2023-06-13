@@ -30,6 +30,13 @@ source(file = "R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00
 source(file = "R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/crud_operations_local.R")
 source(file = "R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/00_scripts/crud_operations_mongodb.R")
 
+database   <-  "stock_analyzer"
+collection <-  "user_base_test"
+
+Sys.setenv(R_CONFIG_ACTIVE = "default")
+
+config <- config::get(file = "R-Track/Course_04_Shiny_Web_App_Part_2/DS4B_102_R_Shiny_Apps_2/01_stock_analyzer_app/config.yml")
+
 stock_list_tbl <- get_stock_list("SP500")
 
 
@@ -67,7 +74,10 @@ server <- function(input, output, session) {
    # 0.0 READ USER BASE & AUTHENTICATE USER LOGIN ----
     
     # 0.1 Return user_base_tbl - To Global Environment -----
-    read_user_base()
+    mongo_read_user_base(
+       database = database,
+       collection = collection 
+    )
     
     # 0.2 Credentials ----
     credentials <- callModule(
