@@ -135,7 +135,9 @@ server <- function(input, output, session) {
         update_and_write_user_base(
             user_name    = credentials()$info$user,
             column_name  = "last_symbol", 
-            assign_input = get_symbol_from_user_input(input$stock_selection)
+            assign_input = get_symbol_from_user_input(input$stock_selection),
+            database     = database,
+            collection   = collection
         )
     })
     
