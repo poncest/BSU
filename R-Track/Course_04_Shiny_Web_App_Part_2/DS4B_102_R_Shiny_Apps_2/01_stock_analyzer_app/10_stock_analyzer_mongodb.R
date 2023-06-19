@@ -75,8 +75,11 @@ server <- function(input, output, session) {
     
     # 0.1 Return user_base_tbl - To Global Environment -----
     mongo_read_user_base(
-       database = database,
-       collection = collection 
+       database    = database,
+       collection  = collection,
+       host        = config$host, 
+       username    = config$username, 
+       password    = config$password
     )
     
     # 0.2 Credentials ----
@@ -132,12 +135,15 @@ server <- function(input, output, session) {
     
     # 1.2 Stock Symbol ----
     observeEvent(input$analyze, {
-        update_and_write_user_base(
+        mongo_update_and_write_user_base(
             user_name    = credentials()$info$user,
             column_name  = "last_symbol", 
             assign_input = get_symbol_from_user_input(input$stock_selection),
             database     = database,
-            collection   = collection
+            collection   = collection,
+            host         = config$host, 
+            username     = config$username, 
+            password     = config$password
         )
     })
     
@@ -159,10 +165,13 @@ server <- function(input, output, session) {
             time_window      = input$time_window
         )
         
-        update_and_write_user_base(
+        mongo_update_and_write_user_base(
             user_name    = credentials()$info$user,
             column_nmae  = "user_settings",
-            assign_input = list(user_settings_tbl)
+            assign_input = list(user_settings_tbl),
+            host         = config$host, 
+            username     = config$username, 
+            password     = config$password
         )
     })
     
@@ -221,10 +230,13 @@ server <- function(input, output, session) {
             
             updateTabsetPanel(session = session, inputId = "tab_panel_stock_chart", selected = new_symbol)
             
-            update_and_write_user_base(
-                user_name = credentials()$info$user,
-                column_name = "favorites",
-                assign_input = list(reactive_values$favorites_list)
+            mongo_update_and_write_user_base(
+                user_name    = credentials()$info$user,
+                column_name  = "favorites",
+                assign_input = list(reactive_values$favorites_list),
+                host         = config$host, 
+                username     = config$username, 
+                password     = config$password
             )
         }
         
@@ -280,10 +292,13 @@ server <- function(input, output, session) {
                           inputId = "drop_list", 
                           choices = reactive_values$favorites_list %>% sort())
         
-        update_and_write_user_base(
+        mongo_update_and_write_user_base(
             user_name    = credentials()$info$user,
             column_name  = "favorites",
-            assign_input = list(reactive_values$favorites_list)
+            assign_input = list(reactive_values$favorites_list),
+            host         = config$host, 
+            username     = config$username, 
+            password     = config$password
         )
     })
     
@@ -296,10 +311,13 @@ server <- function(input, output, session) {
                           inputId = "drop_list", 
                           choices = reactive_values$favorites_list %>% sort())
         
-        update_and_write_user_base(
+        mongo_update_and_write_user_base(
             user_name    = credentials()$info$user,
             column_name  = "favorites",
-            assign_input = list(reactive_values$favorites_list)
+            assign_input = list(reactive_values$favorites_list),
+            host         = config$host, 
+            username     = config$username, 
+            password     = config$password
         )
     })
     
